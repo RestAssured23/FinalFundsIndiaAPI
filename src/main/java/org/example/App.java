@@ -17,12 +17,12 @@ public class App
 
         try {
             if (os.contains("win")) {
-             xmlfile.add(System.getProperty("user.dir") + "\\src\\main\\testdata\\testng.xml");  //For Windows
+             xmlfile.add(System.getProperty("user.dir") + "\\src\\main\\configfile\\testng.xml");  //For Windows
             runner.setTestSuites(xmlfile);
             runner.run();
 
     } else if (os.contains("mac")) {
-        xmlfile.add(System.getProperty("user.dir") + "/src/main/testdata/testng.xml");      // For MAC
+        xmlfile.add(System.getProperty("user.dir") + "/src/main/configfile/testng.xml");      // For MAC
         runner.setTestSuites(xmlfile);
         runner.run();
     } else {
