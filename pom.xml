@@ -82,6 +82,17 @@
       <artifactId>mssql-jdbc</artifactId>
       <version>8.4.1.jre8</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-email</artifactId>
+      <version>1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>javax.mail-api</artifactId>
+      <version>1.6.2</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -95,7 +106,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>org.example.App</mainClass>
+              <mainClass>coreapi.App</mainClass>
             </manifest>
           </archive>
         </configuration>
