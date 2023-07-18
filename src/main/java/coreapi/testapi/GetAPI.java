@@ -1,13 +1,13 @@
 package coreapi.testapi;
 
 import coreapi.basepath.AccessPropertyFile;
+import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import coreapi.model.HoldingProfile;
-import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
 
@@ -53,18 +53,17 @@ public class GetAPI extends AccessPropertyFile {
         RequestSpecification res = given().spec(req);
         HoldingProfile.Root hold_response = res.when().get("/core/investor/holding-profiles")
                 .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
-
         for (int i = 0; i < hold_response.getData().size(); i++) {
-            int foundIndex = -1;
+            int foundIndex;
             String id_list = hold_response.getData().get(i).getHoldingProfileId();
-            if (id_list.equalsIgnoreCase(holding_id)) {
+            if (id_list.equalsIgnoreCase(holdingid_pro)) {
                 Holdingid = hold_response.getData().get(i).getHoldingProfileId();
                 System.out.println("Holding ID is matched with property file :"+Holdingid);
                 if (hold_response.getData().get(i).getHoldingProfileId().equalsIgnoreCase(Holdingid)) {
                     foundIndex = i;
                     InvestorId = hold_response.getData().get(foundIndex).getInvestors().get(0).getInvestorId();
                 }
-                matchFound = true; // Set the flag to true
+                matchFound = true;
                 break;
             }
         }
@@ -74,16 +73,13 @@ public class GetAPI extends AccessPropertyFile {
             System.out.println("Holding ID is not matched with property file :"+Holdingid);
         }
     }
-
-
     @Test(priority = 1)
     public void Dashboard() {
             RequestSpecification res = given().spec(req)
-                    .queryParam("holdingProfileId", Holdingid);
+                    .queryParam("holdingProfileId", "183318");
             response = res.when().get("/core/investor/dashboard")
                     .then().log().all().spec(respec).extract().response().asString();
             Reporter.log(response);
-
     }
     @Test(priority = 1)
     public void Dashboard_Portfolio() {
@@ -92,7 +88,6 @@ public class GetAPI extends AccessPropertyFile {
         response=res.when().get("/core/investor/dashboard/portfolio")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
-
     }
     @Test(priority = 1)
     public void Systematic_plan() {
@@ -102,7 +97,6 @@ public class GetAPI extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
-
     @Test(priority = 1)
     public void Invested_Schemes() {
         RequestSpecification res = given().spec(req)
@@ -151,7 +145,6 @@ public class GetAPI extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
-
     @Test(priority = 1)
     public void SWP() {
         RequestSpecification res = given().log().all().spec(req)
@@ -481,6 +474,23 @@ public class GetAPI extends AccessPropertyFile {
            //     .queryParam("investorId","1401246")  ;
         response= res.when().get("/core/investor/advisors/callback")
                 .then().log().all().spec(respec).extract().response().asString();
+        Reporter.log(response);
+    }*/
+
+  /*  @Test(priority = 1)
+    public void main_dashboard_restAPI() throws IOException {
+
+        RestAssured.baseURI = "https://webrevampneo.fundsindia.com";
+        response = given().log().all()
+                .header("x-api-version", "2.0")
+                .header("channel-id", "10")
+                .header("x-fi-access-token", accesstoken())
+                .header("Content-Type", "application/json")
+
+                .body("").when().post("/rest/fi/dashboard/v1/user")
+                .then().log().all().assertThat().statusCode(200)
+                .header("Content-Type", "application/json")
+                .extract().response().asString();
         Reporter.log(response);
     }*/
 }

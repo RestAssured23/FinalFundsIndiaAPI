@@ -20,7 +20,7 @@ public class login_cred {
 
 
     static RequestSpecification req = new RequestSpecBuilder()
-            .setBaseUri(live)
+            .setBaseUri(neo)
             .addHeader("x-api-version", "2.0")
             .addHeader("channel-id", "10")
             .setContentType(ContentType.JSON).build();

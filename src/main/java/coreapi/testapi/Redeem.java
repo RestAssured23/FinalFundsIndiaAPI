@@ -1,5 +1,6 @@
 package coreapi.testapi;
 
+import coreapi.basepath.AccessPropertyFile;
 import coreapi.model.otp.CommonOTP;
 import coreapi.model.otp.VerifyOtpRequest;
 import io.restassured.builder.RequestSpecBuilder;
@@ -7,7 +8,6 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import coreapi.accesspropertyfile.Login;
 import coreapi.dbconnection.dbo;
 import coreapi.model.HoldingProfile;
 import coreapi.model.InvestedScheme;
@@ -20,57 +20,62 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
-public class Redeem {
+public class Redeem extends AccessPropertyFile {
     RequestSpecification req = new RequestSpecBuilder()
-                       .setBaseUri(Login.URI())
+                       .setBaseUri(Basepath())
             .addHeader("x-api-version", "2.0")
             .addHeader("channel-id", "12")
-            .addHeader("x-fi-access-token", Login.Regression())
+            .addHeader("x-fi-access-token", accesstoken())
             .setContentType(ContentType.JSON).build();
     ResponseSpecification respec = new ResponseSpecBuilder()
             .expectStatusCode(200)
             .expectContentType(ContentType.JSON).build();
     public Redeem() throws IOException {
     }
-    String Holdingid, InvestorId, folio, otp_refid, dbotp, DB_refid, qref_id, RT_refno;
+    String Holdingid, InvestorId, folio, otp_refid, dbotp, DB_refid, qref_id, firstReferenceNo;
     String goalid, goalname, schemcode, schemename, unintsformat, dividendoption, option, bankid, minunitformat, minuamountformat;
-    double Total_units, minunit, minamount;
+    double Total_units, minunit, minamount,available_units;
 
     @Test(priority = 2)
     public void Holding_Profile() {
-        RequestSpecification res = given().log().all().spec(req);
+        boolean matchFound = false; // Flag variable
+        RequestSpecification res = given().spec(req);
         HoldingProfile.Root hold_response = res.when().get("/core/investor/holding-profiles")
                 .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
-        int size = hold_response.getData().size();  // Data Size
-        for (int i = 0; i < size; i++) {
-            if(hold_response.getData().get(i).getHoldingProfileId().equalsIgnoreCase(Login.HoldID)){
+        for (int i = 0; i < hold_response.getData().size(); i++) {
+            int foundIndex;
+            String id_list = hold_response.getData().get(i).getHoldingProfileId();
+            if (id_list.equalsIgnoreCase(holdingid_pro)) {
                 Holdingid = hold_response.getData().get(i).getHoldingProfileId();
-                System.out.println("Holding ID :" + Holdingid);
-                for(int j=0;j<hold_response.getData().get(i).getInvestors().size();j++){
-                    InvestorId = hold_response.getData().get(i).getInvestors().get(j).getInvestorId();
-                    System.out.println("Investor ID : " + InvestorId);
+                System.out.println("Holding ID is matched with property file :"+Holdingid);
+                if (hold_response.getData().get(i).getHoldingProfileId().equalsIgnoreCase(Holdingid)) {
+                    foundIndex = i;
+                    InvestorId = hold_response.getData().get(foundIndex).getInvestors().get(0).getInvestorId();
                 }
+                matchFound = true;
+                break;
             }
-            else{
-                System.out.println("HoldingProfile Not Matched");
-            }
+        }
+        if (!matchFound ) {
+            Holdingid = hold_response.getData().get(0).getHoldingProfileId();
+            InvestorId = hold_response.getData().get(0).getInvestors().get(0).getInvestorId();
+            System.out.println("Holding ID is not matched with property file :"+Holdingid);
         }
     }
     @Test(priority = 3)
-    public void InvestedSchem_API() {
+    public void InvestedScheme_API() {
         RequestSpecification res = given().log().all().spec(req)
-                .queryParam("holdingProfileId", Holdingid);
+                .queryParam("holdingProfileId", "183318");
         InvestedScheme.Root response = res.when().get("/core/investor/invested-schemes")
                 .then().log().all().spec(respec).extract().response().as(InvestedScheme.Root.class);
         int count = response.getData().size();
 
         for (int i = 0; i < count; i++) {
-            if (response.getData().get(i).getFolio().equalsIgnoreCase(Login.Redeem_Folio)) {
+            if (response.getData().get(i).getFolio().equalsIgnoreCase(folio_pro)) {
                 System.out.println(response.getData().get(i).getSchemeName());
                 folio = response.getData().get(i).getFolio();
                 goalid = response.getData().get(i).getGoalId();
@@ -86,12 +91,13 @@ public class Redeem {
                 minunitformat = response.getData().get(i).getRedemption().getUnitsFormatted();
                 minamount = response.getData().get(i).getRedemption().getMinimumAmount();
                 minuamountformat = response.getData().get(i).getRedemption().getMinimumAmountFormatted();
-                System.out.println(Total_units);
+            //    System.out.println(folio);
+                 available_units=response.getData().get(i).getRedemption().getUnits();
             }
         }
     }
     @Test(priority = 4)
-    public void Questinoari_API() {
+    public void QuestionariAPI() {
         RequestSpecification res = given().log().all().spec(req)
                 .body(Payload.questionnaire());
         QuestionnaireResponse.Root quesresponse = res.when().post("/core/questionnaire")
@@ -163,7 +169,7 @@ public class Redeem {
         Redeem_Units.put("goalName", goalname);
         Redeem_Units.put("schemeCode", schemcode);
         Redeem_Units.put("schemeName", schemename);
-        Redeem_Units.put("units", Integer.parseInt(Login.Redeem_units));
+        Redeem_Units.put("units",Integer.parseInt(units_pro));
         Redeem_Units.put("unitsFormatted", unintsformat);
         Redeem_Units.put("redemptionMode", "partial");            // full / partial
         Redeem_Units.put("dividendOption", dividendoption);
@@ -180,7 +186,7 @@ public class Redeem {
         Redeem_Amount.put("goalName", goalname);
         Redeem_Amount.put("schemeCode", schemcode);
         Redeem_Amount.put("schemeName", schemename);
-        Redeem_Amount.put("amount",Integer.parseInt(Login.Redeem_amt));
+        Redeem_Amount.put("amount",Integer.parseInt(amount_pro));
         Redeem_Amount.put("unitsFormatted", unintsformat);
         Redeem_Amount.put("redemptionMode", "partial");            // full / partial
         Redeem_Amount.put("dividendOption", dividendoption);
@@ -197,7 +203,7 @@ public class Redeem {
         Redeem_All.put("goalName", goalname);
         Redeem_All.put("schemeCode", schemcode);
         Redeem_All.put("schemeName", schemename);
-        Redeem_All.put("units", Total_units);
+        Redeem_All.put("units", available_units);
         Redeem_All.put("unitsFormatted", unintsformat);
         Redeem_All.put("redemptionMode", "full");            // full / partial
         Redeem_All.put("dividendOption", dividendoption);
@@ -207,12 +213,13 @@ public class Redeem {
         Redeem_All.put("otpReferenceId", DB_refid);
         Redeem_All.put("questionnaireReferenceId", qref_id);
 
-        if (Login.Redeem_units.equalsIgnoreCase("0") && Login.Redeem_amt.equalsIgnoreCase("0")) {
+        if (units_pro.equalsIgnoreCase("0")
+                && amount_pro.equalsIgnoreCase("0")) {
             RequestSpecification redeem = given().log().all().spec(req)
                     .body(Redeem_All);
             redeem.when().post("/core/investor/redeem")
                     .then().log().all().spec(respec);
-        } else if (Login.Redeem_units.equalsIgnoreCase("0")) {
+        } else if (units_pro.equalsIgnoreCase("0")) {
             RequestSpecification redeem = given().log().all().spec(req)
                     .body(Redeem_Amount);
             redeem.when().post("/core/investor/redeem")
@@ -224,6 +231,7 @@ public class Redeem {
                     .then().log().all().spec(respec);
         }
     }
+
     @Test(priority = 9)
     public void Recent_Transaction() {
         RequestSpecification res = given().log().all().spec(req)
@@ -232,27 +240,40 @@ public class Redeem {
                 .queryParam("size", "10");
         RecentTransaction.Root response = res.when().get("/core/investor/recent-transactions")
                 .then().log().all().spec(respec).extract().response().as(RecentTransaction.Root.class);
-        int count = response.getData().size();
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; j < response.getData().get(i).getMf().size(); j++) {
-                for (int k = 0; k < response.getData().get(i).getMf().get(j).getActions().size(); k++) {
-                    if (response.getData().get(i).getMf().get(j).getFolio().equalsIgnoreCase(Login.FolioID) ==
-                            (response.getData().get(i).getMf().get(j).getActions().get(k).equalsIgnoreCase("cancel"))) {
-                        RT_refno = response.getData().get(i).getMf().get(j).getReferenceNo();
-                        System.out.println("Cancelled ReferenceNo"+RT_refno);
+
+        String firstReferenceNo = null;  // Initialize a variable to store the first reference number
+
+        for (RecentTransaction.Datum data : response.getData()) {
+            for (RecentTransaction.Mf mf : data.getMf()) {
+                for (String action : mf.getActions()) {
+                    boolean isCancelled = mf.getFolio().equalsIgnoreCase(folio_pro) &&
+                            action.equalsIgnoreCase("cancel");
+                    if (isCancelled) {
+                        firstReferenceNo = mf.getReferenceNo();  // Update the first reference number
+                        break;  // Break out of the loop once the first reference number is found
                     }
                 }
+                if (firstReferenceNo != null) {
+                    break;  // Break out of the loop once the first reference number is found
+                }
+            }
+            if (firstReferenceNo != null) {
+                break;  // Break out of the loop once the first reference number is found
             }
         }
+
+        if (firstReferenceNo != null) {
+            System.out.println("First Cancelled ReferenceNo: " + firstReferenceNo);
+        }
     }
-    @Test(priority = 10)
+  /*  @Test(priority = 10)
     public void Cancel_Redeem() {
         Map<String, String> del = new HashMap<>();
         del.put("action", "cancel");
-        del.put("referenceNo", RT_refno);
+        del.put("referenceNo", firstReferenceNo);
 
         RequestSpecification can = given().log().all().spec(req).body(del);
         can.when().post("/core/investor/recent-transactions")
                 .then().log().all().spec(respec);
-    }
+    }*/
 }

@@ -1,6 +1,5 @@
 package coreapi.basepath;
 
-import coreapi.basepath.BasePlatform;
 import coreapi.model.Signin;
 import io.restassured.RestAssured;
 import org.testng.annotations.Test;
@@ -14,7 +13,7 @@ import java.util.Properties;
 import static io.restassured.RestAssured.given;
 
 public class AccessPropertyFile {
-    public static String holding_id;
+    public static String holdingid_pro,folio_pro,units_pro,amount_pro;
     static Properties properties = new Properties();
     @Test
     public String Basepath() {
@@ -32,8 +31,10 @@ public class AccessPropertyFile {
     @Test
     public String accesstoken() throws IOException {
         BasePlatform uri = new BasePlatform();
-        holding_id = properties.getProperty("holdingid");
-
+        holdingid_pro = properties.getProperty("holdingid");
+        folio_pro=properties.getProperty("folio");
+        units_pro=properties.getProperty("units");
+        amount_pro=properties.getProperty("amount");
 
 try{
         FileInputStream fis = new FileInputStream(uri.platform());
