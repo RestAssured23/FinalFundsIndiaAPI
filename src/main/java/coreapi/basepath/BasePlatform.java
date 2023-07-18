@@ -3,7 +3,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 
 public class BasePlatform {
-    public static String propertyfile="live.properties";
+    public static String propertyfile="local.properties";
 @Test
     public String setUp() {
         String os = System.getProperty("os.name").toLowerCase();

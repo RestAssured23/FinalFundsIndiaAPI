@@ -1,4 +1,4 @@
-package coreapi.basepath.accessproperty;
+package coreapi.basepath;
 
 import coreapi.basepath.BasePlatform;
 import coreapi.model.Signin;

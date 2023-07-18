@@ -1,13 +1,11 @@
 package coreapi.testapi;
 
-import coreapi.basepath.BasePlatform;
-import coreapi.basepath.accessproperty.AccessPropertyFile;
+import coreapi.basepath.AccessPropertyFile;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import coreapi.accesspropertyfile.credential;
 import coreapi.model.HoldingProfile;
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -31,7 +29,6 @@ public class GetAPI extends AccessPropertyFile {
             .expectStatusCode(200)
             .expectContentType(ContentType.JSON).build();
 
-
     String Holdingid,InvestorId,response;
 
     public GetAPI() throws IOException {
@@ -52,28 +49,32 @@ public class GetAPI extends AccessPropertyFile {
     }
     @Test
     public void Holding_Profile() {
-        try {
-            RequestSpecification res = given().spec(req);
-            HoldingProfile.Root hold_response = res.when().get("/core/investor/holding-profiles")
-                    .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
-Assert.assertEquals(200, hold_response.getCode());
+        boolean matchFound = false; // Flag variable
+        RequestSpecification res = given().spec(req);
+        HoldingProfile.Root hold_response = res.when().get("/core/investor/holding-profiles")
+                .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
 
-            for (int i = 0; i < hold_response.getData().size(); i++) {
-                for (int j = 0; j < hold_response.getData().get(i).getInvestors().size(); j++) {
-                    if (hold_response.getData().get(i).getInvestors().get(j).getType().equalsIgnoreCase("primary")) {
-                        InvestorId = hold_response.getData().get(i).getInvestors().get(j).getInvestorId();
-                        Holdingid = hold_response.getData().get(i).getHoldingProfileId();
-                        System.out.println(InvestorId);
-                        System.out.println(Holdingid);
-                    }
-                }break;
+        for (int i = 0; i < hold_response.getData().size(); i++) {
+            int foundIndex = -1;
+            String id_list = hold_response.getData().get(i).getHoldingProfileId();
+            if (id_list.equalsIgnoreCase(holding_id)) {
+                Holdingid = hold_response.getData().get(i).getHoldingProfileId();
+                System.out.println("Holding ID is matched with property file :"+Holdingid);
+                if (hold_response.getData().get(i).getHoldingProfileId().equalsIgnoreCase(Holdingid)) {
+                    foundIndex = i;
+                    InvestorId = hold_response.getData().get(foundIndex).getInvestors().get(0).getInvestorId();
+                }
+                matchFound = true; // Set the flag to true
+                break;
             }
-        } catch (AssertionError e) {
-            System.out.println("Assertion error occurred: " + e.getMessage());
-            System.exit(0);
-
+        }
+        if (!matchFound ) {
+            Holdingid = hold_response.getData().get(0).getHoldingProfileId();
+            InvestorId = hold_response.getData().get(0).getInvestors().get(0).getInvestorId();
+            System.out.println("Holding ID is not matched with property file :"+Holdingid);
         }
     }
+
 
     @Test(priority = 1)
     public void Dashboard() {

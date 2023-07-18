@@ -11,7 +11,7 @@ import static io.restassured.RestAssured.given;
 
 public class Adv_DashboardCollection {
     RequestSpecification req = new RequestSpecBuilder()
-            .setBaseUri(login_cred.live)
+            .setBaseUri(login_cred.neo)
             .addHeader("x-api-version", "2.0")
             .addHeader("channel-id", "10")
             .addHeader("x-fi-access-token",login_cred.qateam())
