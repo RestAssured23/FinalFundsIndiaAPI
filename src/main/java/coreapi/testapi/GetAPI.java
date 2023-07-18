@@ -18,29 +18,36 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 
 public class GetAPI extends AccessPropertyFile {
-    RequestSpecification req =new RequestSpecBuilder()
-                .setBaseUri(getBasePath())
-            .addHeader("x-api-version","2.0")
-            .addHeader("channel-id","10")
-            .addHeader("x-fi-access-token", getAccessToken())
-            .setContentType(ContentType.JSON).build().log().all();
-    ResponseSpecification respec =new ResponseSpecBuilder()
-            .expectStatusCode(200)
-            .expectContentType(ContentType.JSON).build();
-
-    String Holdingid,InvestorId,response;
+    private final RequestSpecification req;
+    private final ResponseSpecification respec;
+    private String Holdingid;
+    private String InvestorId;
+    private String response;
 
     public GetAPI() throws IOException {
+        req = new RequestSpecBuilder()
+                .setBaseUri(getBasePath())
+                .addHeader("x-api-version", "2.0")
+                .addHeader("channel-id", "10")
+                .addHeader("x-fi-access-token", getAccessToken())
+                .setContentType(ContentType.JSON)
+                .build()
+                .log()
+                .all();
+        respec = new ResponseSpecBuilder()
+                .expectStatusCode(200)
+                .expectContentType(ContentType.JSON)
+                .build();
     }
     @Test
-    public void Feature() {
+    public void feature() {
         RequestSpecification res = given().spec(req);
         response=res.when().get("/core/features")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
     @Test
-    public void User_Profile() {
+    public void userProfile() {
         RequestSpecification res = given().spec(req);
         response=res.when().get("/core/user-profile")
                 .then().log().all().spec(respec).extract().response().asString();
@@ -73,7 +80,7 @@ public class GetAPI extends AccessPropertyFile {
         }
     }
     @Test(priority = 1)
-    public void Dashboard() {
+    public void dashboard() {
             RequestSpecification res = given().spec(req)
                     .queryParam("holdingProfileId", Holdingid);
             response = res.when().get("/core/investor/dashboard")
@@ -81,7 +88,7 @@ public class GetAPI extends AccessPropertyFile {
             Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Dashboard_Portfolio() {
+    public void dashboardPortfolio() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
         response=res.when().get("/core/investor/dashboard/portfolio")
@@ -89,7 +96,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Systematic_plan() {
+    public void systematicPlan() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
         response=res.when().get("/core/investor/systematic-plan/sips")
@@ -97,7 +104,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Invested_Schemes() {
+    public void investedSchemes() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
         response=res.when().get("/core/investor/invested-schemes")
@@ -105,7 +112,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Recent_Transactions() {
+    public void recentTransactions() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
         response=res.when().get("/core/investor/recent-transactions")
@@ -113,7 +120,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Investor_Mandates() {
+    public void investorMandates() {
         RequestSpecification res = given().spec(req)
                 .queryParam("investorId", InvestorId);
       response=  res.when().get("/core/investor/mandates")
@@ -121,7 +128,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void STP() {
+    public void stp() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid)
                 .queryParam("page", "1")
@@ -131,13 +138,13 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Power_STPs() {
+    public void powerSTP() {
         RequestSpecification res = given().log().all().spec(req);
        response= res.when().get("/core/investor/power-stps")
                 .then().log().all().spec(respec).extract().response().asString();
     }
     @Test(priority = 1)
-    public void Triggers() {
+    public void triggers() {
         RequestSpecification res = given().log().all().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
        response= res.when().get("/core/investor/current-triggers")
@@ -145,7 +152,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void SWP() {
+    public void swp() {
         RequestSpecification res = given().log().all().spec(req)
                 .queryParam("holdingProfileId", Holdingid)
                 .queryParam("page", "1")
@@ -156,7 +163,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Folio_Banklist() {
+    public void folioBanklist() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
         response=res.when().get("/core/investor/folio-bank-list")
@@ -164,14 +171,14 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Contact_Info() {
+    public void contactInfo() {
         RequestSpecification res = given().spec(req);
         response=res.when().get("/core/investor/contacts")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Transactions_Authorization() {
+    public void authorization() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
        response= res.when().get("/core/investor/transactions/authorization")
@@ -179,7 +186,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Pending_Payments() {
+    public void pendingPayments() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
        response= res.when().get("/core/investor/pending-payments")
@@ -187,14 +194,14 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void Investor_Goals() {
+    public void goals() {
         RequestSpecification res = given().spec(req);
        response= res.when().get("/core/goals")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
     @Test
-    public void Investor_Goal() {
+    public void investorGoal() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
         response=res.when().get("/core/investor/goals")
@@ -202,7 +209,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void product_search_mf_form() {
+    public void productSearchMfForm() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
        response= res.when().get("/core/product-search/mf/form")
@@ -210,7 +217,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void Announcements() {
+    public void announcements() {
         RequestSpecification res = given().spec(req);
       response=  res.when().get("/core/user/sign-up/announcements")
                 .then().log().all().spec(respec).extract().response().asString();
@@ -225,7 +232,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void ProductSearch_MF_Form() {
+    public void productSearchMfFormPost() {
         RequestSpecification res = given().spec(req)
                 .body(Payload.product_Search());
        response= res.when().post("/core/product-search/mf")
@@ -233,7 +240,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void Super_Savings() {
+    public void superSavings() {
         RequestSpecification res = given().spec(req)
                 .body(Payload.Super_Savings());
        response= res.when().post("/core/product-search/mf")
@@ -241,7 +248,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void NFO_Search() {
+    public void nfoSearch() {
         RequestSpecification res = given().spec(req)
                 .body(Payload.NFO());
        response= res.when().post("/core/product-search/mf")
@@ -249,7 +256,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Scheme_info() //Scheme_Info
+    public void schemeInfo() //Scheme_Info
     {
         Map<String, Object> payload = new HashMap<>();
         payload.put("holdingProfileId", "0");
@@ -272,7 +279,7 @@ public class GetAPI extends AccessPropertyFile {
     }
     //Asset Allocation
     @Test
-    public void Dashboard_portfolio_Allocation_Asset_All() {
+    public void dashboardPortfolioAllocationAssetAll() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("holdingProfileId", "0");
         payload.put("portfolioId", "0");
@@ -286,7 +293,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void MF_Scheme() {
+    public void mfScheme() {
         RequestSpecification res = given().spec(req)
                 .queryParam("schemeCodes",876)
                 .queryParam("page",1)
@@ -296,7 +303,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void Dashboard_portfolio_Allocation_category() {
+    public void dashboardPortfolioAllocationCategory() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("holdingProfileId", "0");
         payload.put("portfolioId", "0");
@@ -310,7 +317,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void Dashboard_portfolio_Allocation_fi_style() {
+    public void dashboardPortfolioAllocationFiStyle() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("holdingProfileId", "0");
         payload.put("portfolioId", "0");
@@ -324,7 +331,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void Dashboard_portfolio_Allocation_credit() {
+    public void dashboardPortfolioAllocationCredit() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("holdingProfileId", "0");
         payload.put("portfolioId", "0");
@@ -338,7 +345,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void Select_Funds() {
+    public void selectFunds() {
         RequestSpecification res = given().spec(req)
                 .body(Payload.Select_Funds());
       response=  res.when().post("/core/product-search/mf/select-funds")
@@ -346,7 +353,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void New_Nominee_Declaration() {
+    public void newNomineeDeclaration() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
       response=  res.when().get("/core/investor/nominees/declaration")
@@ -354,7 +361,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Get_Existing_Nominee_MF() {
+    public void getExistingNomineeMf() {
         //Investor ID for Equity and Holding id for MF
         RequestSpecification res=given().spec(req)
                 .queryParam("holdingProfileId",Holdingid)
@@ -364,7 +371,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void Get_Equity_GetNominee() {           //Get API
+    public void getEquityGetNominee() {           //Get API
         //Investor ID for Equity and Holding id for MF
         RequestSpecification res=given().spec(req)
                 .queryParam("investorId",InvestorId)      // 934332(saravanan)  , 177973(local)
@@ -374,7 +381,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void View_Investor() {
+    public void viewInvestor() {
         RequestSpecification res = given().spec(req)
                 .queryParam("investorId",InvestorId);
        response= res.when().get("/core/investor/accounts")
@@ -384,7 +391,7 @@ public class GetAPI extends AccessPropertyFile {
 
     //FD API
     @Test
-    public void FD_Company() {
+    public void fdCompany() {
         RequestSpecification res = given().spec(req)
                 .body("{companyId:[2]}");
        response= res.when().post("/core/product-search/fixed-deposit/companies")
@@ -407,7 +414,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void AllSupport_Authorization() {
+    public void allSupportAuthorization() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", "0");
        response= res.when().get("/core/investor/transactions/authorization")
@@ -415,7 +422,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void AllSupport_Pending_Payments() {
+    public void allSupportPendingPayments() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", "0");
         response=res.when().get("/core/investor/pending-payments")
@@ -423,7 +430,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void AllSupport_Recent_Transactions() {
+    public void allSupportRecentTransactions() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", 0);
        response= res.when().get("/core/investor/recent-transactions")
@@ -431,14 +438,14 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void AllSupport_Sys_plan() {
+    public void allSupportSysPlan() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", 0);
         response=res.when().get("/core/investor/systematic-plan/sips")
                 .then().log().all().spec(respec).extract().response().asString();
     }
     @Test(priority = 1)
-    public void AllSupport_STP() {
+    public void allSupportSTP() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", 0)
                 .queryParam("page", "1")
@@ -448,7 +455,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void AllSupport_SWP() {
+    public void allSupportSWP() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", 0)
                 .queryParam("page", "1")
@@ -459,7 +466,7 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test(priority = 1)
-    public void AllSupport_Triggers() {
+    public void allSupportTriggers() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", 0);
         response=res.when().get("/core/investor/current-triggers")
