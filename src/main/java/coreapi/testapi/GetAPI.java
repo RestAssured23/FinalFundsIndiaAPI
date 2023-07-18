@@ -1,7 +1,6 @@
 package coreapi.testapi;
 
 import coreapi.basepath.AccessPropertyFile;
-import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
@@ -20,10 +19,10 @@ import static io.restassured.RestAssured.given;
 
 public class GetAPI extends AccessPropertyFile {
     RequestSpecification req =new RequestSpecBuilder()
-                .setBaseUri(Basepath())
+                .setBaseUri(getBasePath())
             .addHeader("x-api-version","2.0")
             .addHeader("channel-id","10")
-            .addHeader("x-fi-access-token",accesstoken())
+            .addHeader("x-fi-access-token", getAccessToken())
             .setContentType(ContentType.JSON).build().log().all();
     ResponseSpecification respec =new ResponseSpecBuilder()
             .expectStatusCode(200)
@@ -48,35 +47,35 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void Holding_Profile() {
+    public void holdingProfile() {
         boolean matchFound = false; // Flag variable
         RequestSpecification res = given().spec(req);
-        HoldingProfile.Root hold_response = res.when().get("/core/investor/holding-profiles")
+        HoldingProfile.Root holdResponse = res.when().get("/core/investor/holding-profiles")
                 .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
-        for (int i = 0; i < hold_response.getData().size(); i++) {
-            int foundIndex;
-            String id_list = hold_response.getData().get(i).getHoldingProfileId();
-            if (id_list.equalsIgnoreCase(holdingid_pro)) {
-                Holdingid = hold_response.getData().get(i).getHoldingProfileId();
-                System.out.println("Holding ID is matched with property file :"+Holdingid);
-                if (hold_response.getData().get(i).getHoldingProfileId().equalsIgnoreCase(Holdingid)) {
-                    foundIndex = i;
-                    InvestorId = hold_response.getData().get(foundIndex).getInvestors().get(0).getInvestorId();
+
+        for (HoldingProfile.Datum data : holdResponse.getData()) {
+            String idList = data.getHoldingProfileId();
+            if (idList.equalsIgnoreCase(holdingid_pro)) {
+                Holdingid = idList;
+                System.out.println("Holding ID is matched with the property file: " + Holdingid);
+                if (data.getHoldingProfileId().equalsIgnoreCase(Holdingid)) {
+                    int foundIndex = holdResponse.getData().indexOf(data);
+                    InvestorId = holdResponse.getData().get(foundIndex).getInvestors().get(0).getInvestorId();
                 }
                 matchFound = true;
                 break;
             }
         }
-        if (!matchFound ) {
-            Holdingid = hold_response.getData().get(0).getHoldingProfileId();
-            InvestorId = hold_response.getData().get(0).getInvestors().get(0).getInvestorId();
-            System.out.println("Holding ID is not matched with property file :"+Holdingid);
+        if (!matchFound) {
+            Holdingid = holdResponse.getData().get(0).getHoldingProfileId();
+            InvestorId = holdResponse.getData().get(0).getInvestors().get(0).getInvestorId();
+            System.out.println("Holding ID is not matched with the property file: " + Holdingid);
         }
     }
     @Test(priority = 1)
     public void Dashboard() {
             RequestSpecification res = given().spec(req)
-                    .queryParam("holdingProfileId", "183318");
+                    .queryParam("holdingProfileId", Holdingid);
             response = res.when().get("/core/investor/dashboard")
                     .then().log().all().spec(respec).extract().response().asString();
             Reporter.log(response);
@@ -393,10 +392,9 @@ public class GetAPI extends AccessPropertyFile {
         Reporter.log(response);
     }
     @Test
-    public void FD_Transaction() {
+    public void fdTransaction() {
         HashMap<String, Object> trans = new HashMap<>();
         trans.put("holdingProfileId", "0");
-
         ArrayList<String> type = new ArrayList<>();
         //type.add("holdings");            // [ pendings, holdings ]
         type.add("pendings");
@@ -478,8 +476,8 @@ public class GetAPI extends AccessPropertyFile {
     }*/
 
   /*  @Test(priority = 1)
-    public void main_dashboard_restAPI() throws IOException {
-
+    public void main_dashboard_restAPI() throws IOException
+    {
         RestAssured.baseURI = "https://webrevampneo.fundsindia.com";
         response = given().log().all()
                 .header("x-api-version", "2.0")

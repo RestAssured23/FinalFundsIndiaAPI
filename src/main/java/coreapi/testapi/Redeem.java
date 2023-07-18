@@ -26,10 +26,10 @@ import static io.restassured.RestAssured.given;
 
 public class Redeem extends AccessPropertyFile {
     RequestSpecification req = new RequestSpecBuilder()
-                       .setBaseUri(Basepath())
+                       .setBaseUri(getBasePath())
             .addHeader("x-api-version", "2.0")
             .addHeader("channel-id", "12")
-            .addHeader("x-fi-access-token", accesstoken())
+            .addHeader("x-fi-access-token", getAccessToken())
             .setContentType(ContentType.JSON).build();
     ResponseSpecification respec = new ResponseSpecBuilder()
             .expectStatusCode(200)

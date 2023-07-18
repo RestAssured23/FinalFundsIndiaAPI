@@ -5,7 +5,6 @@ import io.restassured.RestAssured;
 import org.testng.annotations.Test;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
@@ -16,26 +15,24 @@ public class AccessPropertyFile {
     public static String holdingid_pro,folio_pro,units_pro,amount_pro;
     static Properties properties = new Properties();
     @Test
-    public String Basepath() {
+    public String getBasePath() {
         BasePlatform uri = new BasePlatform();
 
         try {
             FileInputStream fis = new FileInputStream(uri.platform());
             properties.load(fis);
             return properties.getProperty("baseURI");
-        } catch (
-                IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
     @Test
-    public String accesstoken() throws IOException {
+    public String getAccessToken() {
         BasePlatform uri = new BasePlatform();
         holdingid_pro = properties.getProperty("holdingid");
         folio_pro=properties.getProperty("folio");
         units_pro=properties.getProperty("units");
         amount_pro=properties.getProperty("amount");
-
 try{
         FileInputStream fis = new FileInputStream(uri.platform());
         properties.load(fis);
@@ -52,16 +49,20 @@ try{
                 .header("x-api-version", "2.0")
                 .header("channel-id", "10")
                 .header("Content-Type", "application/json")
-
-                .body(login).when().post("/core/auth/sign-in")
-                .then().assertThat().statusCode(200)
+                .body(login)
+                .when()
+                .post("/core/auth/sign-in")
+                .then()
+                .assertThat()
+                .statusCode(200)
                 .header("Content-Type", "application/json")
-                .extract().response().as(Signin.Root.class);
+                .extract()
+                .response()
+                .as(Signin.Root.class);
         return response.getData().getAccessToken();
 
-    }catch (FileNotFoundException e) {
-    throw new RuntimeException(e);
-}
+    }catch (IOException e) {
+    throw new RuntimeException(e);}
     }
 
 }
