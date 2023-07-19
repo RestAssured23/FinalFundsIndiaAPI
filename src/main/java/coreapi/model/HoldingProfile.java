@@ -58,6 +58,7 @@ public class HoldingProfile {
         public boolean minor;
         public boolean poa;
          public Guardian guardian;
+        public String clientId;
     }
     @Getter @Setter
     public static class Guardian{

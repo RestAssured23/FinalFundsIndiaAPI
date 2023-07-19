@@ -1,5 +1,6 @@
 package coreapi.testapi;
 
+import coreapi.basepath.AccessPropertyFile;
 import coreapi.model.otp.CommonOTP;
 import coreapi.model.otp.VerifyOtpRequest;
 import io.restassured.builder.RequestSpecBuilder;
@@ -25,86 +26,72 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-public class Switch {
-    RequestSpecification req =new RequestSpecBuilder()
-            .setBaseUri(Login.URI())
-            .addHeader("x-api-version","2.0")
-            .addHeader("channel-id","10")
-            .addHeader("x-fi-access-token", Login.Regression())
-            .setContentType(ContentType.JSON).build();
-    ResponseSpecification respec =new ResponseSpecBuilder()
-            .expectStatusCode(200)
-            .expectContentType(ContentType.JSON).build();
-    String Holdingid, InvestorId, folio, otp_refid, dbotp, DB_refid,  RT_refno,Source_SchemeName;
+public class Switch extends AccessPropertyFile {
+    private final RequestSpecification req;
+    private final ResponseSpecification respec;
+    private String response;
+    String Holdingid, folio, otp_refid, dbotp, DB_refid,  RT_refno,Source_SchemeName;
     String goalid, goalname, bankid;
     double minamount, units, minunit, currentamount,Total_units;
     String fromschemename, fromschemecode, fromoption,   toschemename, toschemcode, tooption,AMC_Name, AMC_Code;
     public Switch() throws IOException {
-    }
-
-    @Test(priority = 11)
-    public void Holding_Profile() {
-        RequestSpecification res = given().log().all().spec(req);
-        HoldingProfile.Root hold_response = res.when().get("/core/investor/holding-profiles")
-                .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
-        int size = hold_response.getData().size();  // Data Size
-        for (int i = 0; i < size; i++) {
-            if (hold_response.getData().get(i).getHoldingProfileId().equalsIgnoreCase(Login.HoldID)) {
-                Holdingid = hold_response.getData().get(i).getHoldingProfileId();
-                System.out.println("Holding ID :" + Holdingid);
-                for (int j = 0; j < hold_response.getData().get(i).getInvestors().size(); j++) {
-                    InvestorId = hold_response.getData().get(i).getInvestors().get(j).getInvestorId();
-                    System.out.println("Investor ID : " + InvestorId);
-                }
-            }
-        }
+        req = new RequestSpecBuilder()
+                .setBaseUri(getBasePath())
+                .addHeader("x-api-version", "2.0")
+                .addHeader("channel-id", "10")
+                .addHeader("x-fi-access-token", getAccessToken())
+                .setContentType(ContentType.JSON)
+                .build()
+                .log()
+                .all();
+        respec = new ResponseSpecBuilder()
+                .expectStatusCode(200)
+                .expectContentType(ContentType.JSON)
+                .build();
     }
     @Test(priority = 12)
-    public void InvestedSchem_API() {
+    public void getInvestedSchemeDetails() {
         RequestSpecification res = given().log().all().spec(req)
-                .queryParam("holdingProfileId", Holdingid);
+                .queryParam("holdingProfileId", holdingid_pro);
         InvestedScheme.Root response = res.when().get("/core/investor/invested-schemes")
                 .then().log().all().spec(respec).extract().response().as(InvestedScheme.Root.class);
-        int count = response.getData().size();
 
-        for (int i = 0; i < count; i++) {
-            if (response.getData().get(i).getFolio().equalsIgnoreCase(Login.Switch_Folio)) {
-                fromschemename = response.getData().get(i).getSchemeName();
-                fromschemecode = response.getData().get(i).getSchemeCode();
-                folio = response.getData().get(i).getFolio();
-                units = response.getData().get(i).getUnits();
-                fromoption = response.getData().get(i).getOption();
-                goalid = response.getData().get(i).getGoalId();
-                bankid = response.getData().get(i).getBankId();
-                minamount = response.getData().get(i).getSwitchOut().getMinimumAmount();
-                minunit = response.getData().get(i).getSwitchOut().getMinimumUnits();
-                currentamount = response.getData().get(i).getCurrentAmount();
-                goalname = response.getData().get(i).getGoalName();
-                Total_units = response.getData().get(i).getUnits();
+        for(InvestedScheme.Datum data:response.getData()) {
+            if (data.getFolio().equalsIgnoreCase(folio_pro)) {
+                fromschemename = data.getSchemeName();
+                fromschemecode = data.getSchemeCode();
+                folio = data.getFolio();
+                units = data.getUnits();
+                fromoption = data.getOption();
+                goalid = data.getGoalId();
+                bankid = data.getBankId();
+                minamount = data.getSwitchOut().getMinimumAmount();
+                minunit = data.getSwitchOut().getMinimumUnits();
+                currentamount = data.getCurrentAmount();
+                goalname = data.getGoalName();
+                Total_units = data.getUnits();
                 System.out.println(fromschemename);
-                System.out.println(units);
+                System.out.println(folio);
             }
         }
     }
     @Test(priority = 13)
-    public void product_search_mf_form() {
+    public void productSearchMFForm() {
         RequestSpecification res = given().log().all().spec(req)
                 .queryParam("page", 1)
                 .queryParam("size", 100)
                 .queryParam("schemeCodes", fromschemecode);
         MFscheme.Root response = res.when().get("/core/product-search/mf/schemes")
                 .then().log().all().spec(respec).extract().response().as(MFscheme.Root.class);
-        for (int i = 0; i < response.getData().getContent().size(); i++) {
-            AMC_Name = response.getData().getContent().get(i).getAmc();
-            AMC_Code = response.getData().getContent().get(i).getAmcCode();
-            Source_SchemeName=response.getData().getContent().get(i).getName();
-            System.out.printf(AMC_Code+"\t"+AMC_Name+"\t"+Source_SchemeName);
-
+        for (MFscheme.Content content : response.getData().getContent()) {
+            AMC_Name = content.getAmc();
+            AMC_Code = content.getAmcCode();
+            Source_SchemeName = content.getName();
+            System.out.printf(AMC_Code + "\t" + AMC_Name + "\t" + Source_SchemeName);
         }
     }
-
     @Test(priority = 14)
-    public void TargetScheme_Search_Test() {
+    public void targetSchemeSearch() {
         RequestSpecification res = given().log().all().spec(req)
                 .body("{\n" +
                         "  \"page\": 1,\n" +
@@ -129,30 +116,29 @@ public class Switch {
                         "    }\n" +
                         "  ]\n" +
                         "}");
+
         MFscheme.Root response = res.when().post("/core/product-search/mf")
                 .then().log().all().spec(respec).extract().response().as(MFscheme.Root.class);
         int size = response.getData().getContent().size();
-        if (Login.Switch_TargetScheme.equalsIgnoreCase("0")) {
-            for (int i = 0; i <=2; i++) {
-                toschemename = response.getData().getContent().get(i).getName();
-                toschemcode = response.getData().getContent().get(i).getSchemeCode();
-                tooption = response.getData().getContent().get(i).getOption();
-                System.out.println("To SchemeName: " + toschemename);
-                System.out.println("To schemecode: " + toschemcode);
-                System.out.println("To Option: " + tooption);
-            }
+
+        if (targetscheme_pro.equalsIgnoreCase("0")) {
+            printSchemeDetails(response, 3);
         } else {
             for (int i = 0; i < size; i++) {
                 if (response.getData().getContent().get(i).getName().equalsIgnoreCase(Login.Switch_TargetScheme)) {
-                    toschemename = response.getData().getContent().get(i).getName();
-                    toschemcode = response.getData().getContent().get(i).getSchemeCode();
-                    tooption = response.getData().getContent().get(i).getOption();
-                    System.out.println("To SchemeName: " + toschemename);
-                    System.out.println("To schemecode: " + toschemcode);
-                    System.out.println("To Option: " + tooption);
+                    printSchemeDetails(response, i);
+                    break;
                 }
             }
         }
+    }
+    private void printSchemeDetails(MFscheme.Root response, int index) {
+        toschemename = response.getData().getContent().get(index).getName();
+        toschemcode = response.getData().getContent().get(index).getSchemeCode();
+        tooption = response.getData().getContent().get(index).getOption();
+        System.out.println("To SchemeName: " + toschemename);
+        System.out.println("To schemecode: " + toschemcode);
+        System.out.println("To Option: " + tooption);
     }
 
 
@@ -172,26 +158,24 @@ public class Switch {
     }
 
     @Test(priority = 16)
-    public void DB_Connection() throws SQLException {
-        Statement s1 = null;
-        Connection con = null;
-        ResultSet rs = null;
+    public void DB_Connection() {
         try {
             dbo ds = new dbo();
-            con = ds.getConnection();
-            s1 = con.createStatement();
-            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
-            rs.next();
-            dbotp = rs.getString("otp");
-            DB_refid = rs.getString("referenceid");
-            System.out.println("OTP :" + dbotp);
-            System.out.println("OTPReferenceID :" + DB_refid);
-        } catch (Exception e) {
+            Connection con = ds.getConnection();
+            Statement s1 = con.createStatement();
+            ResultSet rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
+
+            if (rs.next()) {
+                dbotp = rs.getString("otp");
+                DB_refid = rs.getString("referenceid");
+                System.out.println("OTP :" + dbotp);
+                System.out.println("OTPReferenceID :" + DB_refid);
+            }
+            rs.close();
+            s1.close();
+            con.close();
+        } catch (SQLException e) {
             System.out.println(e);
-        } finally {
-            if (s1 != null) s1.close();
-            if (rs != null) rs.close();
-            if (con != null) con.close();
         }
     }
 
@@ -211,6 +195,86 @@ public class Switch {
     }
 
     @Test(priority = 18)
+    public void switchAPI() {
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("holdingProfileId", holdingid_pro);
+        requestData.put("folio", folio);
+        requestData.put("goalId", goalid);
+        requestData.put("goalName", goalname);
+        requestData.put("fromSchemeName", fromschemename);
+        requestData.put("fromSchemeCode", fromschemecode);
+        requestData.put("toSchemeName", toschemename);
+        requestData.put("toSchemeCode", toschemcode);
+        requestData.put("fromOption", fromoption);
+        requestData.put("toOption", tooption);
+        requestData.put("bankId", bankid);
+        requestData.put("otpReferenceId", DB_refid);
+
+        if (switch_unitpro.equalsIgnoreCase("0") && switch_amtpro.equalsIgnoreCase("0")) {
+            String switchMode = "full";
+            String toDividendOption = "Payout";
+            String switchType = "regular";
+
+            if (fromoption.equalsIgnoreCase("Dividend") && tooption.equalsIgnoreCase("Growth")) {
+                toDividendOption = "Reinvestment";
+            }
+
+            if (fromoption.equalsIgnoreCase("Growth")) {
+                if (tooption.equalsIgnoreCase("Growth")) {
+                    switchMode = "full";
+                } else if (tooption.equalsIgnoreCase("Dividend")) {
+                    switchMode = "partial";
+                }
+            } else if (fromoption.equalsIgnoreCase("Dividend")) {
+                if (tooption.equalsIgnoreCase("Dividend")) {
+                    switchMode = "full";
+                } else if (tooption.equalsIgnoreCase("Growth")) {
+                    switchMode = "partial";
+                }
+            }
+            requestData.put("switchMode", switchMode);
+            requestData.put("switchType", switchType);
+            requestData.put("toDividendOption", toDividendOption);
+
+            RequestSpecification redeem = given().log().all().spec(req).body(requestData);
+            redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
+        } else {
+            String switchMode = "partial";
+            String toDividendOption = "Payout";
+            String switchType = "regular";
+
+            if (fromoption.equalsIgnoreCase("Dividend") && tooption.equalsIgnoreCase("Growth")) {
+                toDividendOption = "Reinvestment";
+            }
+
+            if (fromoption.equalsIgnoreCase("Growth")) {
+                if (tooption.equalsIgnoreCase("Growth")) {
+                    requestData.put("units", Total_units);
+                } else if (tooption.equalsIgnoreCase("Dividend")) {
+                    requestData.put("units", Login.Switch_Units);
+                }
+            } else if (fromoption.equalsIgnoreCase("Dividend")) {
+                if (tooption.equalsIgnoreCase("Dividend")) {
+                    requestData.put("units", Total_units);
+                } else if (tooption.equalsIgnoreCase("Growth")) {
+                    requestData.put("units", Login.Switch_Units);
+                }
+            }
+
+            if (switch_amtpro.equalsIgnoreCase("0")) {
+                requestData.put("amount", Login.Switch_Amt);
+            }
+
+            requestData.put("switchMode", switchMode);
+            requestData.put("switchType", switchType);
+            requestData.put("toDividendOption", toDividendOption);
+
+            RequestSpecification redeem = given().log().all().spec(req).body(requestData);
+            redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
+        }
+    }
+
+/*    @Test(priority = 18)
     public void Switch_API() {
         Map<String, Object> Growth_Growth_Unit = new HashMap<>();
         Growth_Growth_Unit.put("holdingProfileId", Holdingid);
@@ -430,8 +494,9 @@ public class Switch {
         Div_Growth_All.put("bankId", bankid);
         Div_Growth_All.put("otpReferenceId", DB_refid);
 
-        if ((Login.Switch_Units==0) && Login.Switch_Amt==0) {
 
+
+        if ((Login.Switch_Units==0) && Login.Switch_Amt==0) {
             if (fromoption.equalsIgnoreCase("Growth") && (tooption.equalsIgnoreCase("Growth"))) {
                 RequestSpecification redeem = given().log().all().spec(req)
                         .body(Growth_Growth_All);
@@ -501,7 +566,7 @@ public class Switch {
                         .then().log().all().spec(respec);
             }
         }
-    }
+    }*/
     @Test(priority = 19)
     public void Recent_Transaction() {
         RequestSpecification res = given().log().all().spec(req)

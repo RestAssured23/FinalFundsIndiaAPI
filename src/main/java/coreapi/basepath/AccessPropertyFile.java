@@ -12,7 +12,7 @@ import java.util.Properties;
 import static io.restassured.RestAssured.given;
 
 public class AccessPropertyFile {
-    public static String holdingid_pro,folio_pro,units_pro,amount_pro;
+    public static String holdingid_pro,folio_pro,units_pro,amount_pro,targetscheme_pro,switch_unitpro,switch_amtpro;
     static Properties properties = new Properties();
     @Test
     public String getBasePath() {
@@ -33,16 +33,20 @@ public class AccessPropertyFile {
         folio_pro=properties.getProperty("folio");
         units_pro=properties.getProperty("units");
         amount_pro=properties.getProperty("amount");
+        targetscheme_pro=properties.getProperty("targetscheme");
+        switch_unitpro=properties.getProperty("swunits");
+        switch_amtpro=properties.getProperty("swamount");
+
 try{
         FileInputStream fis = new FileInputStream(uri.platform());
         properties.load(fis);
- //Login Payload
+    if(properties.getProperty("accesstoken").isEmpty()) {
+        //Login Payload
         HashMap<String, String> login = new HashMap<>();
         login.put("emailId", properties.getProperty("email"));
         login.put("password", properties.getProperty("password"));
         login.put("grantType", "credentials");
         login.put("refreshToken", "string");
-
  //Login API
         RestAssured.baseURI = properties.getProperty("baseURI");
         Signin.Root response = given().log().all()
@@ -60,7 +64,10 @@ try{
                 .response()
                 .as(Signin.Root.class);
         return response.getData().getAccessToken();
-
+    }
+    else {
+        return properties.getProperty("accesstoken");
+    }
     }catch (IOException e) {
     throw new RuntimeException(e);}
     }

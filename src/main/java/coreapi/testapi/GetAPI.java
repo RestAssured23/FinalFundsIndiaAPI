@@ -20,9 +20,7 @@ import static io.restassured.RestAssured.given;
 public class GetAPI extends AccessPropertyFile {
     private final RequestSpecification req;
     private final ResponseSpecification respec;
-    private String Holdingid;
-    private String InvestorId;
-    private String response;
+    private String Holdingid,InvestorId,response;
 
     public GetAPI() throws IOException {
         req = new RequestSpecBuilder()
@@ -473,14 +471,6 @@ public class GetAPI extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
-   /* @Test(priority = 1)
-    public void callback() {
-        RequestSpecification res=given().spec(req);
-           //     .queryParam("investorId","1401246")  ;
-        response= res.when().get("/core/investor/advisors/callback")
-                .then().log().all().spec(respec).extract().response().asString();
-        Reporter.log(response);
-    }*/
 
   /*  @Test(priority = 1)
     public void main_dashboard_restAPI() throws IOException
