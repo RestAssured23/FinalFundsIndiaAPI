@@ -1,6 +1,7 @@
 package coreapi.testapi;
 
 import coreapi.basepath.AccessPropertyFile;
+import coreapi.model.HoldingProfile;
 import coreapi.model.otp.CommonOTP;
 import coreapi.model.otp.VerifyOtpRequest;
 import io.restassured.builder.RequestSpecBuilder;
@@ -13,6 +14,7 @@ import coreapi.dbconnection.DatabaseConnection;
 import coreapi.model.InvestedScheme;
 import coreapi.model.MFscheme;
 import coreapi.model.RecentTransaction;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -29,11 +31,11 @@ public class Switch extends AccessPropertyFile {
     private final RequestSpecification req;
     private final ResponseSpecification respec;
     private String response;
-    String Holdingid, folio, otp_refid, dbotp, DB_refid,  RT_refno,Source_SchemeName;
+    String Holdingid, folio, otp_refid, dbotp, DB_refid,  firstReferenceNo,Source_SchemeName;
     String goalid, goalname, bankid;
     double minamount, units, minunit, currentamount,Total_units;
     String fromschemename, fromschemecode, fromoption,   toschemename, toschemcode, tooption,AMC_Name, AMC_Code;
-    public Switch() throws IOException {
+    public Switch() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
                 .addHeader("x-api-version", "2.0")
@@ -48,10 +50,29 @@ public class Switch extends AccessPropertyFile {
                 .expectContentType(ContentType.JSON)
                 .build();
     }
+    @Test(priority = 11)
+    public void Holding_Profile() {
+        boolean matchFound = false; // Flag variable
+        RequestSpecification res = given().spec(req);
+        HoldingProfile.Root holdResponse = res.when().get("/core/investor/holding-profiles")
+                .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
+
+        for (HoldingProfile.Datum data : holdResponse.getData()) {
+            if (data.getHoldingProfileId().equalsIgnoreCase(holdingid_pro)) {
+                Holdingid = data.getHoldingProfileId();
+                System.out.println("Holding ID is matched with the property file: " + Holdingid);
+                matchFound = true;
+                break;
+            }
+        }
+        if (!matchFound) {
+            Assert.fail("Holding ID is not matched with Investor. Stopping the test.");
+        }
+    }
     @Test(priority = 12)
     public void getInvestedSchemeDetails() {
         RequestSpecification res = given().log().all().spec(req)
-                .queryParam("holdingProfileId", holdingid_pro);
+                .queryParam("holdingProfileId", Holdingid);
         InvestedScheme.Root response = res.when().get("/core/investor/invested-schemes")
                 .then().log().all().spec(respec).extract().response().as(InvestedScheme.Root.class);
 
@@ -140,7 +161,6 @@ public class Switch extends AccessPropertyFile {
         System.out.println("To Option: " + tooption);
     }
 
-
     @Test(priority = 15)
     public void Common_OTP() {
         Map<String, Object> otppayload = new HashMap<>();
@@ -157,27 +177,31 @@ public class Switch extends AccessPropertyFile {
     }
 
     @Test(priority = 16)
-    public void DB_Connection() {
+    public void DB_Connection() throws SQLException {
+        System.out.println("DB Connection Name: "+dbusr);
+        Statement s1 = null;
+        Connection con = null;
+        ResultSet rs = null;
         try {
-            DatabaseConnection ds = new DatabaseConnection();
-            Connection con = ds.getConnection();
-            Statement s1 = con.createStatement();
-            ResultSet rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
+            DatabaseConnection ds = new DatabaseConnection(dbusr, dbpwd, dburl, databasename, true, dbdrivername);
+            con = ds.getConnection();
+            Assert.assertNotNull(con, "Database connection failed!"); // Throw an error if the connection is null (failed)
+            s1 = con.createStatement();
+            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
+            rs.next();
+            dbotp = rs.getString("otp");
+            DB_refid = rs.getString("referenceid");
+            System.out.println("OTP :" + dbotp);
+            System.out.println("OTPReferenceID :" + DB_refid);
 
-            if (rs.next()) {
-                dbotp = rs.getString("otp");
-                DB_refid = rs.getString("referenceid");
-                System.out.println("OTP :" + dbotp);
-                System.out.println("OTPReferenceID :" + DB_refid);
-            }
-            rs.close();
-            s1.close();
-            con.close();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e);
+        } finally {
+            if (s1 != null) s1.close();
+            if (rs != null) rs.close();
+            if (con != null) con.close();
         }
     }
-
     @Test(priority = 17)
     public void Verify_OTP() {
         VerifyOtpRequest.Root payload = new VerifyOtpRequest.Root();
@@ -194,372 +218,96 @@ public class Switch extends AccessPropertyFile {
     }
 
     @Test(priority = 18)
-    public void switchAPI() {
-        String switchMode = "partial";
-        String switchType = "regular";
-        String toDividendOption = "Payout";         // Default value
-        if (switch_unitpro.equalsIgnoreCase("0") && switch_amtpro.equalsIgnoreCase("0")) {
-            switchMode = "full";
-        }
+    public void Switch_API() {
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("holdingProfileId", Holdingid);
+        requestData.put("folio", folio);
+        requestData.put("goalId", goalid);
+        requestData.put("goalName", goalname);
+        requestData.put("fromSchemeName", fromschemename);
+        requestData.put("fromSchemeCode", fromschemecode);
+        requestData.put("toSchemeName", toschemename);
+        requestData.put("toSchemeCode", toschemcode);
+        requestData.put("bankId", bankid);
+        requestData.put("otpReferenceId", DB_refid);
 
-        Map<String, Object> commonParams = new HashMap<>();
-        commonParams.put("holdingProfileId", Holdingid);
-        commonParams.put("folio", folio);
-        commonParams.put("goalId", goalid);
-        commonParams.put("goalName", goalname);
-        commonParams.put("fromSchemeName", fromschemename);
-        commonParams.put("fromSchemeCode", fromschemecode);
-        commonParams.put("toSchemeName", toschemename);
-        commonParams.put("toSchemeCode", toschemcode);
-        commonParams.put("fromOption", fromoption);
-        commonParams.put("toOption", tooption);
-        commonParams.put("switchMode", switchMode);
-        commonParams.put("switchType", switchType);
-        commonParams.put("bankId", bankid);
-        commonParams.put("otpReferenceId", DB_refid);
+        // Common fields for all switch types
+        requestData.put("fromOption", fromoption);
+        requestData.put("toOption", tooption);
+        requestData.put("switchType", "regular");
 
-        Map<String, Object> params = new HashMap<>();
-        params.putAll(commonParams);
-
-        if (switch_unitpro.equalsIgnoreCase("0")) {
-            params.put("amount", switch_amtpro);
+        if (switch_unitpro == 0 && switch_amtpro == 0) {
+            requestData.put("switchMode", "full");
+            requestData.put("units", Total_units);
+        } else if (switch_unitpro == 0) {
+            requestData.put("switchMode", "partial");
+            requestData.put("amount", switch_amtpro);
         } else {
-            params.put("units", switch_unitpro);
+            requestData.put("switchMode", "partial");
+            requestData.put("units", switch_unitpro);
         }
 
-        if (fromoption.equalsIgnoreCase("Dividend")) {
-            params.put("fromDividendOption", "Payout");
+        // Determine the dividend option based on the toOption value
+        String dividendOption = tooption.equalsIgnoreCase("Dividend") ? "Reinvestment" : "Payout";
+
+        switch (fromoption + "_" + tooption) {
+            case "Growth_Growth":
+                requestData.put("units", Total_units);
+                break;
+            case "Growth_Dividend":
+                requestData.put("toDividendOption", dividendOption);
+                break;
+            case "Dividend_Growth":
+                requestData.put("fromDividendOption", "Payout");
+                break;
+            case "Dividend_Dividend":
+                requestData.put("fromDividendOption", "Payout");
+                requestData.put("toDividendOption", dividendOption);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid switch combination");
         }
 
-        if (tooption.equalsIgnoreCase("Dividend")) {
-            toDividendOption = "Reinvestment";
-        }
-        params.put("toDividendOption", toDividendOption);
-
-        RequestSpecification redeem = given().log().all().spec(req).body(params);
+        RequestSpecification redeem = given().log().all().spec(req).body(requestData);
         redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
     }
-
-/*    @Test(priority = 18)
-    public void Switch_API() {
-        Map<String, Object> Growth_Growth_Unit = new HashMap<>();
-        Growth_Growth_Unit.put("holdingProfileId", Holdingid);
-        Growth_Growth_Unit.put("folio", folio);
-        Growth_Growth_Unit.put("goalId", goalid);
-        Growth_Growth_Unit.put("goalName", goalname);
-        Growth_Growth_Unit.put("fromSchemeName", fromschemename);
-        Growth_Growth_Unit.put("fromSchemeCode", fromschemecode);
-        Growth_Growth_Unit.put("toSchemeName", toschemename);
-        Growth_Growth_Unit.put("toSchemeCode", toschemcode);
-        Growth_Growth_Unit.put("units", Login.Switch_Units);
-        Growth_Growth_Unit.put("fromOption", fromoption);
-        Growth_Growth_Unit.put("toOption", tooption);
-        Growth_Growth_Unit.put("switchMode", "partial");
-        Growth_Growth_Unit.put("switchType", "regular");
-        Growth_Growth_Unit.put("bankId", bankid);
-        Growth_Growth_Unit.put("otpReferenceId", DB_refid);
-
-        Map<String, Object> Growth_Growth_Amount = new HashMap<>();
-        Growth_Growth_Amount.put("holdingProfileId", Holdingid);
-        Growth_Growth_Amount.put("folio", folio);
-        Growth_Growth_Amount.put("goalId", goalid);
-        Growth_Growth_Amount.put("goalName", goalname);
-        Growth_Growth_Amount.put("fromSchemeName", fromschemename);
-        Growth_Growth_Amount.put("fromSchemeCode", fromschemecode);
-        Growth_Growth_Amount.put("toSchemeName", toschemename);
-        Growth_Growth_Amount.put("toSchemeCode", toschemcode);
-        Growth_Growth_Unit.put("amount", Login.Switch_Amt);
-        Growth_Growth_Amount.put("fromOption", fromoption);
-        Growth_Growth_Amount.put("toOption", tooption);
-        Growth_Growth_Amount.put("switchMode", "partial");
-        Growth_Growth_Amount.put("switchType", "regular");
-        Growth_Growth_Amount.put("bankId", bankid);
-        Growth_Growth_Amount.put("otpReferenceId", DB_refid);
-
-        Map<String, Object> Growth_Growth_All = new HashMap<>();
-        Growth_Growth_All.put("holdingProfileId", Holdingid);
-        Growth_Growth_All.put("folio", folio);
-        Growth_Growth_All.put("goalId", goalid);
-        Growth_Growth_All.put("goalName", goalname);
-        Growth_Growth_All.put("fromSchemeName", fromschemename);
-        Growth_Growth_All.put("fromSchemeCode", fromschemecode);
-        Growth_Growth_All.put("toSchemeName", toschemename);
-        Growth_Growth_All.put("toSchemeCode", toschemcode);
-        Growth_Growth_Unit.put("units", Total_units);
-        Growth_Growth_All.put("fromOption", fromoption);
-        Growth_Growth_All.put("toOption", tooption);
-        Growth_Growth_All.put("switchMode", "full");
-        Growth_Growth_All.put("switchType", "regular");
-        Growth_Growth_All.put("bankId", bankid);
-        Growth_Growth_All.put("otpReferenceId", DB_refid);
-
-        Map<String, Object> Growth_Div_Unit = new HashMap<>();
-        Growth_Div_Unit.put("holdingProfileId", Holdingid);
-        Growth_Div_Unit.put("folio", folio);
-        Growth_Div_Unit.put("goalId", goalid);
-        Growth_Div_Unit.put("goalName", goalname);
-        Growth_Div_Unit.put("fromSchemeName", fromschemename);
-        Growth_Div_Unit.put("fromSchemeCode", fromschemecode);
-        Growth_Div_Unit.put("toSchemeName", toschemename);
-        Growth_Div_Unit.put("toSchemeCode", toschemcode);
-        Growth_Growth_All.put("units", Login.Switch_Units);
-        Growth_Div_Unit.put("fromOption", fromoption);
-        Growth_Div_Unit.put("toDividendOption", "Payout");       // Payout / Reinvestment
-        Growth_Div_Unit.put("toOption", tooption);
-        Growth_Div_Unit.put("switchMode", "partial");              //partial or all
-        Growth_Div_Unit.put("switchType", "regular");
-        Growth_Div_Unit.put("bankId", bankid);
-        Growth_Div_Unit.put("otpReferenceId", DB_refid);
-
-        Map<String, Object> Growth_Div_Amount = new HashMap<>();
-        Growth_Div_Amount.put("holdingProfileId", Holdingid);
-        Growth_Div_Amount.put("folio", folio);
-        Growth_Div_Amount.put("goalId", goalid);
-        Growth_Div_Amount.put("goalName", goalname);
-        Growth_Div_Amount.put("fromSchemeName", fromschemename);
-        Growth_Div_Amount.put("fromSchemeCode", fromschemecode);
-        Growth_Div_Amount.put("toSchemeName", toschemename);
-        Growth_Div_Amount.put("toSchemeCode", toschemcode);
-        Growth_Div_Amount.put("amount", Login.Switch_Amt);
-        Growth_Div_Amount.put("fromOption", fromoption);
-        Growth_Div_Amount.put("toDividendOption", "Payout");       // Payout / Reinvestment
-        Growth_Div_Amount.put("toOption", tooption);
-        Growth_Div_Amount.put("switchMode", "partial");              //partial or all
-        Growth_Div_Amount.put("switchType", "regular");
-        Growth_Div_Amount.put("bankId", bankid);
-        Growth_Div_Amount.put("otpReferenceId", DB_refid);
-
-        Map<String, Object> Growth_Div_All = new HashMap<>();
-        Growth_Div_All.put("holdingProfileId", Holdingid);
-        Growth_Div_All.put("folio", folio);
-        Growth_Div_All.put("goalId", goalid);
-        Growth_Div_All.put("goalName", goalname);
-        Growth_Div_All.put("fromSchemeName", fromschemename);
-        Growth_Div_All.put("fromSchemeCode", fromschemecode);
-        Growth_Div_All.put("toSchemeName", toschemename);
-        Growth_Div_All.put("toSchemeCode", toschemcode);
-        Growth_Growth_All.put("units", Total_units);
-        Growth_Div_All.put("fromOption", fromoption);
-        Growth_Div_All.put("toDividendOption", "Payout");       // Payout / Reinvestment
-        Growth_Div_All.put("toOption", tooption);
-        Growth_Div_All.put("switchMode", "full");              //partial or all
-        Growth_Div_All.put("switchType", "regular");
-        Growth_Div_All.put("bankId", bankid);
-        Growth_Div_All.put("otpReferenceId", DB_refid);
-
-
-        Map<String, Object> Div_Div_Unit = new HashMap<>();
-        Div_Div_Unit.put("holdingProfileId", Holdingid);
-        Div_Div_Unit.put("folio", folio);
-        Div_Div_Unit.put("goalId", goalid);
-        Div_Div_Unit.put("goalName", goalname);
-        Div_Div_Unit.put("fromSchemeName", fromschemename);
-        Div_Div_Unit.put("fromSchemeCode", fromschemecode);
-        Div_Div_Unit.put("toSchemeName", toschemename);
-        Div_Div_Unit.put("toSchemeCode", toschemcode);
-        Div_Div_Unit.put("units", Login.Switch_Units);
-        Div_Div_Unit.put("fromOption", fromoption);
-        Div_Div_Unit.put("fromDividendOption", "Payout");
-        Div_Div_Unit.put("toOption", tooption);
-        Div_Div_Unit.put("toDividendOption", "Reinvestment");       // Payout / Reinvestment
-        Div_Div_Unit.put("switchMode", "partial");              //partial or all
-        Div_Div_Unit.put("switchType", "regular");
-        Div_Div_Unit.put("bankId", bankid);
-        Div_Div_Unit.put("otpReferenceId", DB_refid);
-
-        Map<String, Object> Div_Div_Amount = new HashMap<>();
-        Div_Div_Amount.put("holdingProfileId", Holdingid);
-        Div_Div_Amount.put("folio", folio);
-        Div_Div_Amount.put("goalId", goalid);
-        Div_Div_Amount.put("goalName", goalname);
-        Div_Div_Amount.put("fromSchemeName", fromschemename);
-        Div_Div_Amount.put("fromSchemeCode", fromschemecode);
-        Div_Div_Amount.put("toSchemeName", toschemename);
-        Div_Div_Amount.put("toSchemeCode", toschemcode);
-        Div_Div_Amount.put("amount", Login.Switch_Amt);
-        Div_Div_Amount.put("fromOption", fromoption);
-        Div_Div_Amount.put("fromDividendOption", "Payout");
-        Div_Div_Amount.put("toOption", tooption);
-        Div_Div_Amount.put("toDividendOption", "Reinvestment");       // Payout / Reinvestment
-        Div_Div_Amount.put("switchMode", "partial");              //partial or all
-        Div_Div_Amount.put("switchType", "regular");
-        Div_Div_Amount.put("bankId", bankid);
-        Div_Div_Amount.put("otpReferenceId", DB_refid);
-
-        Map<String, Object> Div_Div_All = new HashMap<>();
-        Div_Div_All.put("holdingProfileId", Holdingid);
-        Div_Div_All.put("folio", folio);
-        Div_Div_All.put("goalId", goalid);
-        Div_Div_All.put("goalName", goalname);
-        Div_Div_All.put("fromSchemeName", fromschemename);
-        Div_Div_All.put("fromSchemeCode", fromschemecode);
-        Div_Div_All.put("toSchemeName", toschemename);
-        Div_Div_All.put("toSchemeCode", toschemcode);
-        Div_Div_All.put("units", Total_units);
-        Div_Div_All.put("fromOption", fromoption);
-        Div_Div_All.put("fromDividendOption", "Payout");
-        Div_Div_All.put("toOption", tooption);
-        Div_Div_All.put("toDividendOption", "Reinvestment");       // Payout / Reinvestment
-        Div_Div_All.put("switchMode", "full");              //partial or all
-        Div_Div_All.put("switchType", "regular");
-        Div_Div_All.put("bankId", bankid);
-        Div_Div_All.put("otpReferenceId", DB_refid);
-
-
-        Map<String, Object> Div_Growth_Unit = new HashMap<>();
-        Div_Growth_Unit.put("holdingProfileId", Holdingid);
-        Div_Growth_Unit.put("folio", folio);
-        Div_Growth_Unit.put("goalId", goalid);
-        Div_Growth_Unit.put("goalName", goalname);
-        Div_Growth_Unit.put("fromSchemeName", fromschemename);
-        Div_Growth_Unit.put("fromSchemeCode", fromschemecode);
-        Div_Growth_Unit.put("toSchemeName", toschemename);
-        Div_Growth_Unit.put("toSchemeCode", toschemcode);
-        Div_Growth_Unit.put("units", Login.Switch_Units);
-        Div_Growth_Unit.put("fromOption", fromoption);
-        Div_Growth_Unit.put("fromDividendOption", "Payout");
-        Div_Growth_Unit.put("toOption", tooption);
-        Div_Growth_Unit.put("switchMode", "partial");              //partial or full
-        Div_Growth_Unit.put("switchType", "regular");
-        Div_Growth_Unit.put("bankId", bankid);
-        Div_Growth_Unit.put("otpReferenceId", DB_refid);
-
-        Map<String, Object> Div_Growth_Amount = new HashMap<>();
-        Div_Growth_Amount.put("holdingProfileId", Holdingid);
-        Div_Growth_Amount.put("folio", folio);
-        Div_Growth_Amount.put("goalId", goalid);
-        Div_Growth_Amount.put("goalName", goalname);
-        Div_Growth_Amount.put("fromSchemeName", fromschemename);
-        Div_Growth_Amount.put("fromSchemeCode", fromschemecode);
-        Div_Growth_Amount.put("toSchemeName", toschemename);
-        Div_Growth_Amount.put("toSchemeCode", toschemcode);
-        Div_Growth_Amount.put("amount", Login.Switch_Amt);
-        Div_Growth_Amount.put("fromOption", fromoption);
-        Div_Growth_Amount.put("fromDividendOption", "Payout");
-        Div_Growth_Amount.put("toOption", tooption);
-        Div_Growth_Amount.put("switchMode", "partial");              //partial or full
-        Div_Growth_Amount.put("switchType", "regular");
-        Div_Growth_Amount.put("bankId", bankid);
-        Div_Growth_Amount.put("otpReferenceId", DB_refid);
-
-        Map<String, Object> Div_Growth_All = new HashMap<>();
-        Div_Growth_All.put("holdingProfileId", Holdingid);
-        Div_Growth_All.put("folio", folio);
-        Div_Growth_All.put("goalId", goalid);
-        Div_Growth_All.put("goalName", goalname);
-        Div_Growth_All.put("fromSchemeName", fromschemename);
-        Div_Growth_All.put("fromSchemeCode", fromschemecode);
-        Div_Growth_All.put("toSchemeName", toschemename);
-        Div_Growth_All.put("toSchemeCode", toschemcode);
-        Div_Growth_All.put("units", Total_units);
-        Div_Growth_All.put("fromOption", fromoption);
-        Div_Growth_All.put("fromDividendOption", "Payout");
-        Div_Growth_All.put("toOption", tooption);
-        Div_Growth_All.put("switchMode", "full");              //partial or full
-        Div_Growth_All.put("switchType", "regular");
-        Div_Growth_All.put("bankId", bankid);
-        Div_Growth_All.put("otpReferenceId", DB_refid);
-
-
-
-        if ((Login.Switch_Units==0) && Login.Switch_Amt==0) {
-            if (fromoption.equalsIgnoreCase("Growth") && (tooption.equalsIgnoreCase("Growth"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Growth_Growth_All);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            } else if (fromoption.equalsIgnoreCase("Growth") && (tooption.equalsIgnoreCase("Dividend"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Growth_Div_All);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            } else if (fromoption.equalsIgnoreCase("Dividend") && (tooption.equalsIgnoreCase("Dividend"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Div_Div_All);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            } else if (fromoption.equalsIgnoreCase("Dividend") && (tooption.equalsIgnoreCase("Growth"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Div_Growth_All);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            }
-        }
-        // Units =0
-        else if (Login.Switch_Units==0) {
-            if (fromoption.equalsIgnoreCase("Growth") && (tooption.equalsIgnoreCase("Growth"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Growth_Growth_Amount);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            } else if (fromoption.equalsIgnoreCase("Growth") && (tooption.equalsIgnoreCase("Dividend"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Growth_Div_Amount);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            } else if (fromoption.equalsIgnoreCase("Dividend") && (tooption.equalsIgnoreCase("Dividend"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Div_Div_Amount);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            } else if (fromoption.equalsIgnoreCase("Dividend") && (tooption.equalsIgnoreCase("Growth"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Div_Growth_Amount);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            }
-        }
-        else {
-            if (fromoption.equalsIgnoreCase("Growth") && (tooption.equalsIgnoreCase("Growth"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Growth_Growth_Unit);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            } else if (fromoption.equalsIgnoreCase("Growth") && (tooption.equalsIgnoreCase("Dividend"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Growth_Div_Unit);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            } else if (fromoption.equalsIgnoreCase("Dividend") && (tooption.equalsIgnoreCase("Dividend"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Div_Div_Unit);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            } else if (fromoption.equalsIgnoreCase("Dividend") && (tooption.equalsIgnoreCase("Growth"))) {
-                RequestSpecification redeem = given().log().all().spec(req)
-                        .body(Div_Growth_Unit);
-                redeem.when().post("/core/investor/switch")
-                        .then().log().all().spec(respec);
-            }
-        }
-    }*/
     @Test(priority = 19)
     public void Recent_Transaction() {
         RequestSpecification res = given().log().all().spec(req)
-                .queryParam("holdingProfileId", Holdingid)
+                .queryParam("holdingProfileId", "183318")
                 .queryParam("page", "1")
                 .queryParam("size", "10");
         RecentTransaction.Root response = res.when().get("/core/investor/recent-transactions")
                 .then().log().all().spec(respec).extract().response().as(RecentTransaction.Root.class);
-        int count = response.getData().size();
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; j < response.getData().get(i).getMf().size(); j++) {
-                for (int k = 0; k < response.getData().get(i).getMf().get(j).getActions().size(); k++) {
-                    if (response.getData().get(i).getMf().get(j).getFolio().equalsIgnoreCase(Login.Switch_Folio) ==
-                            (response.getData().get(i).getMf().get(j).getActions().get(k).equalsIgnoreCase("cancel"))) {
-                        RT_refno = response.getData().get(i).getMf().get(j).getReferenceNo();
-                        System.out.println(RT_refno);
+
+        firstReferenceNo = null;
+        for (RecentTransaction.Datum data : response.getData()) {
+            for (RecentTransaction.Mf mf : data.getMf()) {
+                for (String action : mf.getActions()) {
+                    boolean isCancelled = mf.getFolio().equalsIgnoreCase(folio_pro) &&
+                            action.equalsIgnoreCase("cancel");
+                    if (isCancelled) {
+                        firstReferenceNo = mf.getReferenceNo();  // Update the first reference number
+                        break;                      // Break out of the loop once the first reference number is found
                     }
                 }
+                if (firstReferenceNo != null) {
+                    break;      // Break out of the loop once the first reference number is found
+                }
+            }
+            if (firstReferenceNo != null) {
+                break;              // Break out of the loop once the first reference number is found
             }
         }
+        if (firstReferenceNo != null) {
+            System.out.println("First Cancelled ReferenceNo: " + firstReferenceNo);
+        }
     }
-
     @Test(priority = 20)
-    public void Delete_API() {
+    public void Cancel_Switch() {
         Map<String, String> del = new HashMap<>();
         del.put("action", "cancel");
-        del.put("referenceNo", RT_refno);
+        del.put("referenceNo", firstReferenceNo);
 
         RequestSpecification can=given().log().all().spec(req)
                 .body(del);

@@ -119,13 +119,14 @@ public class Redeem extends AccessPropertyFile {
     }
     @Test(priority = 6)
     public void DB_Connection() throws SQLException {
+        System.out.println("DB Connection Name: "+dbusr);
         Statement s1 = null;
         Connection con = null;
         ResultSet rs = null;
         try {
             DatabaseConnection ds = new DatabaseConnection(dbusr, dbpwd, dburl, databasename, true, dbdrivername);
             con = ds.getConnection();
-            Assert.assertNotNull(con, "Database connection failed!"); //// Throw an error if the connection is null (failed)
+            Assert.assertNotNull(con, "Database connection failed!"); // Throw an error if the connection is null (failed)
             s1 = con.createStatement();
             rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
             rs.next();
@@ -133,6 +134,7 @@ public class Redeem extends AccessPropertyFile {
             DB_refid = rs.getString("referenceid");
             System.out.println("OTP :" + dbotp);
             System.out.println("OTPReferenceID :" + DB_refid);
+
         } catch (Exception e) {
             System.out.println(e);
         } finally {
@@ -156,7 +158,6 @@ public class Redeem extends AccessPropertyFile {
         res1.when().post("/core/investor/common/otp/verify")
                 .then().log().all().spec(respec);
     }
-
     @Test(priority = 8)
     public void Redeem_API() {
         Map<String, Object> redeemParams = new HashMap<>();
@@ -191,7 +192,6 @@ public class Redeem extends AccessPropertyFile {
                 .body(redeemParams);
         redeem.when().post("/core/investor/redeem").then().log().all().spec(respec);
     }
-
     @Test(priority = 9)
     public void Recent_Transaction() {
         RequestSpecification res = given().log().all().spec(req)

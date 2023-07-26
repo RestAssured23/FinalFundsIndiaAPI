@@ -17,8 +17,8 @@ import static io.restassured.RestAssured.given;
 
 public class AccessPropertyFile {
 
-
-    public static String holdingid_pro, folio_pro, units_pro, amount_pro, targetscheme_pro, switch_unitpro, switch_amtpro, switch_target;
+    public static double  switch_unitpro,switch_amtpro;
+    public static String holdingid_pro, folio_pro, units_pro, amount_pro, targetscheme_pro,  switch_target;
     public static String dbusr, dbpwd, dburl, databasename, encrypt, dbdrivername;
     static Properties properties = new Properties();
 
@@ -42,8 +42,8 @@ public class AccessPropertyFile {
         units_pro = properties.getProperty("units");
         amount_pro = properties.getProperty("amount");
         targetscheme_pro = properties.getProperty("targetscheme");
-        switch_unitpro = properties.getProperty("switchunits");
-        switch_amtpro = properties.getProperty("switchamount");
+        switch_unitpro = Double.parseDouble(properties.getProperty("switchunits"));
+        switch_amtpro = Double.parseDouble(properties.getProperty("switchamount"));
         switch_target = properties.getProperty("targetscheme");
 
 
