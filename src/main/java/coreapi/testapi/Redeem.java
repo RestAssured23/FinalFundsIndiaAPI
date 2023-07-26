@@ -1,6 +1,7 @@
 package coreapi.testapi;
 
 import coreapi.basepath.AccessPropertyFile;
+import coreapi.dbconnection.DatabaseConnection;
 import coreapi.model.otp.CommonOTP;
 import coreapi.model.otp.VerifyOtpRequest;
 import io.restassured.builder.RequestSpecBuilder;
@@ -8,17 +9,12 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import coreapi.dbconnection.dbo;
 import coreapi.model.HoldingProfile;
 import coreapi.model.InvestedScheme;
 import coreapi.model.QuestionnaireResponse;
 import coreapi.model.RecentTransaction;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
-
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +27,7 @@ public class Redeem extends AccessPropertyFile {
     private final RequestSpecification req;
     private final ResponseSpecification respec;
 
-    public Redeem() throws IOException {
+    public Redeem() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
                 .addHeader("x-api-version", "2.0")
@@ -122,24 +118,27 @@ public class Redeem extends AccessPropertyFile {
         otp_refid = responce.getData().getOtpReferenceId();
     }
     @Test(priority = 6)
-    public void DB_Connection() {
+    public void DB_Connection() throws SQLException {
+        Statement s1 = null;
+        Connection con = null;
+        ResultSet rs = null;
         try {
-            dbo ds = new dbo();
-            Connection con = ds.getConnection();
-            Statement s1 = con.createStatement();
-            ResultSet rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
-
-            if (rs.next()) {
-                dbotp = rs.getString("otp");
-                DB_refid = rs.getString("referenceid");
-                System.out.println("OTP :" + dbotp);
-                System.out.println("OTPReferenceID :" + DB_refid);
-            }
-            rs.close();
-            s1.close();
-            con.close();
-        } catch (SQLException e) {
+            DatabaseConnection ds = new DatabaseConnection(dbusr, dbpwd, dburl, databasename, true, dbdrivername);
+            con = ds.getConnection();
+            Assert.assertNotNull(con, "Database connection failed!"); //// Throw an error if the connection is null (failed)
+            s1 = con.createStatement();
+            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
+            rs.next();
+            dbotp = rs.getString("otp");
+            DB_refid = rs.getString("referenceid");
+            System.out.println("OTP :" + dbotp);
+            System.out.println("OTPReferenceID :" + DB_refid);
+        } catch (Exception e) {
             System.out.println(e);
+        } finally {
+            if (s1 != null) s1.close();
+            if (rs != null) rs.close();
+            if (con != null) con.close();
         }
     }
     @Test(priority = 7)

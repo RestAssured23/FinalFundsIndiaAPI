@@ -7,14 +7,17 @@ import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.Test;
 
+import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 
 public class Adv_DashboardCollection {
+
+
     RequestSpecification req = new RequestSpecBuilder()
-            .setBaseUri(login_cred.neo)
+            .setBaseUri(LoginCredentials.neo)
             .addHeader("x-api-version", "2.0")
             .addHeader("channel-id", "10")
-            .addHeader("x-fi-access-token",login_cred.qateam())
+            .addHeader("x-fi-access-token", LoginCredentials.qateam())
             .setContentType(ContentType.JSON).build();
     ResponseSpecification respec = new ResponseSpecBuilder()
             .expectStatusCode(200)
@@ -26,7 +29,6 @@ public class Adv_DashboardCollection {
         res.when().get("/tools/advisory-dashboard/filters/form")
                 .then().log().all().spec(respec);
     }
-
     @Test
     public void Dues() {
         RequestSpecification res = given().spec(req);
@@ -36,30 +38,31 @@ public class Adv_DashboardCollection {
     @Test
     public void All_Clients() {
         RequestSpecification res = given().spec(req)
-                .body("{\n" +
-                        "  \"page\": 1,\n" +
-                        "  \"size\": 20,\n" +
-                        "  \"segments\": [\n" +
-                        "    \"platinum\",\n" +
-                        "    \"gold\",\n" +
-                        "    \"silver\",\n" +
-                        "    \"digital\"\n" +
-                        "  ],\n" +
-                        "  \"status\": [\n" +
-                        "    \"not_started\",\n" +
-                        "    \"in_progress\",\n" +
-                        "    \"completed\",\n" +
-                        "    \"overdue\",\n" +
-                        "    \"not_reviewed\"\n" +
-                        "  ],\n" +
-                        "  \"heads\": [\n" +
-                        "    \"2152531\"\n" +
-                        "  ],\n" +
-                        "  \"managers\": [],\n" +
-                        "  \"advisors\": [],\n" +
-                        "  \"sortBy\": \"user_name\",\n" +
-                        "  \"sortType\": \"asc\"\n" +
-                        "}");
+                .body("""
+                        {
+                          "page": 1,
+                          "size": 20,
+                          "segments": [
+                            "platinum",
+                            "gold",
+                            "silver",
+                            "digital"
+                          ],
+                          "status": [
+                            "not_started",
+                            "in_progress",
+                            "completed",
+                            "overdue",
+                            "not_reviewed"
+                          ],
+                          "heads": [
+                            "2152531"
+                          ],
+                          "managers": [],
+                          "advisors": [],
+                          "sortBy": "user_name",
+                          "sortType": "asc"
+                        }""");
         res.when().post("/tools/portfolio-review/clients")
                 .then().log().all().spec(respec);
     }
@@ -73,18 +76,17 @@ public class Adv_DashboardCollection {
     @Test
     public void Communication_mail() {
         RequestSpecification res = given().spec(req)
-                .body("{\n" +
-                        "    \"reviewId\":\"3040\",\n" +
-                        "    \"from\": \"megha.n@fundsindia.com\",\n" +
-                        "    \"to\": [\"shamelikumarcr7@gmail.com\"],\n" +
-                        "    \"mobiles\": [\"09790790876\"],\n" +
-                        "    \"type\":[\"whatsapp\",\"email\"]\n" +
-                        "}");
+                .body("""
+                        {
+                            "reviewId":"3040",
+                            "from": "megha.n@fundsindia.com",
+                            "to": ["shamelikumarcr7@gmail.com"],
+                            "mobiles": ["09790790876"],
+                            "type":["whatsapp","email"]
+                        }""");
         res.when().post("/core/portfolio-review/communications")
                 .then().log().all().spec(respec);
     }
-
-
     @Test
     public void mail_content() {
         RequestSpecification res = given().spec(req)
@@ -106,99 +108,99 @@ public class Adv_DashboardCollection {
                 .then().log().all().spec(respec);
     }
 */
-
     @Test
     public void Review_Clients() {
         RequestSpecification res = given().spec(req)
-                .body("{\n" +
-                        "  \"page\": 0,\n" +
-                        "  \"size\": 0,\n" +
-                        "  \"due\": \"month\",\n" +
-                        "  \"status\": [\n" +
-                        "    \"in_progress\"\n" +
-                        "  ],\n" +
-                        "  \"fromDate\": \"string\",\n" +
-                        "  \"toDate\": \"string\",\n" +
-                        "  \"heads\": [\n" +
-                        "    \"string\"\n" +
-                        "  ],\n" +
-                        "  \"managers\": [\n" +
-                        "    \"string\"\n" +
-                        "  ],\n" +
-                        "  \"advisors\": [\n" +
-                        "    \"string\"\n" +
-                        "  ]\n" +
-                        "}");
+                .body("""
+                        {
+                          "page": 0,
+                          "size": 0,
+                          "due": "month",
+                          "status": [
+                            "in_progress"
+                          ],
+                          "fromDate": "string",
+                          "toDate": "string",
+                          "heads": [
+                            "string"
+                          ],
+                          "managers": [
+                            "string"
+                          ],
+                          "advisors": [
+                            "string"
+                          ]
+                        }""");
         res.when().post("/core/portfolio-review/clients")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Review_communications() {
         RequestSpecification res = given().spec(req)
-                .body("{\n" +
-                        "  \"reviewId\": \"string\",\n" +
-                        "  \"from\": \"string\",\n" +
-                        "  \"to\": [\n" +
-                        "    \"string\"\n" +
-                        "  ],\n" +
-                        "  \"mobiles\": [\n" +
-                        "    \"string\"\n" +
-                        "  ],\n" +
-                        "  \"type\": [\n" +
-                        "    \"whatsapp\"\n" +
-                        "  ]\n" +
-                        "}");
+                .body("""
+                        {
+                          "reviewId": "string",
+                          "from": "string",
+                          "to": [
+                            "string"
+                          ],
+                          "mobiles": [
+                            "string"
+                          ],
+                          "type": [
+                            "whatsapp"
+                          ]
+                        }""");
         res.when().post("/core/portfolio-review/communications")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Review_callback() {
         RequestSpecification res = given().spec(req)
-                .body("{\n" +
-                        "  \"data\": [\n" +
-                        "    {\n" +
-                        "      \"tableName\": \"string\",\n" +
-                        "      \"condition\": \"string\",\n" +
-                        "      \"set\": \"string\",\n" +
-                        "      \"upsert\": true\n" +
-                        "    }\n" +
-                        "  ]\n" +
-                        "}");
+                .body("""
+                        {
+                          "data": [
+                            {
+                              "tableName": "string",
+                              "condition": "string",
+                              "set": "string",
+                              "upsert": true
+                            }
+                          ]
+                        }""");
         res.when().post("/core/portfolio-review/callback")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Review_completed() {
         RequestSpecification res = given().spec(req)
-                .body("{\n" +
-                        "  \"page\": 0,\n" +
-                        "  \"size\": 0,\n" +
-                        "  \"types\": [\n" +
-                        "    \"all\"\n" +
-                        "  ],\n" +
-                        "  \"status\": [\n" +
-                        "    \"all\"\n" +
-                        "  ],\n" +
-                        "  \"fromDate\": \"string\",\n" +
-                        "  \"toDate\": \"string\",\n" +
-                        "  \"heads\": [\n" +
-                        "    \"string\"\n" +
-                        "  ],\n" +
-                        "  \"managers\": [\n" +
-                        "    \"string\"\n" +
-                        "  ],\n" +
-                        "  \"advisors\": [\n" +
-                        "    \"string\"\n" +
-                        "  ]\n" +
-                        "}");
+                .body("""
+                        {
+                          "page": 0,
+                          "size": 0,
+                          "types": [
+                            "all"
+                          ],
+                          "status": [
+                            "all"
+                          ],
+                          "fromDate": "string",
+                          "toDate": "string",
+                          "heads": [
+                            "string"
+                          ],
+                          "managers": [
+                            "string"
+                          ],
+                          "advisors": [
+                            "string"
+                          ]
+                        }""");
         res.when().post("/core/portfolio-review/completed")
                 .then().log().all().spec(respec);
     }
 
-
-
 //Quality
-
     @Test
     public void Quality_Review() {
         RequestSpecification res = given().spec(req).log().all()
@@ -232,12 +234,13 @@ public class Adv_DashboardCollection {
     @Test
     public void Follow_Up_History_Post() {
         RequestSpecification res = given().spec(req).log().all()
-                .body("{\n" +
-                        "  \"date\": \"2023-06-29T23:59:59.000Z\",\n" +
-                        "  \"status\": \"Status Test\",\n" +
-                        "  \"comments\": \"Comments Test\",\n" +
-                        "  \"reviewId\": \"24699\"\n" +
-                        "}");
+                .body("""
+                        {
+                          "date": "2023-06-29T23:59:59.000Z",
+                          "status": "Status Test",
+                          "comments": "Comments Test",
+                          "reviewId": "24699"
+                        }""");
         res.when().post("/tools/portfolio-review/follow-up")
                 .then().log().all().spec(respec);
     }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 
 public class GetAPI extends AccessPropertyFile {
@@ -37,6 +38,7 @@ public class GetAPI extends AccessPropertyFile {
                 .expectContentType(ContentType.JSON)
                 .build();
     }
+
     @Test
     public void feature() {
         RequestSpecification res = given().spec(req);

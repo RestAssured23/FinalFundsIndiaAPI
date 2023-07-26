@@ -22,12 +22,12 @@ public class Testing extends AccessPropertyFile {
             .addHeader("x-api-version", "2.0")
             .addHeader("channel-id", "10")
             .addHeader("x-fi-access-token", getAccessToken())
-            .setContentType(ContentType.JSON).build().log().all();
+            .setContentType(ContentType.JSON).build();
     ResponseSpecification respec = new ResponseSpecBuilder()
             .expectStatusCode(200)
             .expectContentType(ContentType.JSON).build();
     String Holdingid;
-    String InvestorId,response;
+    String InvestorId, response;
 
     public Testing() throws IOException {
     }
@@ -42,39 +42,52 @@ public class Testing extends AccessPropertyFile {
 
     @Test
     public void Holding_Profile() {
-        boolean matchFound = false; // Flag variable
+
         RequestSpecification res = given().spec(req);
         HoldingProfile.Root hold_response = res.when().get("/core/investor/holding-profiles")
+                .then().spec(respec).extract().response().as(HoldingProfile.Root.class);
+if(hold_response.getCode()==200) {
+    if (hold_response.getCode() == 200) {
+        System.out.println("pass");
+    } else {
+        System.out.println("test");
+    }
+}
+else System.out.println("not matched ");
+   }
+
+
+
+
+    @Test
+    public void holdingProfile() {
+        RequestSpecification res = given().spec(req);
+        HoldingProfile.Root holdResponse = res.when().get("/core/investor/holding-profiles")
                 .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
 
-        for (int i = 0; i < hold_response.getData().size(); i++) {
-            int foundIndex = -1;
-            String id_list = hold_response.getData().get(i).getHoldingProfileId();
-            if (id_list.equalsIgnoreCase(holdingid_pro)) {
-                Holdingid = hold_response.getData().get(i).getHoldingProfileId();
-                if (hold_response.getData().get(i).getHoldingProfileId().equalsIgnoreCase(Holdingid)) {
-                    foundIndex = i;
-                    InvestorId = hold_response.getData().get(foundIndex).getInvestors().get(0).getInvestorId();
-                }
-                matchFound = true; // Set the flag to true
-                break;
-            }
-        }
-            if (!matchFound ) {
-                Holdingid = hold_response.getData().get(0).getHoldingProfileId();
-                InvestorId = hold_response.getData().get(0).getInvestors().get(0).getInvestorId();
-                System.out.println("Holding ID is not matched with property file :"+Holdingid);
-                System.out.println("Holding ID is not matched with property file :"+InvestorId);
-            }
+
+        for (HoldingProfile.Datum abc : holdResponse.getData()) {
+            System.out.println(abc.getMobile());
         }
 
-    @Test(priority = 1)
-    public void Dashboard() {
-        RequestSpecification res = given().spec(req)
-                .queryParam("holdingProfileId", Holdingid);
-        response=  res.when().get("/core/investor/dashboard")
-                .then().log().all().spec(respec).extract().response().asString();
-        Reporter.log(response);
+
+    }
+
+    @Test
+    public void sample() {
+        int a[] = {10, 20, 30, 40};
+
+        switch (20) {
+            case 10:
+                System.out.println("10 success");
+                break;
+            case 20:
+                System.out.println("20 success");
+                break;
+            case 30:
+                System.out.println("30 success");
+                break;
+        }
     }
 }
 

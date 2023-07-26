@@ -9,8 +9,7 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import coreapi.accesspropertyfile.Login;
-import coreapi.dbconnection.dbo;
-import coreapi.model.HoldingProfile;
+import coreapi.dbconnection.DatabaseConnection;
 import coreapi.model.InvestedScheme;
 import coreapi.model.MFscheme;
 import coreapi.model.RecentTransaction;
@@ -125,7 +124,7 @@ public class Switch extends AccessPropertyFile {
             printSchemeDetails(response, 3);
         } else {
             for (int i = 0; i < size; i++) {
-                if (response.getData().getContent().get(i).getName().equalsIgnoreCase(Login.Switch_TargetScheme)) {
+                if (response.getData().getContent().get(i).getName().equalsIgnoreCase(switch_target)) {
                     printSchemeDetails(response, i);
                     break;
                 }
@@ -160,7 +159,7 @@ public class Switch extends AccessPropertyFile {
     @Test(priority = 16)
     public void DB_Connection() {
         try {
-            dbo ds = new dbo();
+            DatabaseConnection ds = new DatabaseConnection();
             Connection con = ds.getConnection();
             Statement s1 = con.createStatement();
             ResultSet rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
@@ -196,82 +195,49 @@ public class Switch extends AccessPropertyFile {
 
     @Test(priority = 18)
     public void switchAPI() {
-        Map<String, Object> requestData = new HashMap<>();
-        requestData.put("holdingProfileId", holdingid_pro);
-        requestData.put("folio", folio);
-        requestData.put("goalId", goalid);
-        requestData.put("goalName", goalname);
-        requestData.put("fromSchemeName", fromschemename);
-        requestData.put("fromSchemeCode", fromschemecode);
-        requestData.put("toSchemeName", toschemename);
-        requestData.put("toSchemeCode", toschemcode);
-        requestData.put("fromOption", fromoption);
-        requestData.put("toOption", tooption);
-        requestData.put("bankId", bankid);
-        requestData.put("otpReferenceId", DB_refid);
-
+        String switchMode = "partial";
+        String switchType = "regular";
+        String toDividendOption = "Payout";         // Default value
         if (switch_unitpro.equalsIgnoreCase("0") && switch_amtpro.equalsIgnoreCase("0")) {
-            String switchMode = "full";
-            String toDividendOption = "Payout";
-            String switchType = "regular";
-
-            if (fromoption.equalsIgnoreCase("Dividend") && tooption.equalsIgnoreCase("Growth")) {
-                toDividendOption = "Reinvestment";
-            }
-
-            if (fromoption.equalsIgnoreCase("Growth")) {
-                if (tooption.equalsIgnoreCase("Growth")) {
-                    switchMode = "full";
-                } else if (tooption.equalsIgnoreCase("Dividend")) {
-                    switchMode = "partial";
-                }
-            } else if (fromoption.equalsIgnoreCase("Dividend")) {
-                if (tooption.equalsIgnoreCase("Dividend")) {
-                    switchMode = "full";
-                } else if (tooption.equalsIgnoreCase("Growth")) {
-                    switchMode = "partial";
-                }
-            }
-            requestData.put("switchMode", switchMode);
-            requestData.put("switchType", switchType);
-            requestData.put("toDividendOption", toDividendOption);
-
-            RequestSpecification redeem = given().log().all().spec(req).body(requestData);
-            redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
-        } else {
-            String switchMode = "partial";
-            String toDividendOption = "Payout";
-            String switchType = "regular";
-
-            if (fromoption.equalsIgnoreCase("Dividend") && tooption.equalsIgnoreCase("Growth")) {
-                toDividendOption = "Reinvestment";
-            }
-
-            if (fromoption.equalsIgnoreCase("Growth")) {
-                if (tooption.equalsIgnoreCase("Growth")) {
-                    requestData.put("units", Total_units);
-                } else if (tooption.equalsIgnoreCase("Dividend")) {
-                    requestData.put("units", Login.Switch_Units);
-                }
-            } else if (fromoption.equalsIgnoreCase("Dividend")) {
-                if (tooption.equalsIgnoreCase("Dividend")) {
-                    requestData.put("units", Total_units);
-                } else if (tooption.equalsIgnoreCase("Growth")) {
-                    requestData.put("units", Login.Switch_Units);
-                }
-            }
-
-            if (switch_amtpro.equalsIgnoreCase("0")) {
-                requestData.put("amount", Login.Switch_Amt);
-            }
-
-            requestData.put("switchMode", switchMode);
-            requestData.put("switchType", switchType);
-            requestData.put("toDividendOption", toDividendOption);
-
-            RequestSpecification redeem = given().log().all().spec(req).body(requestData);
-            redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
+            switchMode = "full";
         }
+
+        Map<String, Object> commonParams = new HashMap<>();
+        commonParams.put("holdingProfileId", Holdingid);
+        commonParams.put("folio", folio);
+        commonParams.put("goalId", goalid);
+        commonParams.put("goalName", goalname);
+        commonParams.put("fromSchemeName", fromschemename);
+        commonParams.put("fromSchemeCode", fromschemecode);
+        commonParams.put("toSchemeName", toschemename);
+        commonParams.put("toSchemeCode", toschemcode);
+        commonParams.put("fromOption", fromoption);
+        commonParams.put("toOption", tooption);
+        commonParams.put("switchMode", switchMode);
+        commonParams.put("switchType", switchType);
+        commonParams.put("bankId", bankid);
+        commonParams.put("otpReferenceId", DB_refid);
+
+        Map<String, Object> params = new HashMap<>();
+        params.putAll(commonParams);
+
+        if (switch_unitpro.equalsIgnoreCase("0")) {
+            params.put("amount", switch_amtpro);
+        } else {
+            params.put("units", switch_unitpro);
+        }
+
+        if (fromoption.equalsIgnoreCase("Dividend")) {
+            params.put("fromDividendOption", "Payout");
+        }
+
+        if (tooption.equalsIgnoreCase("Dividend")) {
+            toDividendOption = "Reinvestment";
+        }
+        params.put("toDividendOption", toDividendOption);
+
+        RequestSpecification redeem = given().log().all().spec(req).body(params);
+        redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
     }
 
 /*    @Test(priority = 18)

@@ -20,10 +20,10 @@ public class adv_payload {
         heads.add("2152531");
         payload.put("heads",heads);
         payload.put("duration","1y");
-        payload.put("type","credit_quality");
+        payload.put("type","fi_style");
         //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-        payload.put("aggregateBy","investor_count");              //investor_count / investment_amount
-        payload.put("sortBy","credit_quality");
+        payload.put("aggregateBy","investment_amount");              //investor_count / investment_amount
+        payload.put("sortBy","fi_style");
         //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
         payload.put("order","asc");
        /* Map<String,Object> search= new LinkedHashMap<>();

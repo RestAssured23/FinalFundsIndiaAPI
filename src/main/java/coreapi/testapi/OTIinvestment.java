@@ -9,7 +9,7 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import coreapi.accesspropertyfile.Login;
-import coreapi.dbconnection.dbo;
+import coreapi.dbconnection.DatabaseConnection;
 import coreapi.model.HoldingProfile;
 import coreapi.model.MFSearchForm;
 import coreapi.model.PortfolioDashboard;
@@ -184,7 +184,7 @@ public class OTIinvestment {
         Connection con = null;
         ResultSet rs = null;
         try {
-            dbo ds = new dbo();
+            DatabaseConnection ds = new DatabaseConnection();
             con = ds.getConnection();
             s1 = con.createStatement();
             rs = s1.executeQuery("select TOP 5* from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otprefid + "'");
