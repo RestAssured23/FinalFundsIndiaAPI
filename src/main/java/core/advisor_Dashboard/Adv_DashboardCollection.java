@@ -7,21 +7,29 @@ import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.Test;
 
+import java.util.*;
+
 import static io.restassured.RestAssured.given;
 
-public class Adv_DashboardCollection {
-
-
-    RequestSpecification req = new RequestSpecBuilder()
-            .setBaseUri(LoginCredentials.neo)
-            .addHeader("x-api-version", "2.0")
-            .addHeader("channel-id", "10")
-            .addHeader("x-fi-access-token", LoginCredentials.qateam())
-            .setContentType(ContentType.JSON).build();
-    ResponseSpecification respec = new ResponseSpecBuilder()
-            .expectStatusCode(200)
-            .expectContentType(ContentType.JSON).build();
-
+public class Adv_DashboardCollection extends AD_AccessPropertyFile{
+    private final RequestSpecification req;
+    private final ResponseSpecification respec;
+    private String Holdingid,InvestorId,response;
+    public Adv_DashboardCollection() {
+        req = new RequestSpecBuilder()
+                .setBaseUri(getADBasePath())
+                .addHeader("x-api-version", "2.0")
+                .addHeader("channel-id", "10")
+                .addHeader("x-fi-access-token", getAdminAccessToken())
+                .setContentType(ContentType.JSON)
+                .build()
+                .log()
+                .all();
+        respec = new ResponseSpecBuilder()
+                .expectStatusCode(200)
+                .expectContentType(ContentType.JSON)
+                .build();
+    }
     @Test
     public void Form() {
         RequestSpecification res = given().spec(req).log().all();
@@ -99,14 +107,6 @@ public class Adv_DashboardCollection {
         res.when().get("/tools/advisory-dashboard/filters/form")
                 .then().log().all().spec(respec);
     }
-/*
-    @Test
-    public void Review() {
-        RequestSpecification res = given().spec(req);
-        res.when().get("/core/portfolio-review/dues")
-                .then().log().all().spec(respec);
-    }
-*/
     @Test
     public void Review_Clients() {
         RequestSpecification res = given().spec(req)
@@ -260,24 +260,52 @@ public class Adv_DashboardCollection {
     @Test
     public void Exposure_level0() {
         RequestSpecification res = given().spec(req).log().all()
-                .body(adv_payload.level0());
+                .body(Adv_payload.level0());
         res.when().post("/tools/portfolio-exposure/l0")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Exposure_level1() {
         RequestSpecification res = given().spec(req).log().all()
-                .body( adv_payload.level1());
+                .body(Adv_payload.level1());
         res.when().post("/tools/portfolio-exposure/l1")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Exposure_level2() {
         RequestSpecification res = given().spec(req).log().all()
-                .body(adv_payload.level2());
+                .body(Adv_payload.level2());
         res.when().post("/tools/portfolio-exposure/l2")
                 .then().log().all().spec(respec);
     }
 
+ //Monthly Trends
+ @Test
+ public void MonthlyTrends_Investor() {
+     RequestSpecification res = given().spec(req).log().all()
+                     .queryParam("user_id","");
+     res.when().get("/advisory-dashboard/monthly-trends/investor")
+             .then().log().all().spec(respec);
+ }
+    @Test
+    public void MonthlyTrends_Transaction() {
+        Map<String,Object> payload= new LinkedHashMap<>();
+        payload.put("userId","");
+        payload.put("month","");
+        List<String> type = Arrays.asList("");
+        payload.put("types",type);
+
+    RequestSpecification res = given().spec(req).log().all()
+               .body(payload);
+    res.when().post("/advisory-dashboard/monthly-trends/transactions")
+              .then().log().all().spec(respec);
+    }
+    @Test
+    public void MonthlyTrends_Snapshot() {
+        RequestSpecification res = given().spec(req).log().all()
+                .body(Adv_payload.SnapshotPayload());
+        res.when().post("/advisory-dashboard/investors/snapshot")
+                .then().log().all().spec(respec);
+    }
 }
 

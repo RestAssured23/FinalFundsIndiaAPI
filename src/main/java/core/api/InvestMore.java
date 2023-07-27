@@ -1,5 +1,6 @@
 package core.api;
 
+import core.basepath.AccessPropertyFile;
 import core.model.otp.CommonOTP;
 import core.model.twofa.AddScheme;
 import core.model.twofa.GetCart;
@@ -12,6 +13,7 @@ import core.accesspropertyfile.Login;
 import core.dbconnection.DatabaseConnection;
 import core.model.HoldingProfile;
 import core.model.InvestedScheme;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -23,95 +25,107 @@ import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
-public class InvestMore {
-    RequestSpecification req =new RequestSpecBuilder()
-            .setBaseUri(Login.URI())
-            .addHeader("x-api-version","2.0")
-            .addHeader("channel-id","10")
-            .addHeader("x-fi-access-token", Login.Regression())
-            .setContentType(ContentType.JSON).build();
-    ResponseSpecification respec =new ResponseSpecBuilder()
-            .expectStatusCode(200)
-            .expectContentType(ContentType.JSON).build();
-    String Holdingid, InvestorId, Folio, otprefid, DB_Otp, DB_refid,Bankid,Goal_ID,Option,CartId,GroupId;
-    String Scheme_code, Scheme_Name;
+public class InvestMore extends AccessPropertyFile {
+    private final RequestSpecification req;
+    private final ResponseSpecification respec;
+    String Holdingid, InvestorId, folio, otprefid, dbotp, DB_refid,bankid,goalid,option,CartId,GroupId;
+    String schemeName, schemeCode,otp_refid;
     public InvestMore() throws IOException {
+        req = new RequestSpecBuilder()
+                .setBaseUri(getBasePath())
+                .addHeader("x-api-version", "2.0")
+                .addHeader("channel-id", "10")
+                .addHeader("x-fi-access-token", getAccessToken())
+                .setContentType(ContentType.JSON)
+                .build()
+                .log()
+                .all();
+        respec = new ResponseSpecBuilder()
+                .expectStatusCode(200)
+                .expectContentType(ContentType.JSON)
+                .build();
     }
     @Test(priority = 21)
     public void Holding_Profile() {
-        RequestSpecification res = given().log().all().spec(req);
-        HoldingProfile.Root hold_response = res.when().get("/core/investor/holding-profiles")
+        boolean matchFound = false; // Flag variable
+        RequestSpecification res = given().spec(req);
+        HoldingProfile.Root holdResponse = res.when().get("/core/investor/holding-profiles")
                 .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
-        int size = hold_response.getData().size();  // Data Size
-        for (int i = 0; i < size; i++) {
-            if(hold_response.getData().get(i).getHoldingProfileId().equalsIgnoreCase(Login.HoldID)){
-                Holdingid = hold_response.getData().get(i).getHoldingProfileId();
-                System.out.println("Holding ID :" + Holdingid);
-                for(int j=0;j<hold_response.getData().get(i).getInvestors().size();j++){
-                    InvestorId = hold_response.getData().get(i).getInvestors().get(j).getInvestorId();
-                    System.out.println("Investor ID : " + InvestorId);
-                }
+
+        for (HoldingProfile.Datum data : holdResponse.getData()) {
+            if (data.getHoldingProfileId().equalsIgnoreCase(holdingid_pro)) {
+                Holdingid = data.getHoldingProfileId();
+                System.out.println("Holding ID is matched with the property file: " + Holdingid);
+                matchFound = true;
+                break;
             }
+        }
+        if (!matchFound) {
+            Assert.fail("Holding ID is not matched with Investor. Stopping the test.");
         }
     }
     @Test(priority = 22)
-    public void InvestedScheme_API() {
+    public void getInvestedSchemeInfo() {
         RequestSpecification res = given().log().all().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
         InvestedScheme.Root response = res.when().get("/core/investor/invested-schemes")
                 .then().log().all().spec(respec).extract().response().as(InvestedScheme.Root.class);
-        int count = response.getData().size();
-        for (int i = 0; i < count; i++) {
-            if(response.getData().get(i).getFolio().equalsIgnoreCase(Login.FolioID)){
-                Scheme_Name=response.getData().get(i).getSchemeName();
-                Scheme_code=response.getData().get(i).getSchemeCode();
-                Folio=response.getData().get(i).getFolio();
-                Bankid=response.getData().get(i).getBankId();
-                Goal_ID=response.getData().get(i).getGoalId();
-                Option=response.getData().get(i).getOption();
-                System.out.println("Scheme_Name:"+Scheme_Name+"\n"
-                        +"Scheme_Code:"+Scheme_code+"\n"
-                        +"Folio:"+Folio+"\n"
-                        +"Goal_ID:"+Goal_ID+"\n"
-                        +"Option:"+Option);
+
+        for (InvestedScheme.Datum entry : response.getData()) {
+            if (entry.getFolio().equalsIgnoreCase(folio_pro)) {
+                 schemeName = entry.getSchemeName();
+                 schemeCode = entry.getSchemeCode();
+                 folio = entry.getFolio();
+                 bankid = entry.getBankId();
+                 goalid = entry.getGoalId();
+                 option = entry.getOption();
+
+                System.out.println("Scheme_Name: " + schemeName + "\n"
+                        + "Scheme_Code: " + schemeCode + "\n"
+                        + "Folio: " + folio + "\n"
+                        + "Goal_ID: " + goalid + "\n"
+                        + "Option: " + option);
             }
         }
     }
     @Test(priority = 23)
-    public void Investor_Cart() {
-        Map<String,Object> Payload_Growth=new LinkedHashMap<>();
-        Payload_Growth.put("product","MF");
-        Payload_Growth.put("id","");
-        Map<String,Object> info= new HashMap<>();
-        info.put("os","Web-FI");
-        info.put("fcmId","");
-        Payload_Growth.put("appInfo",info);
-        Payload_Growth.put("holdingProfileId",Holdingid);
-        Map<String,Object> oti= new LinkedHashMap<>();
-        oti.put("totalAmount", Login.Inv_Amount);
-        oti.put("investmentType","oti");
-        oti.put("paymentId","");
-        List<Map<String, Object>> Scheme_List = new LinkedList<>();
-        Map<String, Object> data = new HashMap<>();
-        data.put("dividendOption","Payout");
-        data.put("folio",Folio);
-        data.put("bankId",Bankid);
-        data.put("payment",true);
-        data.put("option",Option);
-        data.put("goalId",Goal_ID);
-        data.put("schemeCode",Scheme_code);
-        data.put("schemeName",Scheme_Name);
-        data.put("amount", Login.Inv_Amount);
-        data.put("sipType","");
-        data.put("sipDate",0);
-        Scheme_List.add(data);
-        oti.put("schemes",Scheme_List);
-        Map<String,Object> investment= new LinkedHashMap<>();
-        investment.put("oti",oti);
-        Payload_Growth.put("mf",investment);
+    public void createInvestorCart() {
+        Map<String, Object> payloadGrowth = new LinkedHashMap<>();
+        payloadGrowth.put("product", "MF");
+        payloadGrowth.put("id", "");
+            Map<String, Object> info = new HashMap<>();
+            info.put("os", "Web-FI");
+            info.put("fcmId", "");
+            payloadGrowth.put("appInfo", info);
 
-        RequestSpecification res = given().log().all().spec(req)
-                .body(Payload_Growth).log().body();
+        payloadGrowth.put("holdingProfileId", Holdingid);
+
+        Map<String, Object> oti = new LinkedHashMap<>();
+        oti.put("totalAmount", inv_amount);
+        oti.put("investmentType", "oti");
+        oti.put("paymentId", "");
+
+        List<Map<String, Object>> schemeList = new LinkedList<>();
+        Map<String, Object> data = new HashMap<>();
+        data.put("dividendOption", "Payout");
+        data.put("folio", folio);
+        data.put("bankId", bankid);
+        data.put("payment", true);
+        data.put("option", option);
+        data.put("goalId", goalid);
+        data.put("schemeCode", schemeCode);
+        data.put("schemeName", schemeName);
+        data.put("amount", inv_amount);
+        data.put("sipType", "");
+        data.put("sipDate", 0);
+        schemeList.add(data);
+        oti.put("schemes", schemeList);
+        Map<String, Object> investment = new LinkedHashMap<>();
+        investment.put("oti", oti);
+        payloadGrowth.put("mf", investment);
+
+        RequestSpecification res = given().spec(req)
+                .body(payloadGrowth);
         AddScheme.Root response=res.when().post("/core/investor/cart")
                 .then().log().body().spec(respec).extract().response().as(AddScheme.Root.class);
         CartId= response.getData().getCartId();
@@ -139,24 +153,25 @@ public class InvestMore {
                 .body(otppayload);
         CommonOTP.Root response = otpres.when().post("/core/investor/common/otp")
                 .then().log().all().spec(respec).extract().response().as(CommonOTP.Root.class);
-        otprefid = response.getData().getOtpReferenceId();
-        System.out.println(otprefid);
+        otp_refid = response.getData().getOtpReferenceId();
+        System.out.println(otp_refid);
     }
     @Test(priority = 26)
     public void DB_Connection() throws SQLException {
-        // DB connection
+        System.out.println("DB Connection Name: "+dbusr);
         Statement s1 = null;
         Connection con = null;
         ResultSet rs = null;
         try {
-            DatabaseConnection ds = new DatabaseConnection();
+            DatabaseConnection ds = new DatabaseConnection(dbusr, dbpwd, dburl, databasename, true, dbdrivername);
             con = ds.getConnection();
+            Assert.assertNotNull(con, "Database connection failed!"); // Throw an error if the connection is null (failed)
             s1 = con.createStatement();
-            rs = s1.executeQuery("select TOP 5* from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otprefid + "'");
+            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
             rs.next();
-            DB_Otp = rs.getString("otp");
+            dbotp = rs.getString("otp");
             DB_refid = rs.getString("referenceid");
-            System.out.println("OTP :" + DB_Otp);
+            System.out.println("OTP :" + dbotp);
             System.out.println("OTPReferenceID :" + DB_refid);
 
         } catch (Exception e) {
@@ -173,7 +188,7 @@ public class InvestMore {
         Map<String, Object> payload2 = new HashMap<>();
         payload2.put("email", "");
         payload2.put("sms", "");
-        payload2.put("email_or_sms", DB_Otp);
+        payload2.put("email_or_sms", dbotp);
         payload1.put("otp", payload2);
         payload1.put("otpReferenceId", DB_refid);
         RequestSpecification res = given().log().all().spec(req)
