@@ -1,29 +1,33 @@
 package core.api;
 
-public class Payload {
+import core.basepath.AccessPropertyFile;
+
+
+public class Payload extends AccessPropertyFile {
+
+
     public static String product_Search()
     {
-        return """
-                {
-                  "page": 1,
-                  "size": 10,
-                  "orderBy": "rating",
-                  "orderType": "ASC",
-                  "categories": [],
-                  "subCategories": [],
-                  "query": "icici",
-                  "risk": [],
-                  "ratings": [],
-                  "amcs": [],
-                  "searchCode": [
-                    {
-                      "value": "",
-                      "sort": true
+        return "{\n" +
+                "  \"page\": 1,\n" +
+                "  \"size\": 10,\n" +
+                "  \"orderBy\": \"rating\",\n" +
+                "  \"orderType\": \"DESC\",\n" +
+                "  \"categories\": [],\n" +
+                "  \"subCategories\": [],\n" +
+                "  \"query\": \""+schemeSearch+"\",\n" +
+                "  \"risk\": [],\n" +
+                "  \"ratings\": [],\n" +
+                "  \"amcs\": [],\n" +
+                "  \"searchCode\": [\n" +
+                "    {\n" +
+                "      \"value\": \"\",\n" +
+                "      \"sort\": true\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"sip\": true\n" +
+                "}";
                     }
-                  ],
-                  "sip": true
-                }""";
-    }
     public static String Select_Funds()
     {
         return """

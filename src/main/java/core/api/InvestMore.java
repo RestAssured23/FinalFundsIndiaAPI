@@ -28,7 +28,7 @@ import static io.restassured.RestAssured.given;
 public class InvestMore extends AccessPropertyFile {
     private final RequestSpecification req;
     private final ResponseSpecification respec;
-    String Holdingid, InvestorId, folio, otprefid, dbotp, DB_refid,bankid,goalid,option,CartId,GroupId;
+    String Holdingid, InvestorId, folio, dbotp, DB_refid,bankid,goalid,option,CartId,GroupId;
     String schemeName, schemeCode,otp_refid;
     public InvestMore() throws IOException {
         req = new RequestSpecBuilder()
@@ -90,36 +90,46 @@ public class InvestMore extends AccessPropertyFile {
     }
     @Test(priority = 23)
     public void createInvestorCart() {
+        // Create payloadGrowth map
         Map<String, Object> payloadGrowth = new LinkedHashMap<>();
         payloadGrowth.put("product", "MF");
         payloadGrowth.put("id", "");
-            Map<String, Object> info = new HashMap<>();
-            info.put("os", "Web-FI");
-            info.put("fcmId", "");
-            payloadGrowth.put("appInfo", info);
 
+        // Create appInfo map
+        Map<String, Object> appInfo = new HashMap<>();
+        appInfo.put("os", "Web-FI");
+        appInfo.put("fcmId", "");
+        payloadGrowth.put("appInfo", appInfo);
+
+        // Add Holdingid to payloadGrowth
         payloadGrowth.put("holdingProfileId", Holdingid);
 
+        // Create oti map
         Map<String, Object> oti = new LinkedHashMap<>();
         oti.put("totalAmount", inv_amount);
         oti.put("investmentType", "oti");
         oti.put("paymentId", "");
 
+        // Create scheme data
+        Map<String, Object> schemeData = new HashMap<>();
+        schemeData.put("dividendOption", "Payout");
+        schemeData.put("folio", folio);
+        schemeData.put("bankId", bankid);
+        schemeData.put("payment", true);
+        schemeData.put("option", option);
+        schemeData.put("goalId", goalid);
+        schemeData.put("schemeCode", schemeCode);
+        schemeData.put("schemeName", schemeName);
+        schemeData.put("amount", inv_amount);
+        schemeData.put("sipType", "");
+        schemeData.put("sipDate", 0);
+
+        // Create schemeList and add schemeData to it
         List<Map<String, Object>> schemeList = new LinkedList<>();
-        Map<String, Object> data = new HashMap<>();
-        data.put("dividendOption", "Payout");
-        data.put("folio", folio);
-        data.put("bankId", bankid);
-        data.put("payment", true);
-        data.put("option", option);
-        data.put("goalId", goalid);
-        data.put("schemeCode", schemeCode);
-        data.put("schemeName", schemeName);
-        data.put("amount", inv_amount);
-        data.put("sipType", "");
-        data.put("sipDate", 0);
-        schemeList.add(data);
+        schemeList.add(schemeData);
         oti.put("schemes", schemeList);
+
+        // Create investment map and add oti to it
         Map<String, Object> investment = new LinkedHashMap<>();
         investment.put("oti", oti);
         payloadGrowth.put("mf", investment);

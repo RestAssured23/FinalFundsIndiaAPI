@@ -1,5 +1,6 @@
 package core.api;
 
+import core.basepath.AccessPropertyFile;
 import core.model.otp.CommonOTP;
 import core.model.twofa.AddScheme;
 import core.model.twofa.GetCart;
@@ -14,6 +15,7 @@ import core.model.HoldingProfile;
 import core.model.MFSearchForm;
 import core.model.MandateAPI;
 import core.model.PortfolioDashboard;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -25,37 +27,46 @@ import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
-public class SIP {
-    RequestSpecification req =new RequestSpecBuilder()
-            .setBaseUri(Login.URI())
-            .addHeader("x-api-version","2.0")
-            .addHeader("channel-id","10")
-            .addHeader("x-fi-access-token", Login.Regression())
-            .setContentType(ContentType.JSON).build();
-    ResponseSpecification respec =new ResponseSpecBuilder()
-            .expectStatusCode(200)
-            .expectContentType(ContentType.JSON).build();
+public class SIP extends AccessPropertyFile {
+    private final RequestSpecification req;
+    private final ResponseSpecification respec;
+
     String Holdingid, InvestorId, otprefid, DB_Otp, DB_refid,Goal_ID,CartId,GroupId;
-    String Scheme_Code, Scheme_Name,Scheme_Option;
-    double Min_Amount;int Min_Tenure; String ConsumerCode,Bank_Id; double Available_Amount;
+    String schemeCode, schemeName, schemeOption;
+    double minAmount;int minTenure; String ConsumerCode,Bank_Id; double Available_Amount;
 
     public SIP() throws IOException {
+        req = new RequestSpecBuilder()
+                .setBaseUri(getBasePath())
+                .addHeader("x-api-version", "2.0")
+                .addHeader("channel-id", "10")
+                .addHeader("x-fi-access-token", getAccessToken())
+                .setContentType(ContentType.JSON)
+                .build()
+                .log()
+                .all();
+        respec = new ResponseSpecBuilder()
+                .expectStatusCode(200)
+                .expectContentType(ContentType.JSON)
+                .build();
     }
-    @Test
+    @Test(priority = 40)
     public void Holding_Profile() {
-        RequestSpecification res = given().log().all().spec(req);
-        HoldingProfile.Root hold_response = res.when().get("/core/investor/holding-profiles")
+        boolean matchFound = false; // Flag variable
+        RequestSpecification res = given().spec(req);
+        HoldingProfile.Root holdResponse = res.when().get("/core/investor/holding-profiles")
                 .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
-        int size = hold_response.getData().size();  // Data Size
-        for (int i = 0; i < size; i++) {
-            if(hold_response.getData().get(i).getHoldingProfileId().equalsIgnoreCase(Login.HoldID)){
-                Holdingid = hold_response.getData().get(i).getHoldingProfileId();
-                System.out.println("Holding ID :" + Holdingid);
-                for(int j=0;j<hold_response.getData().get(i).getInvestors().size();j++){
-                    InvestorId = hold_response.getData().get(i).getInvestors().get(j).getInvestorId();
-                    System.out.println("Investor ID : " + InvestorId);
-                }
+
+        for (HoldingProfile.Datum data : holdResponse.getData()) {
+            if (data.getHoldingProfileId().equalsIgnoreCase(holdingid_pro)) {
+                Holdingid = data.getHoldingProfileId();
+                System.out.println("Holding ID is matched with the property file: " + Holdingid);
+                matchFound = true;
+                break;
             }
+        }
+        if (!matchFound) {
+            Assert.fail("Holding ID is not matched with Investor. Stopping the test.");
         }
     }
 
@@ -79,43 +90,34 @@ public class SIP {
     @Test(priority = 2)
     public void product_search_mf_form() {
         RequestSpecification res = given().log().all().spec(req)
-                .body("{\n" +
-                        "  \"page\": 1,\n" +
-                        "  \"size\": 10,\n" +
-                        "  \"orderBy\": \"rating\",\n" +
-                        "  \"orderType\": \"DESC\",\n" +
-                        "  \"categories\": [],\n" +
-                        "  \"subCategories\": [],\n" +
-                        "  \"query\": \""+ Login.SchemeSearch+"\",\n" +
-                        "  \"risk\": [],\n" +
-                        "  \"ratings\": [],\n" +
-                        "  \"amcs\": [],\n" +
-                        "  \"searchCode\": [\n" +
-                        "    {\n" +
-                        "      \"value\": \"\",\n" +
-                        "      \"sort\": true\n" +
-                        "    }\n" +
-                        "  ],\n" +
-                        "  \"oti\": true\n" +
-                        "}");
-        MFSearchForm.Root response= res.when().post("/core/product-search/mf")
+                .body(Payload.product_Search());
+        MFSearchForm.Root response = res.when().post("/core/product-search/mf")
                 .then().log().all().spec(respec).extract().response().as(MFSearchForm.Root.class);
-        for(int i=0;i<response.getData().getContent().size();i++){
-            if(response.getData().getContent().get(i).getName().equalsIgnoreCase(Login.Expected_Scheme)){
-                Scheme_Name=response.getData().getContent().get(i).getName();
-                Scheme_Code=response.getData().getContent().get(i).getSchemeCode();
-                Min_Amount=response.getData().getContent().get(i).getSipMinimumInvestment();
-                Scheme_Option=response.getData().getContent().get(i).getOption();
-                Min_Tenure=response.getData().getContent().get(i).getMinimumSipTenure();
-            }else {
-                Scheme_Name=response.getData().getContent().get(0).getName();
-                Scheme_Code=response.getData().getContent().get(0).getSchemeCode();
-                Min_Amount=response.getData().getContent().get(0).getSipMinimumInvestment();
-                Scheme_Option=response.getData().getContent().get(0).getOption();
-                Min_Tenure=response.getData().getContent().get(0).getMinimumSipTenure();
+
+        for (MFSearchForm.Content content : response.getData().getContent()) {
+            if (content.getName().equalsIgnoreCase(expectedscheme)) {
+                schemeName = content.getName();
+                schemeCode = content.getSchemeCode();
+                schemeOption = content.getOption();
+                minTenure = content.getMinimumSipTenure();
+                minAmount=content.getSipMinimumInvestment();
+                break; // Exit the loop since we found a matching content item
+            } else {
+                schemeName = response.getData().getContent().get(0).getName();
+                schemeCode = response.getData().getContent().get(0).getSchemeCode();
+                schemeOption = response.getData().getContent().get(0).getOption();
+                minTenure = response.getData().getContent().get(0).getMinimumSipTenure();
+                minAmount=response.getData().getContent().get(0).getSipMinimumInvestment();
             }
         }
+        // Print the results
+        System.out.println(schemeName);
+        System.out.println(schemeCode);
+        System.out.println(schemeOption);
+        System.out.println(minTenure);
+        System.out.println(minAmount);
     }
+
     @Test(priority = 3)
     public void Mandate_API(){
         RequestSpecification res=given().log().all().spec(req)
@@ -152,17 +154,17 @@ public class SIP {
         data.put("folio","-");
         data.put("bankId",Bank_Id);
         data.put("payment",false);
-        data.put("option",Scheme_Option);
+        data.put("option", schemeOption);
         data.put("goalId",Goal_ID);
-        data.put("schemeCode",Scheme_Code);
-        data.put("schemeName",Scheme_Name);
+        data.put("schemeCode", schemeCode);
+        data.put("schemeName", schemeName);
         data.put("amount", Login.Inv_Amount);
         data.put("sipType","regular");
         data.put("sipDate", Login.SIP_Date);
         Map<String, Object> Reg_Type = new HashMap<>();
         Reg_Type.put("amount", Login.Inv_Amount);
         Reg_Type.put("frequency","monthly");
-        Reg_Type.put("tenure",Min_Tenure);
+        Reg_Type.put("tenure",minTenure);
         Reg_Type.put("consumerCode",ConsumerCode);
         data.put("regular",Reg_Type);
         Schemelist.add(data);
@@ -189,17 +191,17 @@ public class SIP {
         data_D.put("folio","-");
         data_D.put("bankId",Bank_Id);
         data_D.put("payment",false);
-        data_D.put("option",Scheme_Option);
+        data_D.put("option", schemeOption);
         data_D.put("goalId",Goal_ID);
-        data_D.put("schemeCode",Scheme_Code);
-        data_D.put("schemeName",Scheme_Name);
+        data_D.put("schemeCode", schemeCode);
+        data_D.put("schemeName", schemeName);
         data_D.put("amount", Login.Inv_Amount);
         data_D.put("sipType","regular");
         data_D.put("sipDate", Login.SIP_Date);
         Map<String, Object> Reg_Type_D = new HashMap<>();
         Reg_Type_D.put("amount", Login.Inv_Amount);
         Reg_Type_D.put("frequency","monthly");
-        Reg_Type_D.put("tenure",Min_Tenure);
+        Reg_Type_D.put("tenure",minTenure);
         Reg_Type_D.put("consumerCode",ConsumerCode);
         data_D.put("regular",Reg_Type_D);
         Schemelist_D.add(data_D);
@@ -226,10 +228,10 @@ public class SIP {
         flexi_data.put("folio","-");
         flexi_data.put("bankId",Bank_Id);
         flexi_data.put("payment",false);
-        flexi_data.put("option",Scheme_Option);
+        flexi_data.put("option", schemeOption);
         flexi_data.put("goalId",Goal_ID);
-        flexi_data.put("schemeCode",Scheme_Code);
-        flexi_data.put("schemeName",Scheme_Name);
+        flexi_data.put("schemeCode", schemeCode);
+        flexi_data.put("schemeName", schemeName);
         flexi_data.put("amount", Login.Inv_Amount);
         flexi_data.put("sipType","flexi");
         flexi_data.put("sipDate", Login.SIP_Date);
@@ -237,8 +239,8 @@ public class SIP {
         flexi_Reg_Type.put("amount", Login.Inv_Amount);
         flexi_Reg_Type.put("frequency","monthly");
         flexi_Reg_Type.put("maximumAmount",3000);
-        flexi_Reg_Type.put("flexiAmount",Min_Amount);
-        flexi_Reg_Type.put("tenure",Min_Tenure);
+        flexi_Reg_Type.put("flexiAmount",minAmount);
+        flexi_Reg_Type.put("tenure",minTenure);
         flexi_Reg_Type.put("consumerCode",ConsumerCode);
         flexi_data.put("flexi",flexi_Reg_Type);
         flexiSchemelist.add(flexi_data);
@@ -266,10 +268,10 @@ public class SIP {
         flexiDiv_data.put("folio","-");
         flexiDiv_data.put("bankId",Bank_Id);
         flexiDiv_data.put("payment",false);
-        flexiDiv_data.put("option",Scheme_Option);
+        flexiDiv_data.put("option", schemeOption);
         flexiDiv_data.put("goalId",Goal_ID);
-        flexiDiv_data.put("schemeCode",Scheme_Code);
-        flexiDiv_data.put("schemeName",Scheme_Name);
+        flexiDiv_data.put("schemeCode", schemeCode);
+        flexiDiv_data.put("schemeName", schemeName);
         flexiDiv_data.put("amount", Login.Inv_Amount);
         flexiDiv_data.put("sipType","flexi");
         flexiDiv_data.put("sipDate", Login.SIP_Date);
@@ -278,7 +280,7 @@ public class SIP {
         flexiDiv_Reg_Type.put("frequency","monthly");
         flexiDiv_Reg_Type.put("maximumAmount",3000);
         flexiDiv_Reg_Type.put("flexiAmount", Login.Inv_Amount);
-        flexiDiv_Reg_Type.put("tenure",Min_Tenure);
+        flexiDiv_Reg_Type.put("tenure",minTenure);
         flexiDiv_Reg_Type.put("consumerCode",ConsumerCode);
         flexiDiv_data.put("flexi",flexiDiv_Reg_Type);
         flexiDiv_Schemelist.add(flexiDiv_data);
@@ -305,10 +307,10 @@ public class SIP {
         Step_data.put("folio","-");
         Step_data.put("bankId",Bank_Id);
         Step_data.put("payment",false);
-        Step_data.put("option",Scheme_Option);
+        Step_data.put("option", schemeOption);
         Step_data.put("goalId",Goal_ID);
-        Step_data.put("schemeCode",Scheme_Code);
-        Step_data.put("schemeName",Scheme_Name);
+        Step_data.put("schemeCode", schemeCode);
+        Step_data.put("schemeName", schemeName);
         Step_data.put("amount", Login.Inv_Amount);
         Step_data.put("sipType","stepup");
         Step_data.put("sipDate", Login.SIP_Date);
@@ -318,7 +320,7 @@ public class SIP {
         Step_Reg_Type.put("stepupFrequency","half-yearly");                 //  annually /half-yearly
         Step_Reg_Type.put("stepupAmount", Login.Inv_Amount);
         Step_Reg_Type.put("finalAmount",0);
-        Step_Reg_Type.put("tenure",Min_Tenure);
+        Step_Reg_Type.put("tenure",minTenure);
         Step_Reg_Type.put("consumerCode",ConsumerCode);
         Step_data.put("stepup",Step_Reg_Type);
         Step_Schemelist.add(Step_data);
@@ -346,10 +348,10 @@ public class SIP {
         StepDiv_data.put("folio","-");
         StepDiv_data.put("bankId",Bank_Id);
         StepDiv_data.put("payment",false);
-        StepDiv_data.put("option",Scheme_Option);
+        StepDiv_data.put("option", schemeOption);
         StepDiv_data.put("goalId",Goal_ID);
-        StepDiv_data.put("schemeCode",Scheme_Code);
-        StepDiv_data.put("schemeName",Scheme_Name);
+        StepDiv_data.put("schemeCode", schemeCode);
+        StepDiv_data.put("schemeName", schemeName);
         StepDiv_data.put("amount", Login.Inv_Amount);
         StepDiv_data.put("sipType","stepup");
         StepDiv_data.put("sipDate", Login.SIP_Date);
@@ -359,7 +361,7 @@ public class SIP {
         StepDiv_Reg_Type.put("stepupFrequency","half-yearly");                 //  annually /half-yearly
         StepDiv_Reg_Type.put("stepupAmount", Login.Inv_Amount);
         StepDiv_Reg_Type.put("finalAmount",0);
-        StepDiv_Reg_Type.put("tenure",Min_Tenure);
+        StepDiv_Reg_Type.put("tenure",minTenure);
         StepDiv_Reg_Type.put("consumerCode",ConsumerCode);
         StepDiv_data.put("stepup",StepDiv_Reg_Type);
         StepDiv_Schemelist.add(StepDiv_data);
@@ -386,10 +388,10 @@ public class SIP {
         Alert_data.put("folio","-");
         Alert_data.put("bankId",Bank_Id);
         Alert_data.put("payment",true);
-        Alert_data.put("option",Scheme_Option);
+        Alert_data.put("option", schemeOption);
         Alert_data.put("goalId",Goal_ID);
-        Alert_data.put("schemeCode",Scheme_Code);
-        Alert_data.put("schemeName",Scheme_Name);
+        Alert_data.put("schemeCode", schemeCode);
+        Alert_data.put("schemeName", schemeName);
         Alert_data.put("amount", Login.Inv_Amount);
         Alert_data.put("sipType","alert");
         Alert_data.put("sipDate", Login.SIP_Date);
@@ -424,10 +426,10 @@ public class SIP {
         AlertDiv_data.put("folio","-");
         AlertDiv_data.put("bankId",Bank_Id);
         AlertDiv_data.put("payment",true);
-        AlertDiv_data.put("option",Scheme_Option);
+        AlertDiv_data.put("option", schemeOption);
         AlertDiv_data.put("goalId",Goal_ID);
-        AlertDiv_data.put("schemeCode",Scheme_Code);
-        AlertDiv_data.put("schemeName",Scheme_Name);
+        AlertDiv_data.put("schemeCode", schemeCode);
+        AlertDiv_data.put("schemeName", schemeName);
         AlertDiv_data.put("amount", Login.Inv_Amount);
         AlertDiv_data.put("sipType","alert");
         AlertDiv_data.put("sipDate", Login.SIP_Date);
@@ -446,7 +448,7 @@ public class SIP {
         switch (Login.SIP_Type) {
             case "regular" -> {
                 RequestSpecification res;
-                if (Scheme_Option.equalsIgnoreCase("Growth")) {
+                if (schemeOption.equalsIgnoreCase("Growth")) {
                     res = given().log().all().spec(req)
                             .body(AlertDiv_Payload);
                     AddScheme.Root response = res.when().post("/core/investor/cart")
@@ -463,7 +465,7 @@ public class SIP {
             }
             case "flexi" -> {
                 RequestSpecification res;
-                if (Scheme_Option.equalsIgnoreCase("Growth")) {
+                if (schemeOption.equalsIgnoreCase("Growth")) {
                     res = given().log().all().spec(req)
                             .body(Flexi_Payload);
                     AddScheme.Root response = res.when().post("/core/investor/cart")
@@ -480,7 +482,7 @@ public class SIP {
             }
             case "stepup" -> {
                 RequestSpecification res;
-                if (Scheme_Option.equalsIgnoreCase("Growth")) {
+                if (schemeOption.equalsIgnoreCase("Growth")) {
                     res = given().log().all().spec(req)
                             .body(Step_Payload);
                     AddScheme.Root response = res.when().post("/core/investor/cart")
