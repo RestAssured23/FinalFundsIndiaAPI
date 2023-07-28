@@ -44,7 +44,7 @@ public class OTIinvestment extends AccessPropertyFile {
                 .expectContentType(ContentType.JSON)
                 .build();
     }
-    @Test(priority = 21)
+    @Test(priority = 28)
     public void Holding_Profile() {
         boolean matchFound = false; // Flag variable
         RequestSpecification res = given().spec(req);
@@ -64,7 +64,7 @@ public class OTIinvestment extends AccessPropertyFile {
         }
     }
 
-    @Test(priority = 30)
+    @Test(priority = 29)
     public void Dashboard_portfolio() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("holdingProfileId", "183318");
@@ -82,7 +82,7 @@ public class OTIinvestment extends AccessPropertyFile {
         System.out.println("Goal ID :" + goalID);
     }
 
-    @Test(priority = 31)
+    @Test(priority = 30)
     public void product_search_mf_form() {
         RequestSpecification res = given().log().all().spec(req)
                 .body(Payload.product_Search());
@@ -107,7 +107,7 @@ public class OTIinvestment extends AccessPropertyFile {
         System.out.println(schemeOption);
     }
 
-    @Test(priority = 32)
+    @Test(priority = 31)
     public void Investor_Cart() {
 
         Map<String, Object> payload = new LinkedHashMap<>();
@@ -154,7 +154,7 @@ public class OTIinvestment extends AccessPropertyFile {
         CartId= response.getData().getCartId();
         System.out.println(CartId);
     }
-    @Test(priority = 33)
+    @Test(priority = 32)
     public void Folio_Group_ID() {
         RequestSpecification getres = given().log().all().spec(req)
                 .queryParam("cartId", CartId);
@@ -163,7 +163,7 @@ public class OTIinvestment extends AccessPropertyFile {
         GroupId = response.getData().getGroups().get(0).getGroupId();
         System.out.println(GroupId);
     }
-    @Test(priority = 34)
+    @Test(priority = 33)
     public void Common_Otp() {
         Map<String, Object> otppayload = new HashMap<>();
         otppayload.put("type", "mobile_and_email");
@@ -178,7 +178,7 @@ public class OTIinvestment extends AccessPropertyFile {
         otp_refid = response.getData().getOtpReferenceId();
         System.out.println(otp_refid);
     }
-    @Test(priority = 35)
+    @Test(priority = 34)
     public void DB_Connection() throws SQLException {
         System.out.println("DB Connection Name: "+dbusr);
         Statement s1 = null;
@@ -204,7 +204,7 @@ public class OTIinvestment extends AccessPropertyFile {
             if (con != null) con.close();
         }
     }
-    @Test(priority = 36)
+    @Test(priority = 35)
     public void OTP_Verify() {
         Map<String, Object> payload1 = new HashMap<>();
         Map<String, Object> payload2 = new HashMap<>();
@@ -219,7 +219,7 @@ public class OTIinvestment extends AccessPropertyFile {
         res.when().post("/core/investor/common/otp/verify")
                 .then().log().all().spec(respec);
     }
-    @Test(priority = 37)
+    @Test(priority = 36)
     public void Buy_Cart() {
         RequestSpecification buyres = given().log().all().spec(req)
                 .queryParam("cartId", CartId);

@@ -48,7 +48,7 @@ public class Switch extends AccessPropertyFile {
                 .expectContentType(ContentType.JSON)
                 .build();
     }
-    @Test(priority = 11)
+    @Test(priority = 10)
     public void Holding_Profile() {
         boolean matchFound = false; // Flag variable
         RequestSpecification res = given().spec(req);
@@ -67,7 +67,7 @@ public class Switch extends AccessPropertyFile {
             Assert.fail("Holding ID is not matched with Investor. Stopping the test.");
         }
     }
-    @Test(priority = 12)
+    @Test(priority = 11)
     public void getInvestedSchemeDetails() {
         RequestSpecification res = given().log().all().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
@@ -93,7 +93,7 @@ public class Switch extends AccessPropertyFile {
             }
         }
     }
-    @Test(priority = 13)
+    @Test(priority = 12)
     public void productSearchMFForm() {
         RequestSpecification res = given().log().all().spec(req)
                 .queryParam("page", 1)
@@ -108,7 +108,7 @@ public class Switch extends AccessPropertyFile {
             System.out.printf(AMC_Code + "\t" + AMC_Name + "\t" + Source_SchemeName);
         }
     }
-    @Test(priority = 14)
+    @Test(priority = 13)
     public void targetSchemeSearch() {
         RequestSpecification res = given().log().all().spec(req)
                 .body("{\n" +
@@ -157,7 +157,7 @@ public class Switch extends AccessPropertyFile {
         System.out.println("To schemecode: " + toschemcode);
     }
 
-    @Test(priority = 15)
+    @Test(priority = 14)
     public void Common_OTP() {
         Map<String, Object> otppayload = new HashMap<>();
         otppayload.put("type", "mobile_and_email");
@@ -172,7 +172,7 @@ public class Switch extends AccessPropertyFile {
         otp_refid = responce.getData().getOtpReferenceId();
     }
 
-    @Test(priority = 16)
+    @Test(priority = 15)
     public void DB_Connection() throws SQLException {
         System.out.println("DB Connection Name: "+dbusr);
         Statement s1 = null;
@@ -198,7 +198,7 @@ public class Switch extends AccessPropertyFile {
             if (con != null) con.close();
         }
     }
-    @Test(priority = 17)
+    @Test(priority = 16)
     public void Verify_OTP() {
         VerifyOtpRequest.Root payload = new VerifyOtpRequest.Root();
         VerifyOtpRequest.Otp otp = new VerifyOtpRequest.Otp();
@@ -213,7 +213,7 @@ public class Switch extends AccessPropertyFile {
                 .then().log().all().spec(respec);
     }
 
-    @Test(priority = 18)
+    @Test(priority = 17)
     public void Switch_API() {
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("holdingProfileId", Holdingid);
@@ -267,7 +267,7 @@ public class Switch extends AccessPropertyFile {
         RequestSpecification redeem = given().log().all().spec(req).body(requestData);
         redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
     }
-    @Test(priority = 19)
+    @Test(priority = 18)
     public void Recent_Transaction() {
         RequestSpecification res = given().log().all().spec(req)
                 .queryParam("holdingProfileId", "183318")
@@ -299,7 +299,7 @@ public class Switch extends AccessPropertyFile {
             System.out.println("First Cancelled ReferenceNo: " + firstReferenceNo);
         }
     }
-    @Test(priority = 20)
+    @Test(priority = 19)
     public void Cancel_Switch() {
         Map<String, String> del = new HashMap<>();
         del.put("action", "cancel");

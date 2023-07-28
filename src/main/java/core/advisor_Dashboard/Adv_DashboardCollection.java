@@ -14,7 +14,7 @@ import static io.restassured.RestAssured.given;
 public class Adv_DashboardCollection extends AD_AccessPropertyFile{
     private final RequestSpecification req;
     private final ResponseSpecification respec;
-    private String Holdingid,InvestorId,response;
+
     public Adv_DashboardCollection() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getADBasePath())

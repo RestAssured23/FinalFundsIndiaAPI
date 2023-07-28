@@ -45,7 +45,7 @@ public class InvestMore extends AccessPropertyFile {
                 .expectContentType(ContentType.JSON)
                 .build();
     }
-    @Test(priority = 21)
+    @Test(priority = 20)
     public void Holding_Profile() {
         boolean matchFound = false; // Flag variable
         RequestSpecification res = given().spec(req);
@@ -64,7 +64,7 @@ public class InvestMore extends AccessPropertyFile {
             Assert.fail("Holding ID is not matched with Investor. Stopping the test.");
         }
     }
-    @Test(priority = 22)
+    @Test(priority = 21)
     public void getInvestedSchemeInfo() {
         RequestSpecification res = given().log().all().spec(req)
                 .queryParam("holdingProfileId", Holdingid);
@@ -88,7 +88,7 @@ public class InvestMore extends AccessPropertyFile {
             }
         }
     }
-    @Test(priority = 23)
+    @Test(priority = 22)
     public void createInvestorCart() {
         // Create payloadGrowth map
         Map<String, Object> payloadGrowth = new LinkedHashMap<>();
@@ -142,7 +142,7 @@ public class InvestMore extends AccessPropertyFile {
         System.out.println(CartId);
     }
 
-    @Test(priority = 24)
+    @Test(priority = 23)
     public void Folio_Group_ID() {
         RequestSpecification getres = given().log().all().spec(req)
                 .queryParam("cartId", CartId);
@@ -151,7 +151,7 @@ public class InvestMore extends AccessPropertyFile {
         GroupId = response.getData().getGroups().get(0).getGroupId();
         System.out.println(GroupId);
     }
-    @Test(priority = 25)
+    @Test(priority = 24)
     public void Common_Otp() {
         Map<String, Object> otppayload = new HashMap<>();
         otppayload.put("type", "mobile_and_email");
@@ -166,7 +166,7 @@ public class InvestMore extends AccessPropertyFile {
         otp_refid = response.getData().getOtpReferenceId();
         System.out.println(otp_refid);
     }
-    @Test(priority = 26)
+    @Test(priority = 25)
     public void DB_Connection() throws SQLException {
         System.out.println("DB Connection Name: "+dbusr);
         Statement s1 = null;
@@ -192,7 +192,7 @@ public class InvestMore extends AccessPropertyFile {
             if (con != null) con.close();
         }
     }
-    @Test(priority = 27)
+    @Test(priority = 26)
     public void OTP_Verify() {
         Map<String, Object> payload1 = new HashMap<>();
         Map<String, Object> payload2 = new HashMap<>();
@@ -206,7 +206,7 @@ public class InvestMore extends AccessPropertyFile {
         res.when().post("/core/investor/common/otp/verify")
                 .then().log().all().spec(respec);
     }
-    @Test(priority = 28)
+    @Test(priority = 27)
     public void Buy_Cart() {
         RequestSpecification buyres = given().log().all().spec(req)
                 .queryParam("cartId", CartId);
