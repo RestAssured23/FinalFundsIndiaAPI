@@ -15,7 +15,7 @@ public class Payload extends AccessPropertyFile {
                 "  \"orderType\": \"DESC\",\n" +
                 "  \"categories\": [],\n" +
                 "  \"subCategories\": [],\n" +
-                "  \"query\": \""+schemeSearch+"\",\n" +
+                "  \"query\": \""+ amcschemeSearch +"\",\n" +
                 "  \"risk\": [],\n" +
                 "  \"ratings\": [],\n" +
                 "  \"amcs\": [],\n" +

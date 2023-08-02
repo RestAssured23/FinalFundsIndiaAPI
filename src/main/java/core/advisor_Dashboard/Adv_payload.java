@@ -2,7 +2,48 @@ package core.advisor_Dashboard;
 import java.util.*;
 
 public class Adv_payload {
-    public static HashMap<String, Object> level0() {
+
+    public static Map<String, Object> Allclients() {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("page", 1);
+        payload.put("size", 20);
+            List<String> segment = Arrays.asList("silver","platinum","gold","digital");
+                                            //"silver", "gold", "platinum", "digital", "n/a"
+            List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
+                                            // "not_started","in_progress","completed","overdue","not_reviewed"
+            List<String> headid = Arrays.asList("187458");
+            List<String> managerid = Arrays.asList();
+            List<String> advisorid = Arrays.asList();
+
+        payload.put("segments", segment);
+        payload.put("status", status);
+        payload.put("heads", headid);
+        payload.put("managers", managerid);
+        payload.put("advisors", advisorid);
+        payload.put("sortBy", "user_name");
+        payload.put("sortType", "asc");                      // [asc, desc]
+        return payload;
+    }
+    public static Map<String, Object> quality_review() {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("reviewId", "23015");
+        payload.put("critical", "yes");         // [yes , no]
+        payload.put("date", "2023-06-26T12:18:34.268Z");
+        payload.put("comments", "testing");
+
+            List<Map<String, Object>> parameter = new ArrayList<>();
+                Map<String, Object> data = new HashMap<>();
+                data.put("id","1");
+                data.put("description","Testing");
+                data.put("value","yes");
+            List<String> tag = Arrays.asList("Tags testing");
+                data.put("tags",tag);
+            parameter.add(data);
+        payload.put("parameters",parameter);
+        return payload;
+    }
+
+    public static  Map<String, Object> level0() {
 
         Map<String,Object> payload= new LinkedHashMap<>();
         payload.put("page",1);
@@ -14,18 +55,21 @@ public class Adv_payload {
         payload.put("heads",heads);
         payload.put("managers",managers);
         payload.put("advisors",advisors);
+    //    payload.put("financialYear","2023-2022");
         payload.put("duration",1);
+        payload.put("durationUnit","month");         //[ month, year ]
         payload.put("type","fi_style");
-        //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-        payload.put("aggregateBy","investment_amount");              //investor_count / investment_amount
+                    //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
+        payload.put("aggregateBy","investment_amount");
+                    //investor_count / investment_amount
         payload.put("sortBy","fi_style");
-        //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
+                         //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
         payload.put("order","asc");
        /* Map<String,Object> search= new LinkedHashMap<>();
         search.put("type","amc");         //only applicable for amc, category, scheme_name
         search.put("query","");
         payload.put("search",search);*/
-        return (HashMap<String, Object>) payload;
+        return  payload;
     }
 
     public static Map<String, Object> level1() {
@@ -40,7 +84,8 @@ public class Adv_payload {
         payload.put("managers",managers);
         payload.put("advisors",advisors);
         payload.put("duration",1);
-        payload.put("type","scheme_name");
+        payload.put("durationUnit","year");         //[ month, year ]
+        payload.put("type","category");
         //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
 
         List<Map<String, Object>> level1 = new ArrayList<>();      // Level 1
@@ -55,10 +100,10 @@ public class Adv_payload {
         //scheme_name ,customer_count,customer_percentage,aum , aum_percentage
         payload.put("order","asc");
 
-        Map<String,Object> search= new LinkedHashMap<>();
+    /*    Map<String,Object> search= new LinkedHashMap<>();
         search.put("type","scheme_name");                          //[ name, mobile, pan, email, scheme_name, amc, category ]
         search.put("query","Aditya Birla SL Balanced Advantage Fund");
-        payload.put("search",search);
+        payload.put("search",search);*/
 
         return payload;
     }
@@ -104,24 +149,24 @@ public class Adv_payload {
     public static Map<String, Object> SnapshotPayload() {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("page", 1);
-        payload.put("size", 100);
-        payload.put("sortBy", "");
-        payload.put("sortType", "asc");             // [asc, desc]
+        payload.put("size", 20);
+        payload.put("sortBy", "inflow");
+        payload.put("sortType", "asc");                      // [asc, desc]
 
-        List<String> segment = Arrays.asList("silver");  //"silver", "gold", "platinum", "digital", "n/a"
-        List<String> headid = Arrays.asList("2152531");
-        List<String> managerid = Collections.emptyList();
-        List<String> advisorid = Collections.emptyList();
+        List<String> segment = Arrays.asList("silver");     //"silver", "gold", "platinum", "digital", "n/a"
+        List<String> headid = Arrays.asList("187458");
+        List<String> managerid = Arrays.asList();
+        List<String> advisorid = Arrays.asList();
 
-        Map<String, Object> search = new HashMap<>();
+       /* Map<String, Object> search = new HashMap<>();
         search.put("type", "name");
-        search.put("query", "string");
+        search.put("query", "string");*/
 
         payload.put("segments", segment);
         payload.put("heads", headid);
         payload.put("managers", managerid);
         payload.put("advisors", advisorid);
-        payload.put("search", search);
+    //    payload.put("search", search);
 
         return payload;
     }

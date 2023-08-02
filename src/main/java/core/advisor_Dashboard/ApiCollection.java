@@ -11,11 +11,11 @@ import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
-public class Adv_DashboardCollection extends AD_AccessPropertyFile{
+public class ApiCollection extends AD_AccessPropertyFile{
     private final RequestSpecification req;
     private final ResponseSpecification respec;
 
-    public Adv_DashboardCollection() {
+    public ApiCollection() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getADBasePath())
                 .addHeader("x-api-version", "2.0")
@@ -31,8 +31,8 @@ public class Adv_DashboardCollection extends AD_AccessPropertyFile{
                 .build();
     }
     @Test
-    public void Form() {
-        RequestSpecification res = given().spec(req).log().all();
+    public void Filter_Form() {
+        RequestSpecification res = given().spec(req);
         res.when().get("/tools/advisory-dashboard/filters/form")
                 .then().log().all().spec(respec);
     }
@@ -45,36 +45,12 @@ public class Adv_DashboardCollection extends AD_AccessPropertyFile{
     @Test
     public void All_Clients() {
         RequestSpecification res = given().spec(req)
-                .body("""
-                        {
-                          "page": 1,
-                          "size": 20,
-                          "segments": [
-                            "platinum",
-                            "gold",
-                            "silver",
-                            "digital"
-                          ],
-                          "status": [
-                            "not_started",
-                            "in_progress",
-                            "completed",
-                            "overdue",
-                            "not_reviewed"
-                          ],
-                          "heads": [
-                            "2152531"
-                          ],
-                          "managers": [],
-                          "advisors": [],
-                          "sortBy": "user_name",
-                          "sortType": "asc"
-                        }""");
+                .body(Adv_payload.Allclients());
         res.when().post("/tools/portfolio-review/clients")
                 .then().log().all().spec(respec);
     }
     @Test
-    public void Communication() {
+    public void Communication_Content() {
         RequestSpecification res = given().spec(req)
                 .queryParam("reviewId",20879);
         res.when().get("/core/portfolio-review/communications/content")
@@ -101,19 +77,14 @@ public class Adv_DashboardCollection extends AD_AccessPropertyFile{
         res.when().get("/core/portfolio-review/mail-content")
                 .then().log().all().spec(respec);
     }
-    @Test
-    public void Advisory_dashboard() {
-        RequestSpecification res = given().spec(req);
-        res.when().get("/tools/advisory-dashboard/filters/form")
-                .then().log().all().spec(respec);
-    }
+
     @Test
     public void Review_Clients() {
         RequestSpecification res = given().spec(req)
                 .body("""
                         {
-                          "page": 0,
-                          "size": 0,
+                          "page": 1,
+                          "size": 10,
                           "due": "month",
                           "status": [
                             "in_progress"
@@ -202,37 +173,21 @@ public class Adv_DashboardCollection extends AD_AccessPropertyFile{
 //Quality
     @Test
     public void Quality_Review() {
-        RequestSpecification res = given().spec(req).log().all()
-                .body("{\n" +
-                        "  \"reviewId\": \"23015\",\n" +
-                        "  \"critical\": \"yes\",\n" +
-                        "  \"date\": \"2023-06-26T12:18:34.268Z\",\n" +
-                        "  \"parameters\": [\n" +
-                        "    {\n" +
-                        "      \"id\": \"1\",\n" +
-                        "      \"description\": \"Testing\",\n" +
-                        //      "      \"comment\": \"string\",\n" +
-                        "      \"value\": \"yes\",\n" +
-                        "      \"tags\": [\n" +
-                        "        \"Tags testing \"\n" +
-                        "      ]\n" +
-                        "    }\n" +
-                        "  ],\n" +
-                        "  \"comments\": \"abcd\"\n" +
-                        "}");
+        RequestSpecification res = given().spec(req)
+                .body(Adv_payload.quality_review());
         res.when().post("/tools/portfolio-review/quality")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Quality_History() {
-        RequestSpecification res = given().spec(req).log().all()
+        RequestSpecification res = given().spec(req)
                 .queryParam("reviewId",24701);
         res.when().get("/tools/portfolio-review/quality/history")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Follow_Up_History_Post() {
-        RequestSpecification res = given().spec(req).log().all()
+        RequestSpecification res = given().spec(req)
                 .body("""
                         {
                           "date": "2023-06-29T23:59:59.000Z",
@@ -245,35 +200,35 @@ public class Adv_DashboardCollection extends AD_AccessPropertyFile{
     }
     @Test
     public void Follow_Up_History() {
-        RequestSpecification res = given().spec(req).log().all()
+        RequestSpecification res = given().spec(req)
                 .queryParam("reviewId",25244);
         res.when().get("/tools/portfolio-review/follow-up/history")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Review_History() {
-        RequestSpecification res = given().spec(req).log().all()
+        RequestSpecification res = given().spec(req)
                 .queryParam("reviewId",24729);
         res.when().get("/tools/portfolio-review/history")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Exposure_level0() {
-        RequestSpecification res = given().spec(req).log().all()
+        RequestSpecification res = given().spec(req)
                 .body(Adv_payload.level0());
         res.when().post("/tools/portfolio-exposure/l0")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Exposure_level1() {
-        RequestSpecification res = given().spec(req).log().all()
+        RequestSpecification res = given().spec(req)
                 .body(Adv_payload.level1());
         res.when().post("/tools/portfolio-exposure/l1")
                 .then().log().all().spec(respec);
     }
     @Test
     public void Exposure_level2() {
-        RequestSpecification res = given().spec(req).log().all()
+        RequestSpecification res = given().spec(req)
                 .body(Adv_payload.level2());
         res.when().post("/tools/portfolio-exposure/l2")
                 .then().log().all().spec(respec);
@@ -282,7 +237,7 @@ public class Adv_DashboardCollection extends AD_AccessPropertyFile{
  //Monthly Trends
  @Test
  public void MonthlyTrends_Investor() {
-     RequestSpecification res = given().spec(req).log().all()
+     RequestSpecification res = given().spec(req)
                      .queryParam("user_id","");
      res.when().get("/advisory-dashboard/monthly-trends/investor")
              .then().log().all().spec(respec);
@@ -295,16 +250,23 @@ public class Adv_DashboardCollection extends AD_AccessPropertyFile{
         List<String> type = Arrays.asList("");
         payload.put("types",type);
 
-    RequestSpecification res = given().spec(req).log().all()
+    RequestSpecification res = given().spec(req)
                .body(payload);
-    res.when().post("/advisory-dashboard/monthly-trends/transactions")
+    res.when().post("/tools/advisory-dashboard/monthly-trends/transactions")
               .then().log().all().spec(respec);
     }
     @Test
     public void MonthlyTrends_Snapshot() {
-        RequestSpecification res = given().spec(req).log().all()
-                .body(Adv_payload.SnapshotPayload());
-        res.when().post("/advisory-dashboard/investors/snapshot")
+        RequestSpecification res = given().spec(req)
+             .body(Adv_payload.SnapshotPayload());
+        res.when().post("/tools/advisory-dashboard/investors/snapshot")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void MonthlyTrends_Get() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("user_id","1642129");
+        res.when().get("/tools/advisory-dashboard/monthly-trends/investor")
                 .then().log().all().spec(respec);
     }
 }

@@ -14,8 +14,10 @@ import static io.restassured.RestAssured.given;
 public class AccessPropertyFile {
 
     public static double  switch_unitpro,switch_amtpro,inv_amount;
-    public static String holdingid_pro, folio_pro, units_pro, amount_pro, targetscheme_pro,switch_target,schemeSearch,expectedscheme;
+    public static String holdingid_pro, folio_pro, units_pro, amount_pro,
+            targetscheme_pro,switch_target, amcschemeSearch,expectedscheme,alertStartdate,alertEnddate;
     public static String dbusr, dbpwd, dburl, databasename, encrypt, dbdrivername;
+    public static int sipDate;
     static Properties properties = new Properties();
 
     @Test
@@ -42,8 +44,14 @@ public class AccessPropertyFile {
         switch_amtpro = Double.parseDouble(properties.getProperty("switchamount"));
         switch_target = properties.getProperty("targetscheme");
 
+
+
+   //SIP Details and Invest more
+        sipDate= Integer.parseInt(properties.getProperty("sipdate"));
+        alertStartdate=properties.getProperty("startdate");
+        alertEnddate=properties.getProperty("enddate");
         inv_amount= Double.parseDouble(properties.getProperty("investamount"));
-        schemeSearch=properties.getProperty("SchemeSearch");
+        amcschemeSearch =properties.getProperty("SchemeSearch");
         expectedscheme=properties.getProperty("ExpectedScheme");
 
  //DB Details
