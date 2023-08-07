@@ -1,15 +1,18 @@
 package core.advisor_Dashboard;
-
+import core.advisor_Dashboard.model.clientSnapshot;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 import static io.restassured.RestAssured.given;
+import static java.lang.Double.parseDouble;
 
 public class ApiCollection extends AD_AccessPropertyFile{
     private final RequestSpecification req;
@@ -45,8 +48,15 @@ public class ApiCollection extends AD_AccessPropertyFile{
     @Test
     public void All_Clients() {
         RequestSpecification res = given().spec(req)
-                .body(Adv_payload.Allclients());
+                .body(Adv_payload.AllClients());
         res.when().post("/tools/portfolio-review/clients")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void All_Reviews() {
+        RequestSpecification res = given().spec(req)
+                .body(Adv_payload.AllReviews());
+        res.when().post("/tools/portfolio-review/completed")
                 .then().log().all().spec(respec);
     }
     @Test
@@ -249,7 +259,6 @@ public class ApiCollection extends AD_AccessPropertyFile{
         payload.put("month","");
         List<String> type = Arrays.asList("");
         payload.put("types",type);
-
     RequestSpecification res = given().spec(req)
                .body(payload);
     res.when().post("/tools/advisory-dashboard/monthly-trends/transactions")
@@ -257,16 +266,91 @@ public class ApiCollection extends AD_AccessPropertyFile{
     }
     @Test
     public void MonthlyTrends_Snapshot() {
+        SoftAssert softAssert = new SoftAssert();
+
+        double totalNetflow = 0;
+        double totalInflow = 0;
+        double totalOutflow = 0;
+        double totalBaseAum = 0;
+        double totalMtm = 0;
+        double totalCurrentAum = 0;
+        double totalNetgrowthper=0;
+        double totalAumgrowthper=0;
+        double totalMtmper=0;
+
         RequestSpecification res = given().spec(req)
              .body(Adv_payload.SnapshotPayload());
-        res.when().post("/tools/advisory-dashboard/investors/snapshot")
-                .then().log().all().spec(respec);
+        clientSnapshot.Root response =res
+                .when()
+                .post("/tools/advisory-dashboard/investors/snapshot")
+                .then()
+                .log()
+                .all()
+                .spec(respec)
+                .extract()
+                .response()
+                .as(clientSnapshot.Root.class);
+      int count=response.getData().getRows().size();
+            for (clientSnapshot.Row rowData : response.getData().getRows()) {
+                double netflow = parseDouble(rowData.getNetflow());
+                double inflow = parseDouble(rowData.getInflow());
+                double outflow = parseDouble(rowData.getOutflow());
+                double baseAum = parseDouble(rowData.getBaseAum());
+                double mtm = parseDouble(rowData.getMtm());
+                double currentAum = parseDouble(rowData.getCurrentAum());
+                double netgrowthPercentage = parseDouble(rowData.getNetflowGrowthPercentage());
+                double aumgrowthPercentage = parseDouble(rowData.getAumGrowthPercentage());
+                double mtmPercentage = parseDouble(rowData.getMtmPercentage());
+
+            totalInflow += inflow;
+            totalOutflow += outflow;
+            totalBaseAum += baseAum;
+            totalNetflow += netflow;
+            totalMtm += mtm;
+            totalCurrentAum += currentAum;
+            totalNetgrowthper +=netgrowthPercentage/count;
+            totalAumgrowthper +=aumgrowthPercentage/count;
+            totalMtmper +=mtmPercentage/count;
+        }
+        System.out.println("OutFlow: " + totalOutflow);
+        System.out.println("NETFLOW: " + totalNetflow);
+        System.out.println("BASEAUM: " + totalBaseAum);
+        System.out.println("netflowGrowthPercentage: " + totalNetgrowthper);
+        System.out.println("MTM: " + totalMtm);
+        System.out.println("TOTAL CUR_AUM: " + totalCurrentAum);
+        System.out.println("mtmPercentage: " + totalMtmper);
+        System.out.println("aumGrowthPercentage: " + totalAumgrowthper);
+        System.out.println("INFLOW: " + totalInflow);
+
+        for (clientSnapshot.Summary summaryData : response.getData().getSummary()) {
+            DecimalFormat decimalFormat = new DecimalFormat("0");
+
+            softAssert.assertEquals(decimalFormat.format(totalOutflow),summaryData.getOutflow(),"OutFlow : ");
+
+                softAssert.assertEquals(totalNetflow,summaryData.getNetflow(),"TotalNetflow :");
+                softAssert.assertEquals(totalBaseAum,summaryData.getBaseAum(), "TotalBaseAum :");
+
+                softAssert.assertEquals(totalNetgrowthper,summaryData.getNetflowGrowthPercentage(),"NetflowGrowthPercentage :");
+                softAssert.assertEquals(totalMtm,summaryData.getMtm(),"MTM :");
+                softAssert.assertEquals(totalCurrentAum,summaryData.getCurrentAum(),"CurrentAum :");
+                softAssert.assertEquals(totalMtmper,summaryData.getMtmPercentage(),"MtmPercentage : ");
+                softAssert.assertEquals(totalAumgrowthper,summaryData.getAumGrowthPercentage(),"AumGrowthPercentage :");
+                softAssert.assertEquals(totalInflow,summaryData.getInflow(),"Inflow :");
+        }
+        softAssert.assertAll();      // Perform all assertions and collect all failures
     }
     @Test
     public void MonthlyTrends_Get() {
         RequestSpecification res = given().spec(req)
-                .queryParam("user_id","1642129");
+                .queryParam("user_id","474062");
         res.when().get("/tools/advisory-dashboard/monthly-trends/investor")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void web_hook_mail() {
+        RequestSpecification res = given().spec(req)
+                .body("{}");
+        res.when().post("/tools/advisory-dashboard/web-hook/mail")
                 .then().log().all().spec(respec);
     }
 }

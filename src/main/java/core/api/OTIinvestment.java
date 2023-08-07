@@ -22,13 +22,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-
 import static io.restassured.RestAssured.given;
-
+import static core.api.CommonVariable.*;
 public class OTIinvestment extends AccessPropertyFile {
-    RequestSpecification req ;    ResponseSpecification respec;
-    String Holdingid, InvestorId, otp_refid, dbotp, DB_refid, goalID,CartId,GroupId;
-    String schemeCode, schemeName, schemeOption;
+
     public OTIinvestment() throws IOException {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
@@ -53,8 +50,8 @@ public class OTIinvestment extends AccessPropertyFile {
 
         for (HoldingProfile.Datum data : holdResponse.getData()) {
             if (data.getHoldingProfileId().equalsIgnoreCase(holdingid_pro)) {
-                Holdingid = data.getHoldingProfileId();
-                System.out.println("Holding ID is matched with the property file: " + Holdingid);
+                holdingId = data.getHoldingProfileId();
+                System.out.println("Holding ID is matched with the property file: " + holdingId);
                 matchFound = true;
                 break;
             }
@@ -67,7 +64,7 @@ public class OTIinvestment extends AccessPropertyFile {
     @Test(priority = 29)
     public void Dashboard_portfolio() {
         Map<String, Object> payload = new HashMap<>();
-        payload.put("holdingProfileId", "183318");
+        payload.put("holdingProfileId", holdingId);
         payload.put("showZeroHoldings", true);
         Map<String, Object> sort = new HashMap<>();
         sort.put("by", "investment_amount");
@@ -78,8 +75,8 @@ public class OTIinvestment extends AccessPropertyFile {
                 .body(payload);
         PortfolioDashboard.Root response = res.when().post("/core/investor/dashboard/portfolio")
                 .then().log().all().spec(respec).extract().response().as(PortfolioDashboard.Root.class);
-        goalID = response.getData().get(0).getId();
-        System.out.println("Goal ID :" + goalID);
+        goalId = response.getData().get(0).getId();
+        System.out.println("Goal ID :" + goalId);
     }
 
     @Test(priority = 30)
@@ -117,7 +114,7 @@ public class OTIinvestment extends AccessPropertyFile {
             appInfo.put("os", "Web-FI");
             appInfo.put("fcmId", "");
         payload.put("appInfo", appInfo);
-        payload.put("holdingProfileId", Holdingid);
+        payload.put("holdingProfileId", holdingId);
 
             Map<String, Object> oti = new LinkedHashMap<>();
             oti.put("totalAmount", inv_amount);
@@ -132,7 +129,7 @@ public class OTIinvestment extends AccessPropertyFile {
             schemeData.put("bankId", "1");
             schemeData.put("payment", true);
             schemeData.put("option", schemeOption);
-            schemeData.put("goalId", goalID);
+            schemeData.put("goalId", goalId);
             schemeData.put("schemeCode", schemeCode);
             schemeData.put("schemeName", schemeName);
             schemeData.put("amount", inv_amount);
@@ -175,8 +172,8 @@ public class OTIinvestment extends AccessPropertyFile {
                 .body(otppayload);
         CommonOTP.Root response = otpres.when().post("/core/investor/common/otp")
                 .then().log().all().spec(respec).extract().response().as(CommonOTP.Root.class);
-        otp_refid = response.getData().getOtpReferenceId();
-        System.out.println(otp_refid);
+        otpRefID = response.getData().getOtpReferenceId();
+        System.out.println(otpRefID);
     }
     @Test(priority = 34)
     public void DB_Connection() throws SQLException {
@@ -189,12 +186,12 @@ public class OTIinvestment extends AccessPropertyFile {
             con = ds.getConnection();
             Assert.assertNotNull(con, "Database connection failed!"); // Throw an error if the connection is null (failed)
             s1 = con.createStatement();
-            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
+            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otpRefID + "'");
             rs.next();
-            dbotp = rs.getString("otp");
-            DB_refid = rs.getString("referenceid");
-            System.out.println("OTP :" + dbotp);
-            System.out.println("OTPReferenceID :" + DB_refid);
+            dbOtp = rs.getString("otp");
+            dbRefId = rs.getString("referenceid");
+            System.out.println("OTP :" + dbOtp);
+            System.out.println("OTPReferenceID :" + dbRefId);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -210,9 +207,9 @@ public class OTIinvestment extends AccessPropertyFile {
         Map<String, Object> payload2 = new HashMap<>();
         payload2.put("email", "");
         payload2.put("sms", "");
-        payload2.put("email_or_sms", dbotp);
+        payload2.put("email_or_sms", dbOtp);
         payload1.put("otp", payload2);
-        payload1.put("otpReferenceId", DB_refid);
+        payload1.put("otpReferenceId", dbRefId);
 
         RequestSpecification res = given().log().all().spec(req)
                 .body(payload1);

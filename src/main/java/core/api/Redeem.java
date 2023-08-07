@@ -1,5 +1,7 @@
 package core.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import core.basepath.AccessPropertyFile;
 import core.dbconnection.DatabaseConnection;
 import core.model.otp.CommonOTP;
@@ -14,18 +16,18 @@ import core.model.InvestedScheme;
 import core.model.QuestionnaireResponse;
 import core.model.RecentTransaction;
 import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.annotations.Test;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import static core.api.CommonVariable.*;
 
 import static io.restassured.RestAssured.given;
 
 public class Redeem extends AccessPropertyFile {
-    private final RequestSpecification req;
-    private final ResponseSpecification respec;
 
     public Redeem() {
         req = new RequestSpecBuilder()
@@ -42,9 +44,6 @@ public class Redeem extends AccessPropertyFile {
                 .expectContentType(ContentType.JSON)
                 .build();
     }
-    String Holdingid, response,folio, otp_refid, dbotp, DB_refid, qref_id, firstReferenceNo;
-    String goalid, goalname, schemcode, schemename, unintsformat, dividendoption, option, bankid, minunitformat, minuamountformat;
-    double Total_units, minunit, minamount,available_units;
 
     @Test(priority = 2)
     public void Holding_Profile() {
@@ -55,8 +54,8 @@ public class Redeem extends AccessPropertyFile {
 
         for (HoldingProfile.Datum data : holdResponse.getData()) {
             if (data.getHoldingProfileId().equalsIgnoreCase(holdingid_pro)) {
-                Holdingid = data.getHoldingProfileId();
-                System.out.println("Holding ID is matched with the property file: " + Holdingid);
+                holdingId = data.getHoldingProfileId();
+                System.out.println("Holding ID is matched with the property file: " + holdingId);
                 matchFound = true;
                 break;
             }
@@ -64,11 +63,21 @@ public class Redeem extends AccessPropertyFile {
         if (!matchFound) {
             Assert.fail("Holding ID is not matched with Investor. Stopping the test.");
         }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String holdResponseJson;
+        try {
+            holdResponseJson = objectMapper.writeValueAsString(holdResponse);
+        } catch (Exception e) {
+            holdResponseJson = "Failed to convert to JSON: " + e.getMessage();
+        }
+        Reporter.log(holdResponseJson);
     }
     @Test(priority = 3)
     public void InvestedSchemeAPI() {
-            RequestSpecification res = given().log().all().spec(req)
-                    .queryParam("holdingProfileId", Holdingid);
+            RequestSpecification res = given().spec(req)
+                    .queryParam("holdingProfileId", holdingId);
             InvestedScheme.Root response = res.when().get("/core/investor/invested-schemes")
                     .then().log().all().spec(respec).extract().response().as(InvestedScheme.Root.class);
 
@@ -76,33 +85,54 @@ public class Redeem extends AccessPropertyFile {
                 if (data.getFolio().equalsIgnoreCase(folio_pro)) {
                     System.out.println(data.getSchemeName());
                     folio = data.getFolio();
-                    goalid = data.getGoalId();
-                    goalname = data.getGoalName();
-                    schemcode = data.getSchemeCode();
-                    schemename = data.getSchemeName();
-                    Total_units = data.getUnits();
+                    goalId = data.getGoalId();
+                    goalName = data.getGoalName();
+                    schemeCode = data.getSchemeCode();
+                    schemeName = data.getSchemeName();
+                    totalUnits = data.getUnits();
                     unintsformat = data.getUnitsFormatted();
                     dividendoption = data.getDividendOption();
                     option = data.getOption();
-                    bankid = data.getBankId();
-                    minunit = data.getRedemption().getMinimumUnits();
+                    bankId = data.getBankId();
+                    minUnit = data.getRedemption().getMinimumUnits();
                     minunitformat = data.getRedemption().getUnitsFormatted();
-                    minamount = data.getRedemption().getMinimumAmount();
+                    minAmt = data.getRedemption().getMinimumAmount();
                     minuamountformat = data.getRedemption().getMinimumAmountFormatted();
-                    available_units = data.getRedemption().getUnits();
+                    availableUnits = data.getRedemption().getUnits();
+                    System.out.println(folio);
                 }
             }
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String holdResponseJson;
+        try {
+            holdResponseJson = objectMapper.writeValueAsString(response);
+        } catch (Exception e) {
+            holdResponseJson = "Failed to convert to JSON: " + e.getMessage();
+        }
+        Reporter.log(holdResponseJson);
         }
 
     @Test(priority = 4)
     public void QuestionariAPI() {
-        RequestSpecification res = given().log().all().spec(req)
+        RequestSpecification res = given().spec(req)
                 .body(Payload.questionnaire());
         QuestionnaireResponse.Root quesresponse = res.when().post("/core/questionnaire")
-                .then().spec(respec).extract().response().as(QuestionnaireResponse.Root.class);
-        qref_id = quesresponse.getData().getReferenceId();
-        System.out.println(qref_id);
+                .then().log().all().spec(respec).extract().response().as(QuestionnaireResponse.Root.class);
+        qrefId = quesresponse.getData().getReferenceId();
+        System.out.println(qrefId);
+        // To print the log in html file
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String holdResponseJson;
+        try {
+            holdResponseJson = objectMapper.writeValueAsString(quesresponse);
+        } catch (Exception e) {
+            holdResponseJson = "Failed to convert to JSON: " + e.getMessage();
+        }
+        Reporter.log(holdResponseJson);
     }
+
     @Test(priority = 5)
     public void Common_OTP() {
         Map<String, Object> otppayload = new HashMap<>();
@@ -111,11 +141,22 @@ public class Redeem extends AccessPropertyFile {
         otppayload.put("referenceId",folio);
         otppayload.put("workflow", "redemption");
 
-        RequestSpecification commonotp = given().log().all().spec(req)
+        RequestSpecification commonotp = given().spec(req)
                 .body(otppayload);
         CommonOTP.Root responce = commonotp.when().post("/core/investor/common/otp")
                 .then().log().all().spec(respec).extract().response().as(CommonOTP.Root.class);
-        otp_refid = responce.getData().getOtpReferenceId();
+        otpRefID = responce.getData().getOtpReferenceId();
+
+        // To print the log in html file
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String holdResponseJson;
+        try {
+            holdResponseJson = objectMapper.writeValueAsString(responce);
+        } catch (Exception e) {
+            holdResponseJson = "Failed to convert to JSON: " + e.getMessage();
+        }
+        Reporter.log(holdResponseJson);
     }
     @Test(priority = 6)
     public void DB_Connection() throws SQLException {
@@ -128,12 +169,12 @@ public class Redeem extends AccessPropertyFile {
             con = ds.getConnection();
             Assert.assertNotNull(con, "Database connection failed!"); // Throw an error if the connection is null (failed)
             s1 = con.createStatement();
-            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
+            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otpRefID + "'");
             rs.next();
-            dbotp = rs.getString("otp");
-            DB_refid = rs.getString("referenceid");
-            System.out.println("OTP :" + dbotp);
-            System.out.println("OTPReferenceID :" + DB_refid);
+            dbOtp = rs.getString("otp");
+            dbRefId = rs.getString("referenceid");
+            System.out.println("OTP :" + dbOtp);
+            System.out.println("OTPReferenceID :" + dbRefId);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -149,33 +190,35 @@ public class Redeem extends AccessPropertyFile {
         VerifyOtpRequest.Otp otp = new VerifyOtpRequest.Otp();
         otp.setSms("");
         otp.setEmail("");
-        otp.setEmail_or_sms(dbotp);
+        otp.setEmail_or_sms(dbOtp);
         payload.setOtp(otp);
-        payload.setOtpReferenceId(DB_refid);
+        payload.setOtpReferenceId(dbRefId);
 
-        RequestSpecification res1 = given().log().all().spec(req)
+        RequestSpecification res1 = given().spec(req)
                 .body(payload);
-        res1.when().post("/core/investor/common/otp/verify")
-                .then().log().all().spec(respec);
+        logResponse =res1.when().post("/core/investor/common/otp/verify")
+                .then().log().all().spec(respec).extract().asString();
+        // To print the log in html file
+        Reporter.log(logResponse);
     }
     @Test(priority = 8)
     public void Redeem_API() {
         Map<String, Object> redeemParams = new HashMap<>();
-        redeemParams.put("holdingProfileId", Holdingid);
+        redeemParams.put("holdingProfileId", holdingId);
         redeemParams.put("folio", folio);
-        redeemParams.put("goalId", goalid);
-        redeemParams.put("goalName", goalname);
-        redeemParams.put("schemeCode", schemcode);
-        redeemParams.put("schemeName", schemename);
+        redeemParams.put("goalId", goalId);
+        redeemParams.put("goalName", goalName);
+        redeemParams.put("schemeCode", schemeCode);
+        redeemParams.put("schemeName", schemeName);
         redeemParams.put("dividendOption", dividendoption);
         redeemParams.put("option", option);
-        redeemParams.put("bankId", bankid);
+        redeemParams.put("bankId", bankId);
         redeemParams.put("redemptionType", "regular");
-        redeemParams.put("otpReferenceId", DB_refid);
-        redeemParams.put("questionnaireReferenceId", qref_id);
+        redeemParams.put("otpReferenceId", dbRefId);
+        redeemParams.put("questionnaireReferenceId", qrefId);
 
         if (units_pro.equalsIgnoreCase("0") && amount_pro.equalsIgnoreCase("0")) {
-            redeemParams.put("units", available_units);
+            redeemParams.put("units", availableUnits);
             redeemParams.put("unitsFormatted", unintsformat);
             redeemParams.put("redemptionMode", "full");                         //full / partial
         } else if (units_pro.equalsIgnoreCase("0")) {
@@ -188,13 +231,14 @@ public class Redeem extends AccessPropertyFile {
             redeemParams.put("redemptionMode", "partial");
         }
 
-        RequestSpecification redeem = given().log().all().spec(req)
+        RequestSpecification redeem = given().spec(req)
                 .body(redeemParams);
-        redeem.when().post("/core/investor/redeem").then().log().all().spec(respec);
+       logResponse = redeem.when().post("/core/investor/redeem").then().log().all().spec(respec).extract().response().asString();
+        Reporter.log(logResponse);
     }
     @Test(priority = 9)
     public void Recent_Transaction() {
-        RequestSpecification res = given().log().all().spec(req)
+        RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", "183318")
                 .queryParam("page", "1")
                 .queryParam("size", "10");
@@ -223,6 +267,18 @@ public class Redeem extends AccessPropertyFile {
         if (firstReferenceNo != null) {
             System.out.println("First Cancelled ReferenceNo: " + firstReferenceNo);
         }
+
+        // To print the log in html file
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String holdResponseJson;
+        try {
+            holdResponseJson = objectMapper.writeValueAsString(response);
+        } catch (Exception e) {
+            holdResponseJson = "Failed to convert to JSON: " + e.getMessage();
+        }
+        Reporter.log(holdResponseJson);
+
     }
     @Test(priority = 10)
     public void Cancel_Redeem() {
@@ -230,8 +286,9 @@ public class Redeem extends AccessPropertyFile {
         del.put("action", "cancel");
         del.put("referenceNo", firstReferenceNo);
 
-        RequestSpecification res = given().log().all().spec(req).body(del);
-        res.when().post("/core/investor/recent-transactions")
-                .then().log().all().spec(respec);
+        RequestSpecification res = given().spec(req).body(del);
+      logResponse =  res.when().post("/core/investor/recent-transactions")
+                .then().log().all().spec(respec).extract().response().asString();
+        Reporter.log(logResponse);
     }
 }

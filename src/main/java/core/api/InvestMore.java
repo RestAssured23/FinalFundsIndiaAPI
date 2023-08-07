@@ -9,7 +9,6 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import core.accesspropertyfile.Login;
 import core.dbconnection.DatabaseConnection;
 import core.model.HoldingProfile;
 import core.model.InvestedScheme;
@@ -22,14 +21,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import static core.api.CommonVariable.*;
 
 import static io.restassured.RestAssured.given;
 
 public class InvestMore extends AccessPropertyFile {
-    private final RequestSpecification req;
-    private final ResponseSpecification respec;
-    String Holdingid, InvestorId, folio, dbotp, DB_refid,bankid,goalid,option,CartId,GroupId;
-    String schemeName, schemeCode,otp_refid;
+
     public InvestMore() throws IOException {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
@@ -54,8 +51,8 @@ public class InvestMore extends AccessPropertyFile {
 
         for (HoldingProfile.Datum data : holdResponse.getData()) {
             if (data.getHoldingProfileId().equalsIgnoreCase(holdingid_pro)) {
-                Holdingid = data.getHoldingProfileId();
-                System.out.println("Holding ID is matched with the property file: " + Holdingid);
+                holdingId = data.getHoldingProfileId();
+                System.out.println("Holding ID is matched with the property file: " + holdingId);
                 matchFound = true;
                 break;
             }
@@ -67,7 +64,7 @@ public class InvestMore extends AccessPropertyFile {
     @Test(priority = 21)
     public void getInvestedSchemeInfo() {
         RequestSpecification res = given().log().all().spec(req)
-                .queryParam("holdingProfileId", Holdingid);
+                .queryParam("holdingProfileId", holdingId);
         InvestedScheme.Root response = res.when().get("/core/investor/invested-schemes")
                 .then().log().all().spec(respec).extract().response().as(InvestedScheme.Root.class);
 
@@ -76,14 +73,14 @@ public class InvestMore extends AccessPropertyFile {
                  schemeName = entry.getSchemeName();
                  schemeCode = entry.getSchemeCode();
                  folio = entry.getFolio();
-                 bankid = entry.getBankId();
-                 goalid = entry.getGoalId();
+                 bankId = entry.getBankId();
+                 goalId = entry.getGoalId();
                  option = entry.getOption();
 
                 System.out.println("Scheme_Name: " + schemeName + "\n"
                         + "Scheme_Code: " + schemeCode + "\n"
                         + "Folio: " + folio + "\n"
-                        + "Goal_ID: " + goalid + "\n"
+                        + "Goal_ID: " + goalId + "\n"
                         + "Option: " + option);
             }
         }
@@ -102,7 +99,7 @@ public class InvestMore extends AccessPropertyFile {
         payloadGrowth.put("appInfo", appInfo);
 
         // Add Holdingid to payloadGrowth
-        payloadGrowth.put("holdingProfileId", Holdingid);
+        payloadGrowth.put("holdingProfileId", holdingId);
 
         // Create oti map
         Map<String, Object> oti = new LinkedHashMap<>();
@@ -114,10 +111,10 @@ public class InvestMore extends AccessPropertyFile {
         Map<String, Object> schemeData = new HashMap<>();
         schemeData.put("dividendOption", "Payout");
         schemeData.put("folio", folio);
-        schemeData.put("bankId", bankid);
+        schemeData.put("bankId", bankId);
         schemeData.put("payment", true);
         schemeData.put("option", option);
-        schemeData.put("goalId", goalid);
+        schemeData.put("goalId", goalId);
         schemeData.put("schemeCode", schemeCode);
         schemeData.put("schemeName", schemeName);
         schemeData.put("amount", inv_amount);
@@ -163,8 +160,8 @@ public class InvestMore extends AccessPropertyFile {
                 .body(otppayload);
         CommonOTP.Root response = otpres.when().post("/core/investor/common/otp")
                 .then().log().all().spec(respec).extract().response().as(CommonOTP.Root.class);
-        otp_refid = response.getData().getOtpReferenceId();
-        System.out.println(otp_refid);
+        otpRefID = response.getData().getOtpReferenceId();
+        System.out.println(otpRefID);
     }
     @Test(priority = 25)
     public void DB_Connection() throws SQLException {
@@ -177,12 +174,12 @@ public class InvestMore extends AccessPropertyFile {
             con = ds.getConnection();
             Assert.assertNotNull(con, "Database connection failed!"); // Throw an error if the connection is null (failed)
             s1 = con.createStatement();
-            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
+            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otpRefID + "'");
             rs.next();
-            dbotp = rs.getString("otp");
-            DB_refid = rs.getString("referenceid");
-            System.out.println("OTP :" + dbotp);
-            System.out.println("OTPReferenceID :" + DB_refid);
+            dbOtp = rs.getString("otp");
+            dbRefId = rs.getString("referenceid");
+            System.out.println("OTP :" + dbOtp);
+            System.out.println("OTPReferenceID :" + dbRefId);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -198,9 +195,9 @@ public class InvestMore extends AccessPropertyFile {
         Map<String, Object> payload2 = new HashMap<>();
         payload2.put("email", "");
         payload2.put("sms", "");
-        payload2.put("email_or_sms", dbotp);
+        payload2.put("email_or_sms", dbOtp);
         payload1.put("otp", payload2);
-        payload1.put("otpReferenceId", DB_refid);
+        payload1.put("otpReferenceId", dbRefId);
         RequestSpecification res = given().log().all().spec(req)
                 .body(payload1);
         res.when().post("/core/investor/common/otp/verify")

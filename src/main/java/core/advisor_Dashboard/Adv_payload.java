@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Adv_payload {
 
-    public static Map<String, Object> Allclients() {
+    public static Map<String, Object> AllClients() {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("page", 1);
         payload.put("size", 20);
@@ -24,6 +24,27 @@ public class Adv_payload {
         payload.put("sortType", "asc");                      // [asc, desc]
         return payload;
     }
+    public static Map<String, Object> AllReviews() {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("page", 1);
+        payload.put("size", 20);
+            List<String> segment = Arrays.asList("silver","platinum","gold","digital");
+                                                 //"silver", "gold", "platinum", "digital", "n/a"
+            List<String> status = Arrays.asList("all","draft","generated","completed");
+            List<String> headid = Arrays.asList("187458");
+            List<String> managerid = Arrays.asList();
+            List<String> advisorid = Arrays.asList();
+        payload.put("segments", segment);
+        payload.put("status", status);
+        payload.put("heads", headid);
+        payload.put("managers", managerid);
+        payload.put("advisors", advisorid);
+        payload.put("types", "all");            //[ all, recent, updated ]
+        payload.put("sortBy", "advisor_name");
+        payload.put("sortType", "asc");                      // [asc, desc]
+        return payload;
+    }
+
     public static Map<String, Object> quality_review() {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("reviewId", "23015");
@@ -50,25 +71,25 @@ public class Adv_payload {
         payload.put("size",500);
         payload.put("userRole","string");
             List<String> heads = Arrays.asList("187458");
-            List<String> managers = Arrays.asList();
+            List<String> managers = Arrays.asList("182424");
             List<String> advisors = Arrays.asList();
         payload.put("heads",heads);
         payload.put("managers",managers);
         payload.put("advisors",advisors);
-    //    payload.put("financialYear","2023-2022");
-        payload.put("duration",1);
-        payload.put("durationUnit","month");         //[ month, year ]
-        payload.put("type","fi_style");
+        payload.put("financialYear","2023-2024");
+    /*    payload.put("duration",1);
+        payload.put("durationUnit","month");         //[ month, year ]*/
+        payload.put("type","amc");
                     //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
         payload.put("aggregateBy","investment_amount");
                     //investor_count / investment_amount
         payload.put("sortBy","fi_style");
                          //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-        payload.put("order","asc");
-       /* Map<String,Object> search= new LinkedHashMap<>();
+        payload.put("order","desc");
+        Map<String,Object> search= new LinkedHashMap<>();
         search.put("type","amc");         //only applicable for amc, category, scheme_name
-        search.put("query","");
-        payload.put("search",search);*/
+        search.put("query","adi");
+        payload.put("search",search);
         return  payload;
     }
 
@@ -83,8 +104,7 @@ public class Adv_payload {
         payload.put("heads",heads);
         payload.put("managers",managers);
         payload.put("advisors",advisors);
-        payload.put("duration",1);
-        payload.put("durationUnit","year");         //[ month, year ]
+        payload.put("financialYear","2023-2024");
         payload.put("type","category");
         //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
 
@@ -123,8 +143,7 @@ public class Adv_payload {
         payload.put("heads",heads);
         payload.put("advisors",advisors);
 
-        payload.put("duration",1);
-        payload.put("durationUnit","month");         //[ month, year ]
+        payload.put("financialYear","2023-2024");
         payload.put("type","scheme_name");
         //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
 
@@ -139,34 +158,34 @@ public class Adv_payload {
         payload.put("sortBy","name");         // name and aum
         payload.put("order","asc");
 
-       /* Map<String,Object> search= new LinkedHashMap<>();
+        Map<String,Object> search= new LinkedHashMap<>();
         search.put("type","email");                          //[ name, mobile, pan, email, scheme_name, amc, category ]
-        search.put("query","sbharadhwaj@gmail.com");
-        payload.put("search",search);*/
+        search.put("query","ridhimasingh910@gmail.com");
+        payload.put("search",search);
         return payload;
     }
 
     public static Map<String, Object> SnapshotPayload() {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("page", 1);
-        payload.put("size", 20);
-        payload.put("sortBy", "inflow");
-        payload.put("sortType", "asc");                      // [asc, desc]
+        payload.put("size", 320);
+        payload.put("sortBy", "outflow");
+        payload.put("sortType", "desc");                      // [asc, desc]
 
-        List<String> segment = Arrays.asList("silver");     //"silver", "gold", "platinum", "digital", "n/a"
+        List<String> segment = Arrays.asList("silver", "gold", "platinum", "digital");     //"silver", "gold", "platinum", "digital"
         List<String> headid = Arrays.asList("187458");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
+        List<String> managerid = Arrays.asList("359296");
+        List<String> advisorid = Arrays.asList("1063336");
 
-       /* Map<String, Object> search = new HashMap<>();
+   /*     Map<String, Object> search = new HashMap<>();
         search.put("type", "name");
-        search.put("query", "string");*/
+        search.put("query", "bal");
+        payload.put("search", search);*/
 
         payload.put("segments", segment);
         payload.put("heads", headid);
         payload.put("managers", managerid);
         payload.put("advisors", advisorid);
-    //    payload.put("search", search);
 
         return payload;
     }

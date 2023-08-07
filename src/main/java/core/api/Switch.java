@@ -24,15 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static core.api.CommonVariable.*;
 
 public class Switch extends AccessPropertyFile {
-    private final RequestSpecification req;
-    private final ResponseSpecification respec;
-    private String response;
-    String Holdingid, folio, otp_refid, dbotp, DB_refid,  firstReferenceNo,Source_SchemeName;
-    String goalid, goalname, bankid;
-    double minamount, units, minunit, currentamount,Total_units;
-    String fromschemename, fromschemecode, fromoption,   toschemename, toschemcode, tooption,AMC_Name, AMC_Code;
+
     public Switch() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
@@ -57,8 +52,8 @@ public class Switch extends AccessPropertyFile {
 
         for (HoldingProfile.Datum data : holdResponse.getData()) {
             if (data.getHoldingProfileId().equalsIgnoreCase(holdingid_pro)) {
-                Holdingid = data.getHoldingProfileId();
-                System.out.println("Holding ID is matched with the property file: " + Holdingid);
+                holdingId = data.getHoldingProfileId();
+                System.out.println("Holding ID is matched with the property file: " + holdingId);
                 matchFound = true;
                 break;
             }
@@ -69,48 +64,48 @@ public class Switch extends AccessPropertyFile {
     }
     @Test(priority = 11)
     public void getInvestedSchemeDetails() {
-        RequestSpecification res = given().log().all().spec(req)
-                .queryParam("holdingProfileId", Holdingid);
+        RequestSpecification res = given().spec(req)
+                .queryParam("holdingProfileId", holdingId);
         InvestedScheme.Root response = res.when().get("/core/investor/invested-schemes")
                 .then().log().all().spec(respec).extract().response().as(InvestedScheme.Root.class);
 
         for(InvestedScheme.Datum data:response.getData()) {
             if (data.getFolio().equalsIgnoreCase(folio_pro)) {
-                fromschemename = data.getSchemeName();
-                fromschemecode = data.getSchemeCode();
+                fromSchemeName = data.getSchemeName();
+                fromSchemeCode = data.getSchemeCode();
                 folio = data.getFolio();
                 units = data.getUnits();
-                fromoption = data.getOption();
-                goalid = data.getGoalId();
-                bankid = data.getBankId();
-                minamount = data.getSwitchOut().getMinimumAmount();
-                minunit = data.getSwitchOut().getMinimumUnits();
-                currentamount = data.getCurrentAmount();
-                goalname = data.getGoalName();
-                Total_units = data.getUnits();
-                System.out.println(fromschemename);
+                fromOption = data.getOption();
+                goalId = data.getGoalId();
+                bankId = data.getBankId();
+                minAmt = data.getSwitchOut().getMinimumAmount();
+                minUnit = data.getSwitchOut().getMinimumUnits();
+                currentAmt = data.getCurrentAmount();
+                goalName = data.getGoalName();
+                totalUnits = data.getUnits();
+                System.out.println(fromSchemeName);
                 System.out.println(folio);
             }
         }
     }
     @Test(priority = 12)
     public void productSearchMFForm() {
-        RequestSpecification res = given().log().all().spec(req)
+        RequestSpecification res = given().spec(req)
                 .queryParam("page", 1)
                 .queryParam("size", 100)
-                .queryParam("schemeCodes", fromschemecode);
+                .queryParam("schemeCodes", fromSchemeCode);
         MFscheme.Root response = res.when().get("/core/product-search/mf/schemes")
                 .then().log().all().spec(respec).extract().response().as(MFscheme.Root.class);
         for (MFscheme.Content content : response.getData().getContent()) {
-            AMC_Name = content.getAmc();
-            AMC_Code = content.getAmcCode();
+            amcName = content.getAmc();
+            amcCode = content.getAmcCode();
             Source_SchemeName = content.getName();
-            System.out.printf(AMC_Code + "\t" + AMC_Name + "\t" + Source_SchemeName);
+            System.out.printf(amcCode + "\t" + amcName + "\t" + Source_SchemeName);
         }
     }
     @Test(priority = 13)
     public void targetSchemeSearch() {
-        RequestSpecification res = given().log().all().spec(req)
+        RequestSpecification res = given().spec(req)
                 .body("{\n" +
                         "  \"page\": 1,\n" +
                         "  \"size\": 10,\n" +
@@ -123,8 +118,8 @@ public class Switch extends AccessPropertyFile {
                         "  \"ratings\": [],\n" +
                         "  \"amcs\": [\n" +
                         "    {\n" +
-                        "      \"name\": \"" + AMC_Name + "\",\n" +
-                        "      \"value\": \"" + AMC_Code + "\"\n" +
+                        "      \"name\": \"" + amcName + "\",\n" +
+                        "      \"value\": \"" + amcCode + "\"\n" +
                         "    }\n" +
                         "  ],\n" +
                         "  \"searchCode\": [\n" +
@@ -150,11 +145,11 @@ public class Switch extends AccessPropertyFile {
         }
     }
     private void printSchemeDetails(MFscheme.Root response, int index) {
-        toschemename = response.getData().getContent().get(index).getName();
-        toschemcode = response.getData().getContent().get(index).getSchemeCode();
-        tooption = response.getData().getContent().get(index).getOption();
-        System.out.println("To SchemeName: " + toschemename);
-        System.out.println("To schemecode: " + toschemcode);
+        toSchemeName = response.getData().getContent().get(index).getName();
+        toSchemeCode = response.getData().getContent().get(index).getSchemeCode();
+        toOption = response.getData().getContent().get(index).getOption();
+        System.out.println("To SchemeName: " + toSchemeName);
+        System.out.println("To schemecode: " + toSchemeCode);
     }
 
     @Test(priority = 14)
@@ -165,11 +160,11 @@ public class Switch extends AccessPropertyFile {
         otppayload.put("referenceId",folio);
         otppayload.put("workflow", "switch");
 
-        RequestSpecification commonotp = given().log().all().spec(req)
+        RequestSpecification commonotp = given().spec(req)
                 .body(otppayload);
         CommonOTP.Root responce = commonotp.when().post("/core/investor/common/otp")
                 .then().log().all().spec(respec).extract().response().as(CommonOTP.Root.class);
-        otp_refid = responce.getData().getOtpReferenceId();
+        otpRefID = responce.getData().getOtpReferenceId();
     }
 
     @Test(priority = 15)
@@ -183,12 +178,12 @@ public class Switch extends AccessPropertyFile {
             con = ds.getConnection();
             Assert.assertNotNull(con, "Database connection failed!"); // Throw an error if the connection is null (failed)
             s1 = con.createStatement();
-            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otp_refid + "'");
+            rs = s1.executeQuery("select * from dbo.OTP_GEN_VERIFICATION ogv where referenceId ='" + otpRefID + "'");
             rs.next();
-            dbotp = rs.getString("otp");
-            DB_refid = rs.getString("referenceid");
-            System.out.println("OTP :" + dbotp);
-            System.out.println("OTPReferenceID :" + DB_refid);
+            dbOtp = rs.getString("otp");
+            dbRefId = rs.getString("referenceid");
+            System.out.println("OTP :" + dbOtp);
+            System.out.println("OTPReferenceID :" + dbRefId);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -204,10 +199,10 @@ public class Switch extends AccessPropertyFile {
         VerifyOtpRequest.Otp otp = new VerifyOtpRequest.Otp();
         otp.setSms("");
         otp.setEmail("");
-        otp.setEmail_or_sms(dbotp);
+        otp.setEmail_or_sms(dbOtp);
         payload.setOtp(otp);
-        payload.setOtpReferenceId(DB_refid);
-        RequestSpecification res1 = given().log().all().spec(req)
+        payload.setOtpReferenceId(dbRefId);
+        RequestSpecification res1 = given().spec(req)
                 .body(payload);
         res1.when().post("/core/investor/common/otp/verify")
                 .then().log().all().spec(respec);
@@ -216,25 +211,25 @@ public class Switch extends AccessPropertyFile {
     @Test(priority = 17)
     public void Switch_API() {
         Map<String, Object> requestData = new HashMap<>();
-        requestData.put("holdingProfileId", Holdingid);
+        requestData.put("holdingProfileId", holdingId);
         requestData.put("folio", folio);
-        requestData.put("goalId", goalid);
-        requestData.put("goalName", goalname);
-        requestData.put("fromSchemeName", fromschemename);
-        requestData.put("fromSchemeCode", fromschemecode);
-        requestData.put("toSchemeName", toschemename);
-        requestData.put("toSchemeCode", toschemcode);
-        requestData.put("bankId", bankid);
-        requestData.put("otpReferenceId", DB_refid);
+        requestData.put("goalId", goalName);
+        requestData.put("goalName", goalName);
+        requestData.put("fromSchemeName", fromSchemeName);
+        requestData.put("fromSchemeCode", fromSchemeCode);
+        requestData.put("toSchemeName", toSchemeName);
+        requestData.put("toSchemeCode", toSchemeCode);
+        requestData.put("bankId", bankId);
+        requestData.put("otpReferenceId", dbRefId);
 
         // Common fields for all switch types
-        requestData.put("fromOption", fromoption);
-        requestData.put("toOption", tooption);
+        requestData.put("fromOption", fromOption);
+        requestData.put("toOption", toOption);
         requestData.put("switchType", "regular");
 
         if (switch_unitpro == 0 && switch_amtpro == 0) {
             requestData.put("switchMode", "full");
-            requestData.put("units", Total_units);
+            requestData.put("units", totalUnits);
         } else if (switch_unitpro == 0) {
             requestData.put("switchMode", "partial");
             requestData.put("amount", switch_amtpro);
@@ -244,11 +239,11 @@ public class Switch extends AccessPropertyFile {
         }
 
         // Determine the dividend option based on the toOption value
-        String dividendOption = tooption.equalsIgnoreCase("Dividend") ? "Reinvestment" : "Payout";
+        String dividendOption = toOption.equalsIgnoreCase("Dividend") ? "Reinvestment" : "Payout";
 
-        switch (fromoption + "_" + tooption) {
+        switch (fromOption + "_" + toOption) {
             case "Growth_Growth":
-                requestData.put("units", Total_units);
+                requestData.put("units", totalUnits);
                 break;
             case "Growth_Dividend":
                 requestData.put("toDividendOption", dividendOption);
@@ -264,12 +259,12 @@ public class Switch extends AccessPropertyFile {
                 throw new IllegalArgumentException("Invalid switch combination");
         }
 
-        RequestSpecification redeem = given().log().all().spec(req).body(requestData);
+        RequestSpecification redeem = given().spec(req).body(requestData);
         redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
     }
     @Test(priority = 18)
     public void Recent_Transaction() {
-        RequestSpecification res = given().log().all().spec(req)
+        RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", "183318")
                 .queryParam("page", "1")
                 .queryParam("size", "10");
@@ -305,7 +300,7 @@ public class Switch extends AccessPropertyFile {
         del.put("action", "cancel");
         del.put("referenceNo", firstReferenceNo);
 
-        RequestSpecification res=given().log().all().spec(req)
+        RequestSpecification res=given().spec(req)
                 .body(del);
         res.when().post("/core/investor/recent-transactions")
                 .then().log().all().spec(respec);
