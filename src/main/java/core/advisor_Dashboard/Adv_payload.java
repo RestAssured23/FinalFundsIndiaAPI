@@ -71,27 +71,53 @@ public class Adv_payload {
         payload.put("size",500);
         payload.put("userRole","string");
             List<String> heads = Arrays.asList("187458");
-            List<String> managers = Arrays.asList("182424");
+            List<String> managers = Arrays.asList();
             List<String> advisors = Arrays.asList();
         payload.put("heads",heads);
         payload.put("managers",managers);
         payload.put("advisors",advisors);
         payload.put("financialYear","2023-2024");
-    /*    payload.put("duration",1);
-        payload.put("durationUnit","month");         //[ month, year ]*/
-        payload.put("type","amc");
+        payload.put("type","fi_rating");
                     //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
         payload.put("aggregateBy","investment_amount");
                     //investor_count / investment_amount
-        payload.put("sortBy","fi_style");
+        payload.put("sortBy","fi_rating");
                          //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-        payload.put("order","desc");
+        payload.put("order","asc");
+       /* Map<String,Object> search= new LinkedHashMap<>();
+        search.put("type","category");         //only applicable for amc, category, scheme_name
+        search.put("query","Equity");
+        payload.put("search",search);*/
+        return  payload;
+    }
+
+    public static  Map<String, Object> level0_paltinum_manager() {
+
+        Map<String,Object> payload= new LinkedHashMap<>();
+        payload.put("page",1);
+        payload.put("size",500);
+        payload.put("userRole","Manager");
+        List<String> heads = Arrays.asList("187458");
+        List<String> managers = Arrays.asList();
+        List<String> advisors = Arrays.asList();
+        payload.put("heads",heads);
+        payload.put("managers",managers);
+        payload.put("advisors",advisors);
+        payload.put("financialYear","2023-2024");
+        payload.put("type","category");
+        //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
+        payload.put("aggregateBy","investment_amount");
+        //investor_count / investment_amount
+        payload.put("sortBy","category");
+        //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
+        payload.put("order","asc");
         Map<String,Object> search= new LinkedHashMap<>();
-        search.put("type","amc");         //only applicable for amc, category, scheme_name
-        search.put("query","adi");
+        search.put("type","category");         //only applicable for amc, category, scheme_name
+        search.put("query","Equity");
         payload.put("search",search);
         return  payload;
     }
+
 
     public static Map<String, Object> level1() {
         Map<String,Object> payload= new LinkedHashMap<>();
@@ -105,19 +131,19 @@ public class Adv_payload {
         payload.put("managers",managers);
         payload.put("advisors",advisors);
         payload.put("financialYear","2023-2024");
-        payload.put("type","category");
-        //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
+        payload.put("type","amc");
+            //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
 
         List<Map<String, Object>> level1 = new ArrayList<>();      // Level 1
         Map<String, Object> data = new HashMap<>();
-        data.put("name","credit_quality");
-        data.put("value","AA & Below");
+        data.put("name","amc");
+        data.put("value","400047");
         level1.add(data);
         payload.put("level1",level1);
 
         payload.put("aggregateBy","investment_amount");
-        payload.put("sortBy","aum_percentage");
-        //scheme_name ,customer_count,customer_percentage,aum , aum_percentage
+        payload.put("sortBy","aum");
+                //scheme_name ,customer_count,customer_percentage,aum , aum_percentage
         payload.put("order","asc");
 
     /*    Map<String,Object> search= new LinkedHashMap<>();
@@ -158,10 +184,10 @@ public class Adv_payload {
         payload.put("sortBy","name");         // name and aum
         payload.put("order","asc");
 
-        Map<String,Object> search= new LinkedHashMap<>();
+       /* Map<String,Object> search= new LinkedHashMap<>();
         search.put("type","email");                          //[ name, mobile, pan, email, scheme_name, amc, category ]
         search.put("query","ridhimasingh910@gmail.com");
-        payload.put("search",search);
+        payload.put("search",search);*/
         return payload;
     }
 

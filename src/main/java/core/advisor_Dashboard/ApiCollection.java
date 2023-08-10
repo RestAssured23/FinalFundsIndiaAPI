@@ -62,7 +62,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
     @Test
     public void Communication_Content() {
         RequestSpecification res = given().spec(req)
-                .queryParam("reviewId",20879);
+                .queryParam("reviewId",26859);
         res.when().get("/core/portfolio-review/communications/content")
                 .then().log().all().spec(respec);
     }
@@ -225,7 +225,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
     @Test
     public void Exposure_level0() {
         RequestSpecification res = given().spec(req)
-                .body(Adv_payload.level0());
+            .body(Adv_payload.level0());
         res.when().post("/tools/portfolio-exposure/l0")
                 .then().log().all().spec(respec);
     }
@@ -248,14 +248,14 @@ public class ApiCollection extends AD_AccessPropertyFile{
  @Test
  public void MonthlyTrends_Investor() {
      RequestSpecification res = given().spec(req)
-                     .queryParam("user_id","");
+                     .queryParam("user_id","474062");
      res.when().get("/advisory-dashboard/monthly-trends/investor")
              .then().log().all().spec(respec);
  }
     @Test
     public void MonthlyTrends_Transaction() {
         Map<String,Object> payload= new LinkedHashMap<>();
-        payload.put("userId","");
+        payload.put("userId","474062");
         payload.put("month","");
         List<String> type = Arrays.asList("");
         payload.put("types",type);
@@ -348,8 +348,21 @@ public class ApiCollection extends AD_AccessPropertyFile{
     }
     @Test
     public void web_hook_mail() {
+            List<Map<String, Object>> mailPayload = new ArrayList<>();      // Level 1
+            Map<String, Object> data = new HashMap<>();
+                data.put("email","tri.sharon01@gmail.com");
+                data.put("timestamp","1513299569");
+                data.put("smtp-id","<14c5d75ce93.dfd.64b469@ismtpd-555>");
+                data.put("event","Bounce");
+                                    /*event possibility ==> Processed,Dropped,Deferred,Bounce,Blocked,Delivered,Open,Click,
+                                                            Span report,Unsubscribe,Group unscubscibe,Group resubscribe*/
+               data.put("category","facts");
+              data.put("sg_event_id","rbtnWrG1DVDGGGFHFyun0A==");
+             data.put("sg_message_id","14c5d75ce93.dfd.64b469.filter0001.16648.5515E0B88.000000000000000000000");
+            mailPayload.add(data);
+
         RequestSpecification res = given().spec(req)
-                .body("{}");
+                        .body(mailPayload);
         res.when().post("/tools/advisory-dashboard/web-hook/mail")
                 .then().log().all().spec(respec);
     }

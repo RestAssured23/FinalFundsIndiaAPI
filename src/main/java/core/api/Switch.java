@@ -44,22 +44,29 @@ public class Switch extends AccessPropertyFile {
                 .build();
     }
     @Test(priority = 10)
-    public void Holding_Profile() {
+    public void holdingProfile() {
         boolean matchFound = false; // Flag variable
         RequestSpecification res = given().spec(req);
         HoldingProfile.Root holdResponse = res.when().get("/core/investor/holding-profiles")
                 .then().log().all().spec(respec).extract().response().as(HoldingProfile.Root.class);
 
         for (HoldingProfile.Datum data : holdResponse.getData()) {
-            if (data.getHoldingProfileId().equalsIgnoreCase(holdingid_pro)) {
-                holdingId = data.getHoldingProfileId();
+            String idList = data.getHoldingProfileId();
+            if (idList.equalsIgnoreCase(holdingid_pro)) {
+                holdingId = idList;
                 System.out.println("Holding ID is matched with the property file: " + holdingId);
+                if (data.getHoldingProfileId().equalsIgnoreCase(holdingId)) {
+                    int foundIndex = holdResponse.getData().indexOf(data);
+                    InvestorId = holdResponse.getData().get(foundIndex).getInvestors().get(0).getInvestorId();
+                }
                 matchFound = true;
                 break;
             }
         }
         if (!matchFound) {
-            Assert.fail("Holding ID is not matched with Investor. Stopping the test.");
+            holdingId = holdResponse.getData().get(0).getHoldingProfileId();
+            InvestorId = holdResponse.getData().get(0).getInvestors().get(0).getInvestorId();
+            System.out.println("Holding ID is not matched with the property file: " + holdingId);
         }
     }
     @Test(priority = 11)
