@@ -32,7 +32,7 @@ public class Adv_payload {
                                                  //"silver", "gold", "platinum", "digital", "n/a"
             List<String> status = Arrays.asList("all","draft","generated","completed");
             List<String> headid = Arrays.asList("187458");
-            List<String> managerid = Arrays.asList();
+            List<String> managerid = Arrays.asList("1871006");
             List<String> advisorid = Arrays.asList();
         payload.put("segments", segment);
         payload.put("status", status);
@@ -76,12 +76,12 @@ public class Adv_payload {
         payload.put("heads",heads);
         payload.put("managers",managers);
         payload.put("advisors",advisors);
-        payload.put("financialYear","2023-2024");
-        payload.put("type","fi_rating");
+        payload.put("financialYear","2022-2023");
+        payload.put("type","amc");
                     //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
         payload.put("aggregateBy","investment_amount");
                     //investor_count / investment_amount
-        payload.put("sortBy","fi_rating");
+        payload.put("sortBy","amc");
                          //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
         payload.put("order","asc");
        /* Map<String,Object> search= new LinkedHashMap<>();
@@ -126,7 +126,7 @@ public class Adv_payload {
         payload.put("userRole","string");
             List<String> heads = Arrays.asList("187458");
             List<String> managers = Arrays.asList();
-            List<String> advisors = Arrays.asList();
+            List<String> advisors = Arrays.asList("86808");
         payload.put("heads",heads);
         payload.put("managers",managers);
         payload.put("advisors",advisors);
@@ -186,7 +186,7 @@ public class Adv_payload {
 
        /* Map<String,Object> search= new LinkedHashMap<>();
         search.put("type","email");                          //[ name, mobile, pan, email, scheme_name, amc, category ]
-        search.put("query","ridhimasingh910@gmail.com");
+        search.put("query","SANDHYAKDN@yahoo.com");
         payload.put("search",search);*/
         return payload;
     }
@@ -194,14 +194,14 @@ public class Adv_payload {
     public static Map<String, Object> SnapshotPayload() {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("page", 1);
-        payload.put("size", 320);
-        payload.put("sortBy", "outflow");
-        payload.put("sortType", "desc");                      // [asc, desc]
+        payload.put("size", 1490);
+        payload.put("sortBy", "inflow");
+        payload.put("sortType", "asc");                      // [asc, desc]
 
         List<String> segment = Arrays.asList("silver", "gold", "platinum", "digital");     //"silver", "gold", "platinum", "digital"
-        List<String> headid = Arrays.asList("187458");
-        List<String> managerid = Arrays.asList("359296");
-        List<String> advisorid = Arrays.asList("1063336");
+        List<String> headid = Arrays.asList("2152531","187458");
+        List<String> managerid = Arrays.asList("1871006");
+        List<String> advisorid = Arrays.asList("300210","335339","1041112","2402884","131919","2443123","2589046","2443125","1871006");
 
    /*     Map<String, Object> search = new HashMap<>();
         search.put("type", "name");
@@ -213,6 +213,55 @@ public class Adv_payload {
         payload.put("managers", managerid);
         payload.put("advisors", advisorid);
 
+        return payload;
+    }
+    public static Map<String, Object> Monthly_Trends() {
+        Map<String,Object> payload= new LinkedHashMap<>();
+        payload.put("page",1);
+        payload.put("size",50);
+        payload.put("financialYear","2023-2024");
+        payload.put("sortBy","ytd");         //ytd ,months,lfy
+        payload.put("sortType","asc");          //asc , desc
+
+        List<String> segment = Arrays.asList("silver");
+        payload.put("segments",segment);
+        List<String> heads = Arrays.asList("187458");
+        payload.put("heads",heads);
+        List<String> managers = Arrays.asList("86808");
+        payload.put("managers",managers);
+        List<String> advisors = Arrays.asList("86808");
+        payload.put("advisors",advisors);
+
+        Map<String,Object> trendsdata=new LinkedHashMap<>();
+                 //INFLOW
+                         /*   Map<String,Object> inflowdata=new LinkedHashMap<>();
+                            inflowdata.put("enabled",true);
+                            inflowdata.put("sip",true);
+                            inflowdata.put("lumpsum",true);
+                            inflowdata.put("transferIn",false);
+                            trendsdata.put("inflow",inflowdata);*/
+                //OUTFLOW
+                        /*   Map<String,Object> outflowdata=new LinkedHashMap<>();
+                            outflowdata.put("enabled",true);
+                            outflowdata.put("redemption",true);
+                            outflowdata.put("transferOut",true);
+                            outflowdata.put("swp",true);
+                            trendsdata.put("outflow",outflowdata);*/
+                //NETFLOW
+                     /*     Map<String,Object> netflowdata=new LinkedHashMap<>();
+                            netflowdata.put("enabled",true);
+                            trendsdata.put("netflow",netflowdata);*/
+                //AUM
+                            Map<String,Object> aumdata=new LinkedHashMap<>();
+                            aumdata.put("enabled",true);
+                            trendsdata.put("netflow",aumdata);
+                //SEARCH
+                        /*   Map<String, Object> search = new HashMap<>();
+                            search.put("type", "name");             // email , pan , name , mobile
+                            search.put("query", "Bhaumik");
+                            payload.put("search", search);*/
+
+        payload.put("trendsBy",trendsdata);
         return payload;
     }
 

@@ -31,6 +31,16 @@ public class AccessPropertyFile {
             throw new RuntimeException(e);
         }
     }
+        public String getChannelID() {
+            BasePlatform chid = new BasePlatform();
+            try {
+                FileInputStream fis = new FileInputStream(chid.platform());
+                properties.load(fis);
+                return properties.getProperty("channelID");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+    }
 
     @Test
     public String getAccessToken() {
@@ -75,7 +85,7 @@ public class AccessPropertyFile {
                 RestAssured.baseURI = properties.getProperty("baseURI");
                 Signin.Root response = given().log().all()
                         .header("x-api-version", "2.0")
-                        .header("channel-id", "10")
+                        .header("channel-id", getChannelID())
                         .header("Content-Type", "application/json")
                         .body(login)
                         .when()

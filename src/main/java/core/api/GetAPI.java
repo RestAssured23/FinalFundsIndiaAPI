@@ -23,7 +23,7 @@ public class GetAPI extends AccessPropertyFile {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
                 .addHeader("x-api-version", "2.0")
-                .addHeader("channel-id", "10")
+                .addHeader("channel-id", getChannelID())
                 .addHeader("x-fi-access-token", getAccessToken())
                 .setContentType(ContentType.JSON)
                 .build()

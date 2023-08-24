@@ -1,9 +1,13 @@
 package core.api.testing;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import core.basepath.AccessPropertyFile;
 import core.model.HoldingProfile;
+import core.model.otp.CommonOTP;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -16,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static core.api.CommonVariable.*;
-import static core.api.CommonVariable.InvestorId;
+import static core.api.CommonVariable.response;
 import static io.restassured.RestAssured.given;
 
 public class Testing extends AccessPropertyFile {
@@ -72,7 +76,7 @@ public class Testing extends AccessPropertyFile {
     public void investorMandates() {
         RequestSpecification res = given().spec(req)
                 .queryParam("investorId", 282306)
-                .queryParam("consumerCode","10000000110025")
+                .queryParam("consumerCode","10000000110026")
                 .queryParam("sipType","flexi");
          res.when().get("/core/investor/mandates")
                 .then().log().all().spec(respec).extract().response().asString();
@@ -81,7 +85,7 @@ public class Testing extends AccessPropertyFile {
     @Test
     public void Delete_Mandate() {
         RequestSpecification res = given().spec(req)
-                .queryParam("consumerCode", "10000000114660");
+                .queryParam("consumerCode", "10000000110078");
         res.when().delete("/core/investor/mandates")
                 .then().log().all().spec(respec).extract().response().asString();
     }
@@ -126,5 +130,42 @@ public class Testing extends AccessPropertyFile {
                         .body(payloadfeature);
         res.when().post("/core/investor/banks/features")
                 .then().log().all().spec(respec).extract().response().asString();
+    }
+
+    @Test               // NRI OTP check
+    public void Common_OTP() {
+        Map<String, Object> otppayload = new HashMap<>();
+        otppayload.put("type", "mobile_and_email");
+        otppayload.put("idType", "folio");
+        otppayload.put("referenceId","454545");
+        otppayload.put("workflow", "swp");
+
+        RequestSpecification commonotp = given().spec(req)
+                .body(otppayload);
+        CommonOTP.Root responce = commonotp.when().post("/core/investor/common/otp")
+                .then().log().all().spec(respec).extract().response().as(CommonOTP.Root.class);
+        otpRefID = responce.getData().getOtpReferenceId();
+    }
+    @Test
+    public void Nominee_Add() {         // Post API
+
+        RequestSpecification res = given().spec(req)
+                .body("{\n" +
+                        "  \"holdingProfileId\": \"181201\",\n" +
+                        "  \"optedOut\": false,\n" +
+                        "  \"nominees\": [\n" +
+                        "    {\n" +
+                        "      \"dateOfBirth\": \"1981-10-08T00:00:00.000+0530\",\n" +
+                        "      \"firstName\": \"test T\",\n" +
+                        "      \"relationship\": \"Brother\",\n" +
+                        "      \"percentage\": 100\n" +
+                        "    }\n" +
+                        "  ]\n" +
+                        "}")
+                .cookie("Test","Test");
+        res.when().log().body().log().method().post("/core/investor/nominees")
+                .then()
+                .log().ifValidationFails(LogDetail.STATUS)
+                .log().body().spec(respec);
     }
 }
