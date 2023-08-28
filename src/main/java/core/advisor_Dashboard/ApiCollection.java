@@ -1,4 +1,5 @@
 package core.advisor_Dashboard;
+import core.advisor_Dashboard.model.MonthlyTrendsResponse;
 import core.advisor_Dashboard.model.PortfolioExposureResponseBo;
 import core.advisor_Dashboard.model.clientSnapshot;
 import io.restassured.builder.RequestSpecBuilder;
@@ -228,8 +229,8 @@ public class ApiCollection extends AD_AccessPropertyFile{
     @Test
     public void Exposure_level0() {
         RequestSpecification res = given().spec(req)
-                    //   .body("{\"userRole\":\"Manager\",\"advisors\":[\"131919\"],\"managers\":[\"1871006\"],\"heads\":[\"187458\"],\"financialYear\":\"2023-2024\",\"type\":\"scheme_name\",\"sortBy\":\"scheme_name\",\"aggregateBy\":\"investment_amount\",\"order\":\"asc\",\"size\":500,\"page\":2}");
-             .body(Adv_payload.level0());
+           //     .body("{\"userRole\":\"Manager\",\"advisors\":[],\"managers\":[\"1871006\"],\"heads\":[\"2152531\"],\"financialYear\":\"2023-2024\",\"type\":\"amc\",\"sortBy\":\"amc\",\"aggregateBy\":\"investment_amount\",\"order\":\"asc\",\"size\":500,\"page\":1}");
+           .body(Adv_payload.level0());
         res.when().post("/tools/portfolio-exposure/l0")
                 .then().log().all().spec(respec);
     }
@@ -378,11 +379,10 @@ public class ApiCollection extends AD_AccessPropertyFile{
         System.out.println(label + ": " + value);
     }
 
-
     @Test
     public void MonthlyTrends_Get() {
         RequestSpecification res = given().spec(req)
-                .queryParam("user_id","474062");
+                .queryParam("user_id","114723");
         res.when().get("/tools/advisory-dashboard/monthly-trends/investor")
                 .then().log().all().spec(respec);
     }
@@ -410,8 +410,66 @@ public class ApiCollection extends AD_AccessPropertyFile{
     public void Advisory_MonthlyTrends() {
         RequestSpecification res = given().spec(req)
                         .body(Adv_payload.Monthly_Trends());
-        res.when().post("/tools/advisory-dashboard/monthly-trends")
+       MonthlyTrendsResponse.Root response= res.when().post("/tools/advisory-dashboard/monthly-trends")
+                .then().log().all().spec(respec).extract().response().as(MonthlyTrendsResponse.Root.class);
+    }
+
+    @Test
+    public void Advisory_Filters() {            //post
+        RequestSpecification res = given().spec(req)
+                .body("{\n" +
+                        "\n" +
+                   //     "  \"id\": \"4453\",\n" +
+                        "\n" +
+                        "  \"name\": \"YTD\",\n" +
+                        "\n" +
+                        "  \"source\":\"MonthlyTrends\",\n" +
+                        "\n" +
+                        "  \"filters\": [\n" +
+                        "\n" +
+                        "    {\n" +
+                        "\n" +
+                         "      \"month\": \"ytd\",\n" +
+                        "\n" +
+                  //      "      \"monthName\": \"July\",\n" +
+                        "\n" +
+                        "      \"field\": \"swp\",\n" +
+                        "\n" +
+                        "      \"condition\": {\n" +
+                        "\n" +
+                        "        \"type\": \"in_range_between\",\n" +
+                        "\n" +
+                        "        \"value1\": \"2000\",\n" +
+                        "\n" +
+                        "        \"value2\": \"\"\n" +
+                        "\n" +
+                 //       "        \"enums\": \"string\"\n" +
+                        "\n" +
+                        "      },\n" +
+                        "\n" +
+                        "      \"type\": \"or\"\n" +
+                        "\n" +
+                        "    }\n" +
+                        "\n" +
+                        "  ]\n" +
+                        "\n" +
+                        "}");
+        res.when().post("/tools/advisory-dashboard/filters")
                 .then().log().all().spec(respec);
     }
+    @Test
+    public void Advisory_Filters_Get() {
+        RequestSpecification res = given().spec(req);
+        res.when().get("/tools/advisory-dashboard/filters")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void Advisory_Filters_Delete() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("filterId","3178009d-86d9-4e19-b628-341f05695749");
+        res.when().delete("/tools/advisory-dashboard/filters")
+                .then().log().all().spec(respec);
+    }
+
 }
 
