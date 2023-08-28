@@ -9,7 +9,7 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import core.accesspropertyfile.Login;
+
 import core.dbconnection.DatabaseConnection;
 import core.model.HoldingProfile;
 import core.model.MFSearchForm;
@@ -199,7 +199,7 @@ public class SIP extends AccessPropertyFile {
                 break;
             case "stepup":
                 regType.put("stepupFrequency", "half-yearly");  // annually/half-yearly
-                regType.put("stepupAmount", Login.Inv_Amount);
+                regType.put("stepupAmount",amount_pro);
                 regType.put("finalAmount", 5000);
                 regType.put("tenure", minTenure);
                 regType.put("consumerCode", ConsumerCode);
