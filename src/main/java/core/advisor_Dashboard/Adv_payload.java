@@ -244,8 +244,8 @@ public class Adv_payload {
                            Map<String,Object> outflowdata=new LinkedHashMap<>();
                             outflowdata.put("enabled",true);
                             outflowdata.put("redemption",true);
-                            outflowdata.put("transferOut",true);
                             outflowdata.put("swp",true);
+                             outflowdata.put("transferOut",true);
                             trendsdata.put("outflow",outflowdata);
                 //NETFLOW
                        /*   Map<String,Object> netflowdata=new LinkedHashMap<>();
@@ -265,5 +265,28 @@ public class Adv_payload {
         payload.put("trendsBy",trendsdata);
         return payload;
     }
+    public static Map<String, Object> Filters() {
+        Map<String, Object> payload = new LinkedHashMap<>();
+      //  payload.put("id", "");
+        payload.put("name", "YTD");
+        payload.put("source", "MonthlyTrends");
 
+        List<Map<String, Object>> parameter = new ArrayList<>();
+            Map<String,Object>filterdata=new LinkedHashMap<>();
+            filterdata.put("month","ytd");                 // mtd, lfy, ytd, current_month, previous_month, other_month
+            filterdata.put("monthName","June");
+            filterdata.put("field","swp");                //sip, lumpsum, inflow, outflow, transfer_in, transfer_out, redemption, swp
+            filterdata.put("type","or");                  //  or, and
+            Map<String,Object>condi_data=new LinkedHashMap<>();
+                condi_data.put("type","is_less_than");
+                                    /*    is_less_than, is_greater_than, is_equal_to, is_less_than_or_equal_to,
+                                          is_greater_than_or_equal_to,contains, in_range_between   */
+                condi_data.put("value1","2000");
+          //      condi_data.put("value2","");
+          //      condi_data.put("enums","string");
+            filterdata.put("condition",condi_data);
+        parameter.add(filterdata);
+    payload.put("filters",parameter);
+        return payload;
+    }
 }

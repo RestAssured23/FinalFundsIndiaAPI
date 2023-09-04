@@ -1,4 +1,5 @@
 package core.advisor_Dashboard;
+import core.advisor_Dashboard.model.AllReviewResponse;
 import core.advisor_Dashboard.model.PortfolioExposureResponseBo;
 import core.advisor_Dashboard.model.clientSnapshot;
 import io.restassured.builder.RequestSpecBuilder;
@@ -6,6 +7,7 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -247,37 +249,29 @@ public class Test_Adv extends AD_AccessPropertyFile{
         }
     }
 
-  /*  @Test
-    public void Exposure_level1() {
-        double aum=0.0,cust = 0.0;
-        RequestSpecification res = given().spec(req)
-                .body(Adv_payload.level1());
-     PortfolioExposureResponseBo.Root response= res.when().post("/tools/portfolio-exposure/l1")
-                .then().log().all().spec(respec).extract().response().as(PortfolioExposureResponseBo.Root.class);
-
-        for (PortfolioExposureResponseBo.Row rowData : response.getData().getRows()) {
-            *//*System.out.println(rowData.getData().get(0).getValue());
-            System.out.println(rowData.getData().get(1).getValue());
-            System.out.println(rowData.getData().get(3).getValue());*//*
-            double CusPercentage = Double.parseDouble(String.valueOf(rowData.getData().get(1).getValue()));
-            double AumPercentage = Double.parseDouble(String.valueOf(rowData.getData().get(3).getValue()));
-            aum += AumPercentage;
-            cust += CusPercentage;
-
-        }
-              System.out.println("Total Customer Percentage: " + cust);
-              System.out.println("Total AUM Percentage: " + aum);
-        softAssert.assertEquals(cust,100.0);
-        softAssert.assertEquals(aum,100.0);
-        softAssert.assertAll();
-    }
     @Test
-    public void Exposure_level2() {
+    public void All_Reviews() {
         RequestSpecification res = given().spec(req)
-                .body(Adv_payload.level2());
-        res.when().post("/tools/portfolio-exposure/l2")
-                .then().log().all().spec(respec);
+                .body("{\"page\":1,\"size\":20,\"segments\":[\"platinum\",\"gold\",\"silver\",\"digital\"],\"types\":\"all\",\"status\":[\"all\",\"draft\",\"generated\",\"completed\"],\"heads\":[\"187458\",\"2152531\"],\"managers\":[],\"advisors\":[],\"sortBy\":\"advisor_name\",\"sortType\":\"asc\",\"search\":{\"query\":\"rupamlaldas@gmail.com\",\"type\":\"email\"}}");
+                //   .body(Adv_payload.AllReviews());
+        AllReviewResponse.Root response = res.when().post("/tools/portfolio-review/completed")
+                .then().log().all().spec(respec).extract().response().as(AllReviewResponse.Root.class);
+
+        for (AllReviewResponse.Review review : response.getData().getReviews()) {
+            String advisorName=review.getAdvisorName();
+            String status =review.getStatus();
+            for (AllReviewResponse.Investor investor : review.getInvestors()) {
+                String investorName = investor.getName();
+
+              //  System.out.println(investorName);
+              //  System.out.println(advisorName);
+              //  System.out.println(status);
+                if (investorName.isBlank()||advisorName.isBlank()||status.isBlank()) {
+                    String message = "Investor / Advisor /Status is blank. Email: " + investor.getEmail() + ", PAN: " + investor.getPan();
+                     Assert.fail(message); // This assertion will fail the test
+                }
+            }
+        }
     }
-*/
 }
 

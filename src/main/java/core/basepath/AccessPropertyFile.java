@@ -122,7 +122,7 @@ public class AccessPropertyFile {
             RestAssured.baseURI = properties.getProperty("baseURI");
             Signin.Root response = given().log().all()
                     .header("x-api-version", "2.0")
-                    .header("channel-id", "10")
+                    .header("channel-id", getChannelID())
                     .header("Content-Type", "application/json")
                     .body(login)
                     .when()

@@ -1,7 +1,5 @@
 package core.api.testing;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import core.basepath.AccessPropertyFile;
 import core.model.HoldingProfile;
 import core.model.otp.CommonOTP;
@@ -12,7 +10,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import org.testng.Reporter;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -20,16 +17,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static core.api.CommonVariable.*;
-import static core.api.CommonVariable.response;
 import static io.restassured.RestAssured.given;
 
-public class Testing extends AccessPropertyFile {
+public class bankmandatetest extends AccessPropertyFile {
     private Response response;
     private final RequestSpecification req;
     private final ResponseSpecification respec;
     private String Holdingid, InvestorId;
 
-    public Testing() throws IOException {
+    public bankmandatetest() throws IOException {
 
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
@@ -72,20 +68,52 @@ public class Testing extends AccessPropertyFile {
             System.out.println("Holding ID is not matched with the property file: " + InvestorId);
         }
     }
+
+    @Test
+    public void BankQR() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("investorId", 1401246);
+        res.when().get("/core/investor/banks/qr")
+                .then().log().all().contentType(ContentType.XML);
+    }
+    @Test
+    public void callback() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("investorId", 1401246)
+                .queryParam("id","");
+        res.when().get("/core/investor/banks/qr/callback")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void InvestorBank() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("investorId", 1401246);
+        res.when().get("/core/investor/banks")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void webhook() {
+        RequestSpecification res = given().spec(req)
+                .body("{}");
+            //    .queryParam("investorId", 1401246);
+        res.when().post("/core/investor/banks/qr/webhook")
+                .then().log().all().contentType(ContentType.XML);
+    }
+
+
+
     @Test
     public void investorMandates() {
         RequestSpecification res = given().spec(req)
-                .queryParam("investorId", 282306)
-                .queryParam("consumerCode","10000000110026")
-                .queryParam("sipType","flexi");
+                .queryParam("investorId", 1401246);
+
          res.when().get("/core/investor/mandates")
                 .then().log().all().spec(respec).extract().response().asString();
-
     }
     @Test
     public void Delete_Mandate() {
         RequestSpecification res = given().spec(req)
-                .queryParam("consumerCode", "10000000110078");
+                .queryParam("consumerCode", "100000001727822");
         res.when().delete("/core/investor/mandates")
                 .then().log().all().spec(respec).extract().response().asString();
     }

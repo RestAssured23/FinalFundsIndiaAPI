@@ -1,11 +1,11 @@
 package core.api;
 
 import core.basepath.AccessPropertyFile;
+import core.model.MFscheme;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import io.restassured.specification.ResponseSpecification;
 import core.model.HoldingProfile;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
@@ -78,7 +78,7 @@ public class GetAPI extends AccessPropertyFile {
     @Test(priority = 1)
     public void dashboard() {
             RequestSpecification res = given().spec(req)
-                    .queryParam("holdingProfileId", holdingId);
+                    .queryParam("holdingProfileId", "holdingId");
             response = res.when().get("/core/investor/dashboard")
                     .then().log().all().spec(respec).extract().response().asString();
             Reporter.log(response);
@@ -469,7 +469,7 @@ public class GetAPI extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
-    @Test
+    @Test(priority = 1)
     public void UserDashboard() {
         RequestSpecification res = given().spec(req)
                .queryParam("holdingProfileId", holdingId);
@@ -477,8 +477,16 @@ public class GetAPI extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
+    @Test(priority = 1)
+    public void InvestorBank() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("investorId", InvestorId);
+        res.when().get("/core/investor/banks")
+                .then().log().all().spec(respec);
+    }
 
-  /*  @Test(priority = 1)
+
+  /*  @Test         // Rest API
     public void main_dashboard_restAPI() throws IOException
     {
         RestAssured.baseURI = "https://webrevampneo.fundsindia.com";

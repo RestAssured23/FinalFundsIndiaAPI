@@ -5,10 +5,8 @@ import core.advisor_Dashboard.model.clientSnapshot;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -279,7 +277,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
         Map<String,Object> payload= new LinkedHashMap<>();
         payload.put("userId","474062");
         payload.put("month","");
-        List<String> type = Arrays.asList("");
+        List<String> type = Arrays.asList();
         payload.put("types",type);
     RequestSpecification res = given().spec(req)
                .body(payload);
@@ -290,7 +288,6 @@ public class ApiCollection extends AD_AccessPropertyFile{
     public void testClientSnapshot() {
         RequestSpecification requestSpec = given().spec(req)
                 .body(Adv_payload.SnapshotPayload());
-
         clientSnapshot.Root response = requestSpec
                 .when()
                 .post("/tools/advisory-dashboard/investors/snapshot")
@@ -417,43 +414,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
     @Test
     public void Advisory_Filters() {            //post
         RequestSpecification res = given().spec(req)
-                .body("{\n" +
-                        "\n" +
-                   //     "  \"id\": \"4453\",\n" +
-                        "\n" +
-                        "  \"name\": \"YTD\",\n" +
-                        "\n" +
-                        "  \"source\":\"MonthlyTrends\",\n" +
-                        "\n" +
-                        "  \"filters\": [\n" +
-                        "\n" +
-                        "    {\n" +
-                        "\n" +
-                         "      \"month\": \"ytd\",\n" +
-                        "\n" +
-                  //      "      \"monthName\": \"July\",\n" +
-                        "\n" +
-                        "      \"field\": \"swp\",\n" +
-                        "\n" +
-                        "      \"condition\": {\n" +
-                        "\n" +
-                        "        \"type\": \"in_range_between\",\n" +
-                        "\n" +
-                        "        \"value1\": \"2000\",\n" +
-                        "\n" +
-                        "        \"value2\": \"\"\n" +
-                        "\n" +
-                 //       "        \"enums\": \"string\"\n" +
-                        "\n" +
-                        "      },\n" +
-                        "\n" +
-                        "      \"type\": \"or\"\n" +
-                        "\n" +
-                        "    }\n" +
-                        "\n" +
-                        "  ]\n" +
-                        "\n" +
-                        "}");
+                        .body(Adv_payload.Filters());
         res.when().post("/tools/advisory-dashboard/filters")
                 .then().log().all().spec(respec);
     }
