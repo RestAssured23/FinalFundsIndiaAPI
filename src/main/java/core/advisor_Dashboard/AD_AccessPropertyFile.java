@@ -16,7 +16,7 @@ public class AD_AccessPropertyFile {
 
 
     static Properties properties = new Properties();
-
+    static String mailid;
     @Test
     public String getADBasePath() {
         AD_BasePlatform uri = new AD_BasePlatform();
@@ -34,6 +34,7 @@ public class AD_AccessPropertyFile {
         try {
             FileInputStream fis = new FileInputStream(uri.platform());
             properties.load(fis);
+            mailid=properties.getProperty("investoremail");
             if (properties.getProperty("accesstoken").isEmpty()) {
                 //Login Payload
                 HashMap<String, String> login = new HashMap<>();

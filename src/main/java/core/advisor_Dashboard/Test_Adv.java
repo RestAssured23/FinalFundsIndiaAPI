@@ -55,11 +55,11 @@ public class Test_Adv extends AD_AccessPropertyFile{
             payload.put("managers", managers);
 
             payload.put("financialYear", "2023-2024");
-            payload.put("type", "amc");
+            payload.put("type", "scheme_name");
             //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
             payload.put("aggregateBy", "investment_amount");
             //investor_count / investment_amount
-            payload.put("sortBy", "amc");
+            payload.put("sortBy", "scheme_name");
             //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
             payload.put("order", "asc");
 
@@ -83,7 +83,7 @@ public class Test_Adv extends AD_AccessPropertyFile{
                 payload.put("page", 1);
                 payload.put("size", 500);
                 payload.put("userRole", "string");
-                List<String> heads = Arrays.asList("187458", "2152531");
+                List<String> heads = Arrays.asList("187458","2152531");
                 payload.put("heads", heads);
 
                 List<String> managers = Arrays.asList(managerId);
@@ -92,11 +92,11 @@ public class Test_Adv extends AD_AccessPropertyFile{
                 payload.put("advisors", advisors);
 
                 payload.put("financialYear", "2023-2024");
-                payload.put("type", "amc");
+                payload.put("type", "scheme_name");
                 //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
                 payload.put("aggregateBy", "investment_amount");
                 //investor_count / investment_amount
-                payload.put("sortBy", "amc");
+                payload.put("sortBy", "scheme_name");
                 //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
                 payload.put("order", "asc");
 
@@ -128,11 +128,11 @@ public class Test_Adv extends AD_AccessPropertyFile{
                 payload.put("advisors", advisors);
 
                 payload.put("financialYear", "2023-2024");
-                payload.put("type", "amc");
+                payload.put("type", "scheme_name");
                 //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
                 payload.put("aggregateBy", "investment_amount");
                 //investor_count / investment_amount
-                payload.put("sortBy", "amc");
+                payload.put("sortBy", "scheme_name");
                 //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
                 payload.put("order", "asc");
 
@@ -163,11 +163,11 @@ public class Test_Adv extends AD_AccessPropertyFile{
                 payload.put("advisors", advisors);
 
                 payload.put("financialYear", "2023-2024");
-                payload.put("type", "amc");
+                payload.put("type", "scheme_name");
                 //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
                 payload.put("aggregateBy", "investment_amount");
                 //investor_count / investment_amount
-                payload.put("sortBy", "amc");
+                payload.put("sortBy", "scheme_name");
                 //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
                 payload.put("order", "asc");
 
@@ -198,7 +198,7 @@ public class Test_Adv extends AD_AccessPropertyFile{
                 payload.put("advisors", advisors);
 
                 payload.put("financialYear", "2023-2024");
-                payload.put("type", "amc");
+                payload.put("type", "scheme_name");
                 //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
                 payload.put("aggregateBy", "investment_amount");
                 //investor_count / investment_amount
@@ -233,11 +233,11 @@ public class Test_Adv extends AD_AccessPropertyFile{
                 payload.put("advisors", advisors);
 
                 payload.put("financialYear", "2023-2024");
-                payload.put("type", "amc");
+                payload.put("type", "scheme_name");
                 //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
                 payload.put("aggregateBy", "investment_amount");
                 //investor_count / investment_amount
-                payload.put("sortBy", "amc");
+                payload.put("sortBy", "scheme_name");
                 //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
                 payload.put("order", "asc");
 

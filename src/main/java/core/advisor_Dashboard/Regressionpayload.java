@@ -1,11 +1,11 @@
 package core.advisor_Dashboard;
 import java.util.*;
 
-public class Regressionpayload {
+public class Regressionpayload  extends AD_AccessPropertyFile {
 
     public static Map<String, Object> SearchInvestor() {
         Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("query","tri.sharon01@gmail.com");
+        payload.put("query",mailid);
         payload.put("type","email");
         return payload;
     }

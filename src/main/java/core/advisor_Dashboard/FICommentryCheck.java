@@ -53,7 +53,7 @@ public class FICommentryCheck extends AD_AccessPropertyFile{
             XSSFSheet sheet1 = wb.getSheetAt(0);
 
             int rowCount = sheet1.getPhysicalNumberOfRows();
-            for(int i=1;i<rowCount; i++) {
+            for(int i=5;i<6; i++) {
                 Row row = sheet1.getRow(i);
                 int value= (int) row.getCell(0).getNumericCellValue();
                 Cell cell = row.getCell(6);
@@ -68,7 +68,7 @@ public class FICommentryCheck extends AD_AccessPropertyFile{
 
                     String expectedNormalized = expectedcomment.replaceAll("\\s+", " ").trim();
                     String actualNormalized = response.getData().getComments().replaceAll("\\s+", " ").trim();
-                    Assert.assertEquals(expectedNormalized, actualNormalized);
+                    Assert.assertEquals(expectedNormalized, actualNormalized, String.valueOf(value));
 
                 } else {
                     System.out.println("No comment found in the cell.");

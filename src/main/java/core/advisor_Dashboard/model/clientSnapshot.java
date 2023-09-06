@@ -40,6 +40,10 @@ public class clientSnapshot {
         public String aumGrowthPercentage;
         public String inflow;
         public String userId;
+        public String advisorName;
+        public boolean moveIn;
+        public boolean moveOut;
+        public boolean referral;
     }
     @Getter@Setter
     public static class Summary{

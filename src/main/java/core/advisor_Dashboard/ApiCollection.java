@@ -360,9 +360,9 @@ public class ApiCollection extends AD_AccessPropertyFile{
             softAssert.assertEquals(decimalFormat.format(totalMtm), summaryData.getMtm(), "MTM :");
             softAssert.assertEquals(decimalFormat.format(totalCurrentAum), summaryData.getCurrentAum(), "CurrentAum :");
             softAssert.assertEquals(decimalFormat.format(totalInflow), summaryData.getInflow(), "Inflow :");
-            softAssert.assertEquals(totalNetgrowthper, summaryData.getNetflowGrowthPercentage(), "NetflowGrowthPercentage :");
-            softAssert.assertEquals(totalMtmper, summaryData.getMtmPercentage(), "MtmPercentage : ");
-            softAssert.assertEquals(totalAumgrowthper, summaryData.getAumGrowthPercentage(), "AumGrowthPercentage :");
+            softAssert.assertEquals(totalNetgrowthper, Double.parseDouble(summaryData.getNetflowGrowthPercentage()),0.000001, "NetflowGrowthPercentage :");
+            softAssert.assertEquals(totalMtmper, Double.parseDouble(summaryData.getMtmPercentage()),0.000001, "MtmPercentage : ");
+            softAssert.assertEquals(totalAumgrowthper, Double.parseDouble(summaryData.getAumGrowthPercentage()),0.000001, "AumGrowthPercentage :");
         }
         softAssert.assertAll();
     }
@@ -432,5 +432,12 @@ public class ApiCollection extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
 
+    @Test
+    public void Overview_MonthlyTrends() {
+        RequestSpecification res = given().spec(req)
+                        .body(Adv_payload.OverviewPayload());
+        res.when().post("/tools/advisory-dashboard/growth/aum/overview")
+                .then().log().all().spec(respec);
+    }
 }
 
