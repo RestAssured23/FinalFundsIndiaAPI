@@ -197,19 +197,18 @@ public class ApiCollection extends AD_AccessPropertyFile{
         res.when().get("/tools/portfolio-review/quality/history")
                 .then().log().all().spec(respec);
     }
-   /* @Test
+    @Test
     public void Follow_Up_History_Post() {
         RequestSpecification res = given().spec(req)
-                .body("""
-                        {
-                          "date": "2023-06-29T23:59:59.000Z",
-                          "status": "Status Test",
-                          "comments": "Comments Test",
-                          "reviewId": "24699"
-                        }""");
+                .body("{\n" +
+                        "                          \"date\": \"2023-06-29T23:59:59.000Z\",\n" +
+                        "                          \"status\": \"Status Test\",\n" +
+                        "                          \"comments\": \"Comments Test\",\n" +
+                        "                          \"reviewId\": \"24699\"\n" +
+                        "                        }");
         res.when().post("/tools/portfolio-review/follow-up")
                 .then().log().all().spec(respec);
-    }*/
+    }
     @Test
     public void Follow_Up_History() {
         RequestSpecification res = given().spec(req)

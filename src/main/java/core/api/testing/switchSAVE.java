@@ -1,37 +1,31 @@
 package core.api.testing;
 
 import core.basepath.AccessPropertyFile;
-import core.dbconnection.DatabaseConnection;
-import core.model.*;
-import core.model.otp.CommonOTP;
-import core.model.otp.VerifyOtpRequest;
+import core.model.AuthorizationResponse;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import org.testng.Assert;
-import org.testng.Reporter;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
 
 import static core.api.CommonVariable.*;
 import static io.restassured.RestAssured.given;
 
 public class switchSAVE extends AccessPropertyFile {
 
-    String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1MTUxNTkiLCJzY29wZXMiOiJyZWFkLHdyaXRlIiwibmFtZSI6IkF1dG9tYXRpb24iLCJlbWFpbCI6IlJlZ3Jlc3Npb25AZ21haWwuY29tIiwibW9iaWxlIjoiMDc5MDc5MDg3NiIsIm1hbmFnZW1lbnQtdXNlci1pZCI6MzQ4NiwibWFuYWdlbWVudC11c2VyLXJvbGVzIjoiYWRtaW4iLCJpc3MiOiJmdW5kc2luZGlhLmNvbSIsImp0aSI6IjFiM2M5ZjVkLWJlYTYtNDZkYi05ZWQ0LTk2NmZkMjhiZDUyMyIsImlhdCI6MTY5NDA4NjE3NSwiZXhwIjoxNjk0MDg3NDM1fQ.k4kAMSaFrgw5sQ7OG_vefcn0v_r4kuDNijdbr_U_uDCPq0ZKp60AM_qVAEVVaqW2Jg94CYMQXk1NcXd6PRjx0A";
+    String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1MTUxNTkiLCJzY29wZXMiOiJyZWFkLHdyaXRlIiwibmFtZSI6IkF1dG9tYXRpb24iLCJlbWFpbCI6IlJlZ3Jlc3Npb25AZ21haWwuY29tIiwibW9iaWxlIjoiMDc5MDc5MDg3NiIsIm1hbmFnZW1lbnQtdXNlci1pZCI6MzQ4NiwibWFuYWdlbWVudC11c2VyLXJvbGVzIjoiYWRtaW4iLCJpc3MiOiJmdW5kc2luZGlhLmNvbSIsImp0aSI6IjRjZTlhNjE1LTVjYzAtNDhmMy05ZjNiLWE5YzhkNjY1M2NjNyIsImlhdCI6MTY5NDA4NzY5NywiZXhwIjoxNjk0MDg4OTU3fQ.UsQ8cvOhRcwJFdSYF9E5f3ExBlvG3VqDEUKeGw7BKg1zVEBVuuyF74erwleeBOLy6m3NH4ldqUz9rmePJbymYQ";
+
+
+
 
     private String growth_amt, growth_unit, div_amt, div_unit;
     String cancelId;
     String savefolio = "343423/434";         // possible folio with same AMC ==> 343423/435
-    String savegoalId = "459104";             //possible goalid==> 459100 / 459101 / 459102 / 459103 / 459104 / 459114 / 459706
+    String fromgoalId = "459104";             //possible goalid==> 459100 / 459101 / 459102 / 459103 / 459104 / 459114 / 459706
     String holdid = "183318";
+
+    String toGoalID="459103";            //possible goalid==> 459100 / 459101 / 459102 / 459103 / 459104 / 459114 / 459706
 
     public switchSAVE() {
         req = new RequestSpecBuilder()
@@ -81,7 +75,8 @@ public class switchSAVE extends AccessPropertyFile {
                 "  \"otpReferenceId\": \"\",\n" +
                 "  \"holdingProfileId\": \"" + holdid + "\",\n" +
                 "  \"folio\": \"" + savefolio + "\",\n" +
-                "  \"goalId\": \"" + savegoalId + "\",\n" +
+                "  \"goalId\": \"" + fromgoalId + "\",\n" +
+                "  \"toGoalId\": \"" + toGoalID + "\",\n" +
                 "  \"fromSchemeCode\": \"20748\",\n" +
                 "  \"toSchemeCode\": \"20747\",\n" +
                 "  \"toOption\": \"Growth\",\n" +
@@ -99,7 +94,7 @@ public class switchSAVE extends AccessPropertyFile {
                 "  \"otpReferenceId\": \"\",\n" +
                 "  \"holdingProfileId\": \"" + holdid + "\",\n" +
                 "  \"folio\": \"" + savefolio + "\",\n" +
-                "  \"goalId\": \"" + savegoalId + "\",\n" +
+                "  \"goalId\": \"" + fromgoalId + "\",\n" +
                 "  \"fromSchemeCode\": \"20748\",\n" +
                 "  \"toSchemeCode\": \"20747\",\n" +
                 "  \"toOption\": \"Growth\",\n" +
@@ -118,7 +113,7 @@ public class switchSAVE extends AccessPropertyFile {
                 "  \"otpReferenceId\": \"\",\n" +
                 "  \"holdingProfileId\": \"" + holdid + "\",\n" +
                 "  \"folio\": \"" + savefolio + "\",\n" +
-                "  \"goalId\": \"" + savegoalId + "\",\n" +
+                "  \"goalId\": \"" + fromgoalId + "\",\n" +
                 "  \"fromSchemeCode\": \"20748\",\n" +
                 "  \"toSchemeCode\": \"45423\",\n" +
                 "  \"toDividendOption\": \"Payout\",\n" +
@@ -138,7 +133,7 @@ public class switchSAVE extends AccessPropertyFile {
                 "  \"otpReferenceId\": \"\",\n" +
                 "  \"holdingProfileId\": \"" + holdid + "\",\n" +
                 "  \"folio\": \"" + savefolio + "\",\n" +
-                "  \"goalId\": \"" + savegoalId + "\",\n" +
+                "  \"goalId\": \"" + fromgoalId + "\",\n" +
                 "  \"fromSchemeCode\": \"20748\",\n" +
                 "  \"toSchemeCode\": \"45423\",\n" +
                 "  \"toDividendOption\": \"Payout\",\n" +
@@ -147,16 +142,16 @@ public class switchSAVE extends AccessPropertyFile {
                 "}";
     }
 
-/*    @Test(priority = 1)
+    @Test(priority = 1)
     public void authorization_switchCancel() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", holdid);
         AuthorizationResponse.Root response = res.when().get("/core/investor/transactions/authorization")
                 .then().log().all().spec(respec).extract().response().as(AuthorizationResponse.Root.class);
-        for (AuthorizationResponse.Switch data : response.getData().getSwitches()) {
+       /* for (AuthorizationResponse.Switch data : response.getData().getSwitches()) {
             cancelId = data.getId();
             System.out.println(cancelId);
-          *//*  List id = new LinkedList();
+            List id = new LinkedList();
             Map<String, Object> payload = new HashMap<>();
             payload.put("id", cancelId);
             payload.put("action", "reject");
@@ -168,9 +163,9 @@ public class switchSAVE extends AccessPropertyFile {
             RequestSpecification can = given().spec(req)
                     .body(id);
             can.when().post("/core/investor/transactions/authorization")
-                    .then().log().all().spec(respec);*//*
-        }
-    }*/
+                    .then().log().all().spec(respec);
+        }*/
+    }
     //Live
    /* @Test
     public void LiveSwitch_API() {   //goal ID : 2932872 / 3363297
