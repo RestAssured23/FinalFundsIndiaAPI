@@ -27,12 +27,12 @@ public class Adv_payload {
     public static Map<String, Object> AllReviews() {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("page", 1);
-        payload.put("size", 20);
+        payload.put("size", 100);
             List<String> segment = Arrays.asList("silver","platinum","gold","digital");
                                                  //"silver", "gold", "platinum", "digital", "n/a"
             List<String> status = Arrays.asList("all","draft","generated","completed");
             List<String> headid = Arrays.asList("187458");
-            List<String> managerid = Arrays.asList("1871006");
+            List<String> managerid = Arrays.asList();
             List<String> advisorid = Arrays.asList();
         payload.put("segments", segment);
         payload.put("status", status);
@@ -291,7 +291,7 @@ public class Adv_payload {
         filter.put("source", "MonthlyTrends");
         List<Map<String, Object>> parameter = new ArrayList<>();
         Map<String,Object>filterdata=new LinkedHashMap<>();
-        filterdata.put("month","ytd");                 // mtd, lfy, ytd, current_month, previous_month, other_month
+        filterdata.put("month","previous_month");                 // mtd, lfy, ytd, current_month, previous_month, other_month
         filterdata.put("monthName","Sep");
         filterdata.put("field","sip");                //sip, lumpsum, inflow, outflow, transfer_in, transfer_out, redemption, swp
         filterdata.put("type","or");                  //  or, and

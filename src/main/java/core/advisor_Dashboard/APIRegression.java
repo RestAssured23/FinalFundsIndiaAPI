@@ -8,7 +8,6 @@ import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import javax.print.attribute.standard.JobKOctets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -17,14 +16,14 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.put;
 
-public class AdvDashboardApiRegression extends AD_AccessPropertyFile{
+public class APIRegression extends AD_AccessPropertyFile{
     private final RequestSpecification req;
     private final ResponseSpecification respec;
     SoftAssert softAssert = new SoftAssert();
     private List<String> investorIDList = new ArrayList<>();
-    String investorId,reviewId;  List<String> portfolioList;
+    String investorId,reviewId,GeneratedReviewId,CompletedReviewId;  List<String> portfolioList;
     private Map<String, List<String>> investorPortfolioMap = new HashMap<>();
-    public AdvDashboardApiRegression() {
+    public APIRegression() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getADBasePath())
                 .addHeader("x-api-version", "2.0")
@@ -289,7 +288,7 @@ public class AdvDashboardApiRegression extends AD_AccessPropertyFile{
                 .then().log().all().assertThat().contentType("application/pdf");
     }
     @Test(priority = 19)
-    public void content() {
+    public void CommunicationsContent() {
         RequestSpecification res = given().spec(req)
                 .queryParam("reviewId",reviewId);
         res.when().get("/core/portfolio-review/communications/content")
@@ -306,7 +305,7 @@ public class AdvDashboardApiRegression extends AD_AccessPropertyFile{
          payload.put("type",typedata);
         List<String>tomail=Arrays.asList(mailid);
          payload.put("to",tomail);
-        List<String> ccmail=Arrays.asList();
+        List<String> ccmail=Arrays.asList(ccmailid);
         payload.put("cc",ccmail);
 
         RequestSpecification res = given().spec(req)
@@ -315,164 +314,124 @@ public class AdvDashboardApiRegression extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
 
-  /*
-    }
-    @Test(priority = 20)
-    public void communications() {
-        Map<String, Object>payload=new HashMap<>();
-        payload.put("reviewId","27948");
-        payload.put("from","qateam@fundsindia.com");
-        payload.put("attachmentName","27948");
-
-        RequestSpecification res = given().spec(req)
-                        .body("{\n" +
-                                "  \"reviewId\": \"27948\",\n" +
-                                "  \"type\": [\n" +
-                                "    \"email\"\n" +
-                                "  ],\n" +
-                                "  \"from\": \"qateam@fundsindia.com\",\n" +
-                                "  \"to\": [\n" +
-                                "    \"tri.sharon01@gmail.com\",\n" +
-                                "    \"stpflow6@gmail.com\"\n" +
-                                "  ],\n" +
-                                "  \"cc\": [],\n" +
-                                "  \"attachmentName\": \"tri.sharon01@gmail.com-27948.pdf\"\n" +
-                                "}");
-        res.when().post("/core/portfolio-review/communications")
-                .then().log().all().spec(respec);
-    }
-
-
-    @Test
+    @Test(priority = 21)
     public void Filter_Form() {
         RequestSpecification res = given().spec(req);
         res.when().get("/tools/advisory-dashboard/filters/form")
                 .then().log().all().spec(respec);
     }
-    @Test
+    @Test(priority = 22)
     public void Dues() {
         RequestSpecification res = given().spec(req);
         res.when().get("/tools/portfolio-review/dues")
                 .then().log().all().spec(respec);
     }
-    @Test
+    @Test(priority = 23)
     public void All_Clients() {
         RequestSpecification res = given().spec(req)
                 .body(Adv_payload.AllClients());
         res.when().post("/tools/portfolio-review/clients")
                 .then().log().all().spec(respec);
     }
-    @Test
+    @Test(priority = 24)
     public void All_Reviews() {
-        RequestSpecification res = given().spec(req)
-                .body("{\n" +
-                        "  \"page\": 1,\n" +
-                        "  \"size\": 20,\n" +
-                        "  \"segments\": [\n" +
-                        "    \"platinum\",\n" +
-                        "    \"gold\",\n" +
-                        "    \"silver\",\n" +
-                        "    \"digital\"\n" +
-                        "  ],\n" +
-                        "  \"types\": \"all\",\n" +
-                        "  \"status\": [\n" +
-                        "    \"all\",\n" +
-                        "    \"draft\",\n" +
-                        "    \"generated\",\n" +
-                        "    \"completed\"\n" +
-                        "  ],\n" +
-                        "  \"heads\": [\n" +
-                        "    \"187458\",\n" +
-                        "    \"2152531\"\n" +
-                        "  ],\n" +
-                        "  \"managers\": [],\n" +
-                        "  \"advisors\": [],\n" +
-                        "  \"sortBy\": \"advisor_name\",\n" +
-                        "  \"sortType\": \"asc\",\n" +
-                        "  \"search\": {\n" +
-                        "    \"query\": \"tri.sharon01@gmail.com\",\n" +
-                        "    \"type\": \"email\"\n" +
-                        "  }\n" +
-                        "}");
-                //.body(Adv_payload.AllReviews());
-       AllReviewResponse.Root response= res.when().post("/tools/portfolio-review/completed")
+               RequestSpecification res = given().spec(req)
+             .body(Adv_payload.AllReviews());
+        AllReviewResponse.Root response= res.when().post("/tools/portfolio-review/completed")
                 .then().log().all().spec(respec).extract().response().as(AllReviewResponse.Root.class);
-        System.out.println(response.getData().getReviews().get(0).getReviewId());
+        for (AllReviewResponse.Review review : response.getData().getReviews()) {
+             GeneratedReviewId = String.valueOf(review.getReviewId());
+             CompletedReviewId = review.getStatus();
+            if ("Generated".equalsIgnoreCase(CompletedReviewId)) {
+                System.out.println("Generated" +GeneratedReviewId);
+            } else if ("Completed".equalsIgnoreCase(CompletedReviewId)) {
+                System.out.println("Completed" + CompletedReviewId);
+            }
+
+        }
     }
-    @Test(priority = 1)
-    public void Communication_Content() {
+    @Test(priority = 25)
+    public void GeneratedPDFDownload() {
         RequestSpecification res = given().spec(req)
-                .queryParam("reviewId",reviewId);
-        res.when().get("/core/portfolio-review/communications/content")
-                .then().log().all().spec(respec);
+                .queryParam("reviewId",GeneratedReviewId)
+                .queryParam("type","New");
+        res.when().get("/core/portfolio-review/download")
+                .then().log().all().assertThat().contentType("application/pdf");
     }
-    @Test
-    public void Communication_mail() {
+    @Test(priority = 26)
+    public void CompletedPDFDownload() {
         RequestSpecification res = given().spec(req)
-                .body("""
-                        {
-                            "reviewId":"3040",
-                            "from": "qateam@fundsindia.com",
-                            "to": ["tri.sharon01@gmail.com"],                           
-                            "type":["email"]
-                        }""");
-        res.when().post("/core/portfolio-review/communications")
-                .then().log().all().spec(respec);
-    }
-    @Test
-    public void mail_content() {
-        RequestSpecification res = given().spec(req)
-                .queryParam("reviewId", reviewId);
-        res.when().get("/core/portfolio-review/mail-content")
-                .then().log().all().spec(respec);
+                .queryParam("reviewId",CompletedReviewId)
+                .queryParam("type","New");
+        res.when().get("/core/portfolio-review/download")
+                .then().log().all().assertThat().contentType("application/pdf");
     }
 
-//Quality
-   @Test
-    public void Quality_Review() {
-        RequestSpecification res = given().spec(req)
-                .body(Adv_payload.quality_review());
-        res.when().post("/tools/portfolio-review/quality")
-                .then().log().all().spec(respec);
-    }
-    @Test
-    public void Quality_History() {
-        RequestSpecification res = given().spec(req)
-                .queryParam("reviewId",reviewId);
-        res.when().get("/tools/portfolio-review/quality/history")
-                .then().log().all().spec(respec);
-    }
-    @Test
-    public void Follow_Up_History_Post() {
-        LocalDateTime updatedDate = LocalDateTime.now().plusDays(1);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        String formattedUpdatedDate = updatedDate.format(formatter);
-
-        Map<String,Object> payload=new HashMap<>();
-            payload.put("date",formattedUpdatedDate);
-            payload.put("status","Automation Testing");
-            payload.put("comments","Automation Comments Test");
-            payload.put("reviewId",reviewId);
-
-        RequestSpecification res = given().spec(req)
-                .body(payload);
-        res.when().post("/tools/portfolio-review/follow-up")
-                .then().log().all().spec(respec);
-    }
-    @Test
-    public void Follow_Up_History() {
-        RequestSpecification res = given().spec(req)
-                .queryParam("reviewId",reviewId);
-        res.when().get("/tools/portfolio-review/follow-up/history")
-                .then().log().all().spec(respec);
-    }
-    @Test
+   @Test(priority = 27)
     public void Review_History() {
         RequestSpecification res = given().spec(req)
                 .queryParam("reviewId",reviewId);
         res.when().get("/tools/portfolio-review/history")
                 .then().log().all().spec(respec);
     }
-*/
+
+    @Test(priority = 28)
+    public void Follow_Up_History_Post() {
+        LocalDateTime updatedDate = LocalDateTime.now().plusDays(2);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String formattedUpdatedDate = updatedDate.format(formatter);
+
+        Map<String,Object> payload=new HashMap<>();
+        payload.put("date",formattedUpdatedDate);
+        payload.put("status","Automation Testing");
+        payload.put("comments","Automation Comments Test");
+        payload.put("reviewId",reviewId);
+
+        RequestSpecification res = given().spec(req)
+                .body(payload);
+        res.when().post("/tools/portfolio-review/follow-up")
+                .then().log().all().spec(respec);
     }
+    @Test(priority = 29)
+    public void Follow_Up_History() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("reviewId",reviewId);
+        res.when().get("/tools/portfolio-review/follow-up/history")
+                .then().log().all().spec(respec);
+    }
+    @Test(priority = 30)
+    public void Quality_History() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("reviewId",reviewId);
+        res.when().get("/tools/portfolio-review/quality/history")
+                .then().log().all().spec(respec);
+    }
+    @Test(priority = 31)
+    public void Quality_Review() {
+        LocalDateTime updatedDate = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String formattedUpdatedDate = updatedDate.format(formatter);
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("reviewId", String.valueOf(reviewId));
+        payload.put("critical", "yes");         // [yes , no]
+        payload.put("date", formattedUpdatedDate);
+        payload.put("comments", "testing");
+
+        List<Map<String, Object>> parameter = new ArrayList<>();
+        Map<String, Object> data = new HashMap<>();
+        data.put("id","1");
+        data.put("description","Testing");
+        data.put("value","yes");
+        List<String> tag = Arrays.asList("Tags testing");
+        data.put("tags",tag);
+        parameter.add(data);
+        payload.put("parameters",parameter);
+
+        RequestSpecification res = given().spec(req)
+                .body(payload);
+        res.when().post("/tools/portfolio-review/quality")
+                .then().log().all().spec(respec);
+    }
+}
 
