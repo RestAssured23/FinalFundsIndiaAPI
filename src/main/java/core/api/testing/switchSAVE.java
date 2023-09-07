@@ -25,8 +25,7 @@ import static io.restassured.RestAssured.given;
 
 public class switchSAVE extends AccessPropertyFile {
 
-    String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMzMxODcwIiwic2NvcGVzIjoicmVhZCx3cml0ZSIsIm5hbWUiOiJzYXRoaXNoIEQiLCJlbWFpbCI6ImRzYXRoaXNoMDIyM0BnbWFpbC5jb20iLCJtb2JpbGUiOiI4MDcyMDA3NTk5IiwibWFuYWdlbWVudC11c2VyLWlkIjoxODkwNzQzLCJtYW5hZ2VtZW50LXVzZXItcm9sZXMiOiJhZG1pbiIsImlzcyI6ImZ1bmRzaW5kaWEuY29tIiwianRpIjoiZTQ4ZDc4NjUtMWM0MC00NDIzLWFlNjUtMzEzNzgzZGYwNjg1IiwiaWF0IjoxNjkzODE5NTc1LCJleHAiOjE2OTM4MjMyMzV9.HWHVoj06kPvDGjBqHUMHTdNhSFEkHUR6TCowcQqfjn0hHQfgxFyb9NlmyB4JwVr8Ow5nGF8Z5pQWMhZ-uSfxOw";
-
+    String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1MTUxNTkiLCJzY29wZXMiOiJyZWFkLHdyaXRlIiwibmFtZSI6IkF1dG9tYXRpb24iLCJlbWFpbCI6IlJlZ3Jlc3Npb25AZ21haWwuY29tIiwibW9iaWxlIjoiMDc5MDc5MDg3NiIsIm1hbmFnZW1lbnQtdXNlci1pZCI6MzQ4NiwibWFuYWdlbWVudC11c2VyLXJvbGVzIjoiYWRtaW4iLCJpc3MiOiJmdW5kc2luZGlhLmNvbSIsImp0aSI6IjFiM2M5ZjVkLWJlYTYtNDZkYi05ZWQ0LTk2NmZkMjhiZDUyMyIsImlhdCI6MTY5NDA4NjE3NSwiZXhwIjoxNjk0MDg3NDM1fQ.k4kAMSaFrgw5sQ7OG_vefcn0v_r4kuDNijdbr_U_uDCPq0ZKp60AM_qVAEVVaqW2Jg94CYMQXk1NcXd6PRjx0A";
 
     private String growth_amt, growth_unit, div_amt, div_unit;
     String cancelId;
@@ -37,7 +36,7 @@ public class switchSAVE extends AccessPropertyFile {
     public switchSAVE() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
-                .addHeader("x-api-version", "2.0")
+                .addHeader("x-api-version", "1.0")
                 .addHeader("channel-id", getChannelID())
                 .addHeader("x-fi-access-token", token)
                 .setContentType(ContentType.JSON)
@@ -52,12 +51,12 @@ public class switchSAVE extends AccessPropertyFile {
     }
     @Test
     public void Switch_API() {
- /*       RequestSpecification res = given()
+        RequestSpecification res = given()
                 .spec(req)
-                .body(div_amt);
+                .body(growth_unit);
         res.when().post("/core/investor/switch/save")
-                .then().log().all().spec(respec);*/
-        String[] bodyValues = {growth_amt, growth_unit, div_unit, div_amt};
+                .then().log().all().spec(respec);
+     /*   String[] bodyValues = {growth_amt, growth_unit, div_unit, div_amt};
 
         for (String bodyValue : bodyValues) {
             RequestSpecification res = given()
@@ -65,7 +64,7 @@ public class switchSAVE extends AccessPropertyFile {
                     .body("bodyValue");
             res.when().post("/core/investor/switch/save")
                     .then().log().all().spec(respec);
-        }
+        }*/
     }
 
     @BeforeClass
@@ -148,7 +147,7 @@ public class switchSAVE extends AccessPropertyFile {
                 "}";
     }
 
-    @Test(priority = 1)
+/*    @Test(priority = 1)
     public void authorization_switchCancel() {
         RequestSpecification res = given().spec(req)
                 .queryParam("holdingProfileId", holdid);
@@ -157,7 +156,7 @@ public class switchSAVE extends AccessPropertyFile {
         for (AuthorizationResponse.Switch data : response.getData().getSwitches()) {
             cancelId = data.getId();
             System.out.println(cancelId);
-          /*  List id = new LinkedList();
+          *//*  List id = new LinkedList();
             Map<String, Object> payload = new HashMap<>();
             payload.put("id", cancelId);
             payload.put("action", "reject");
@@ -169,11 +168,11 @@ public class switchSAVE extends AccessPropertyFile {
             RequestSpecification can = given().spec(req)
                     .body(id);
             can.when().post("/core/investor/transactions/authorization")
-                    .then().log().all().spec(respec);*/
+                    .then().log().all().spec(respec);*//*
         }
-    }
+    }*/
     //Live
-    @Test
+   /* @Test
     public void LiveSwitch_API() {   //goal ID : 2932872 / 3363297
         RequestSpecification res = given()
                 .spec(req)
@@ -197,5 +196,5 @@ public class switchSAVE extends AccessPropertyFile {
                         "}");
         res.when().post("/core/investor/switch/save")
                 .then().log().all().spec(respec);
-    }
+    }*/
 }

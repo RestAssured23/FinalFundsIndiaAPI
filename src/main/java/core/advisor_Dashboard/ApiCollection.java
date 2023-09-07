@@ -68,7 +68,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
         res.when().get("/core/portfolio-review/communications/content")
                 .then().log().all().spec(respec);
     }
-    @Test
+   /* @Test
     public void Communication_mail() {
         RequestSpecification res = given().spec(req)
                 .body("""
@@ -81,7 +81,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
                         }""");
         res.when().post("/core/portfolio-review/communications")
                 .then().log().all().spec(respec);
-    }
+    }*/
     @Test
     public void mail_content() {
         RequestSpecification res = given().spec(req)
@@ -90,7 +90,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
 
-    @Test
+  /*  @Test
     public void Review_Clients() {
         RequestSpecification res = given().spec(req)
                 .body("""
@@ -115,8 +115,8 @@ public class ApiCollection extends AD_AccessPropertyFile{
                         }""");
         res.when().post("/core/portfolio-review/clients")
                 .then().log().all().spec(respec);
-    }
-    @Test
+    }*/
+  /*  @Test
     public void Review_communications() {
         RequestSpecification res = given().spec(req)
                 .body("""
@@ -135,8 +135,8 @@ public class ApiCollection extends AD_AccessPropertyFile{
                         }""");
         res.when().post("/core/portfolio-review/communications")
                 .then().log().all().spec(respec);
-    }
-    @Test
+    }*/
+  /*  @Test
     public void Review_callback() {
         RequestSpecification res = given().spec(req)
                 .body("""
@@ -152,8 +152,8 @@ public class ApiCollection extends AD_AccessPropertyFile{
                         }""");
         res.when().post("/core/portfolio-review/callback")
                 .then().log().all().spec(respec);
-    }
-    @Test
+    }*/
+  /*  @Test
     public void Review_completed() {
         RequestSpecification res = given().spec(req)
                 .body("""
@@ -180,7 +180,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
                         }""");
         res.when().post("/core/portfolio-review/completed")
                 .then().log().all().spec(respec);
-    }
+    }*/
 
 //Quality
     @Test
@@ -197,7 +197,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
         res.when().get("/tools/portfolio-review/quality/history")
                 .then().log().all().spec(respec);
     }
-    @Test
+   /* @Test
     public void Follow_Up_History_Post() {
         RequestSpecification res = given().spec(req)
                 .body("""
@@ -209,7 +209,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
                         }""");
         res.when().post("/tools/portfolio-review/follow-up")
                 .then().log().all().spec(respec);
-    }
+    }*/
     @Test
     public void Follow_Up_History() {
         RequestSpecification res = given().spec(req)

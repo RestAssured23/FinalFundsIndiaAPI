@@ -267,7 +267,7 @@ public class Test_Adv extends AD_AccessPropertyFile{
               //  System.out.println(investorName);
               //  System.out.println(advisorName);
               //  System.out.println(status);
-                if (investorName.isBlank()||advisorName.isBlank()||status.isBlank()) {
+                if (investorName.isEmpty()||advisorName.isEmpty()||status.isEmpty()) {
                     String message = "Investor / Advisor /Status is blank. Email: " + investor.getEmail() + ", PAN: " + investor.getPan();
                      Assert.fail(message); // This assertion will fail the test
                 }

@@ -30,83 +30,79 @@ public class Payload extends AccessPropertyFile {
                     }
     public static String Select_Funds()
     {
-        return """
-                {
-                  "page": 1,
-                  "size": 5,
-                  "orderBy": "rating",
-                  "orderType": "DESC",
-                  "categories": [],
-                  "subCategories": [],
-                  "query": "",
-                  "risk": [],
-                  "ratings": [],
-                  "amcs": [],
-                  "searchCode": [
-                    {
-                      "value": "recommended",
-                      "sort": true
-                    }
-                  ]
-                }""";
+        return "{\n" +
+                "                  \"page\": 1,\n" +
+                "                  \"size\": 5,\n" +
+                "                  \"orderBy\": \"rating\",\n" +
+                "                  \"orderType\": \"DESC\",\n" +
+                "                  \"categories\": [],\n" +
+                "                  \"subCategories\": [],\n" +
+                "                  \"query\": \"\",\n" +
+                "                  \"risk\": [],\n" +
+                "                  \"ratings\": [],\n" +
+                "                  \"amcs\": [],\n" +
+                "                  \"searchCode\": [\n" +
+                "                    {\n" +
+                "                      \"value\": \"recommended\",\n" +
+                "                      \"sort\": true\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                }";
     }
     public static String NFO(){
-        return """
-                {
-                  "page": 1,
-                  "size": 10,
-                  "orderBy": "rating",
-                  "orderType": "DESC",
-                  "categories": [],
-                  "subCategories": [],
-                  "query": "",
-                  "risk": [],
-                  "ratings": [],
-                  "amcs": [],
-                  "searchCode": [
-                    {
-                      "value": "nfo",
-                      "sort": true
-                    }
-                  ],
-                  "nfo": true,
-                  "schemeType": []
-                }""";
+        return "{\n" +
+                "                  \"page\": 1,\n" +
+                "                  \"size\": 10,\n" +
+                "                  \"orderBy\": \"rating\",\n" +
+                "                  \"orderType\": \"DESC\",\n" +
+                "                  \"categories\": [],\n" +
+                "                  \"subCategories\": [],\n" +
+                "                  \"query\": \"\",\n" +
+                "                  \"risk\": [],\n" +
+                "                  \"ratings\": [],\n" +
+                "                  \"amcs\": [],\n" +
+                "                  \"searchCode\": [\n" +
+                "                    {\n" +
+                "                      \"value\": \"nfo\",\n" +
+                "                      \"sort\": true\n" +
+                "                    }\n" +
+                "                  ],\n" +
+                "                  \"nfo\": true,\n" +
+                "                  \"schemeType\": []\n" +
+                "                }";
     }
     public static String Super_Savings(){
-        return """
-                {
-                  "page": 1,
-                  "size": 10,
-                  "orderBy": "rating",
-                  "orderType": "DESC",
-                  "categories": [],
-                  "subCategories": [],
-                  "query": "",
-                  "risk": [],
-                  "ratings": [],
-                  "amcs": [],
-                  "searchCode": [
-                    {
-                      "value": "super_savings",
-                      "sort": true
-                    }
-                  ]
-                }""";
+        return "{\n" +
+                "                  \"page\": 1,\n" +
+                "                  \"size\": 10,\n" +
+                "                  \"orderBy\": \"rating\",\n" +
+                "                  \"orderType\": \"DESC\",\n" +
+                "                  \"categories\": [],\n" +
+                "                  \"subCategories\": [],\n" +
+                "                  \"query\": \"\",\n" +
+                "                  \"risk\": [],\n" +
+                "                  \"ratings\": [],\n" +
+                "                  \"amcs\": [],\n" +
+                "                  \"searchCode\": [\n" +
+                "                    {\n" +
+                "                      \"value\": \"super_savings\",\n" +
+                "                      \"sort\": true\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                }";
     }
     public static String questionnaire() {
         {
-            return """
-                    {
-                      "type": "pre-redemption",
-                      "answers": [
-                        {
-                          "questionId": "4",
-                          "answerId": "0",
-                          "answer": ""
-                        }
-                      ]
-                    }""";
+            return "{\n" +
+                    "                      \"type\": \"pre-redemption\",\n" +
+                    "                      \"answers\": [\n" +
+                    "                        {\n" +
+                    "                          \"questionId\": \"4\",\n" +
+                    "                          \"answerId\": \"0\",\n" +
+                    "                          \"answer\": \"\"\n" +
+                    "                        }\n" +
+                    "                      ]\n" +
+                    "                    }";
         }
     }
 }
