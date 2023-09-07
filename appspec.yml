@@ -1,0 +1,8 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /usr/local/codedeploy/fi-testing-automation
+hooks:
+  AfterInstall:
+    - location: ./transfer.sh
