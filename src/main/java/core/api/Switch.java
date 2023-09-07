@@ -31,7 +31,7 @@ public class Switch extends AccessPropertyFile {
     public Switch() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
-                .addHeader("x-api-version", "2.0")
+                .addHeader("x-api-version", "1.0")
                 .addHeader("channel-id", getChannelID())
                 .addHeader("x-fi-access-token", getAccessToken())
                 .setContentType(ContentType.JSON)
@@ -141,7 +141,7 @@ public class Switch extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().as(MFscheme.Root.class);
 
         if (targetscheme_pro.equalsIgnoreCase("0")) {
-            printSchemeDetails(response, 3);
+            printSchemeDetails(response, 1);
         } else {
             for (int i = 0; i < response.getData().getContent().size(); i++) {
                 if (response.getData().getContent().get(i).getName().equalsIgnoreCase(switch_target)) {

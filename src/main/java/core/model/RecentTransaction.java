@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Date;
 
+@Getter@Setter
 public class RecentTransaction {
     @Getter@Setter
     public static class Datum{
@@ -24,7 +24,7 @@ public class RecentTransaction {
         public String subCategory;
         public String referenceNo;
         public String type;
-        public Date date;
+        public String date;
         public String status;
         public double amount;
         public String amountFormatted;
@@ -32,7 +32,6 @@ public class RecentTransaction {
         public String unitsFormatted;
         public String dividendType;
         public ArrayList<String> actions;
-        public String subTransType;
     }
     @Getter@Setter
     public static class Root{

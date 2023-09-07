@@ -6,23 +6,18 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
-
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.put;
 
 public class APIRegression extends AD_AccessPropertyFile{
     private final RequestSpecification req;
     private final ResponseSpecification respec;
-    SoftAssert softAssert = new SoftAssert();
-    private List<String> investorIDList = new ArrayList<>();
-    String investorId,reviewId,GeneratedReviewId,CompletedReviewId;  List<String> portfolioList;
-    private Map<String, List<String>> investorPortfolioMap = new HashMap<>();
+    private final List<String> investorIDList = new ArrayList<>();
+    String investorId,reviewId,firstGeneratedReviewId,firstCompletedReviewId;  List<String> portfolioList;
+    private final Map<String, List<String>> investorPortfolioMap = new HashMap<>();
     public APIRegression() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getADBasePath())
@@ -60,8 +55,6 @@ public class APIRegression extends AD_AccessPropertyFile{
     public void PortfolioList() {
           Map<String, Object> payload = new HashMap<>();
             payload.put("investors",investorIDList);
-    /*        List<String> investorIds = Arrays.asList("63910", "1560984");
-            payload.put("investors", investorIds);*/
 
             RequestSpecification res = given().spec(req)
                     .body(payload);
@@ -193,10 +186,6 @@ public class APIRegression extends AD_AccessPropertyFile{
     }
     @Test(priority = 9)
     public void cash_Add() {
-     /*   Map<String ,Object>payload=new HashMap<>();
-        payload.put("reviewId",reviewId.toString());
-        payload.put("amount",5000);*/
-
         RequestSpecification res = given().spec(req)
                 .body("{\"reviewId\":"+reviewId+",\"amount\":5000}");
         res.when().post("/core/portfolio-review/cash")
@@ -204,10 +193,7 @@ public class APIRegression extends AD_AccessPropertyFile{
     }
     @Test(priority = 10)
     public void cashWithdraw() {
-     /*   Map<String ,Object>payload=new HashMap<>();
-        payload.put("reviewId",reviewId.toString());
-        payload.put("amount",5000);*/
-        RequestSpecification res = given().spec(req)
+         RequestSpecification res = given().spec(req)
                 .body("{\"reviewId\":"+reviewId+",\"amount\":-5000}");
         res.when().post("/core/portfolio-review/cash")
                 .then().log().all().spec(respec);
@@ -295,7 +281,7 @@ public class APIRegression extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
     @Test(priority = 20)
-    public void communications() {
+    public void SendEmail() {
         Map<String, Object>payload=new HashMap<>();
         payload.put("reviewId",reviewId);
         payload.put("from","qateam@fundsindia.com");
@@ -333,27 +319,42 @@ public class APIRegression extends AD_AccessPropertyFile{
         res.when().post("/tools/portfolio-review/clients")
                 .then().log().all().spec(respec);
     }
-    @Test(priority = 24)
-    public void All_Reviews() {
-               RequestSpecification res = given().spec(req)
-             .body(Adv_payload.AllReviews());
-        AllReviewResponse.Root response= res.when().post("/tools/portfolio-review/completed")
-                .then().log().all().spec(respec).extract().response().as(AllReviewResponse.Root.class);
-        for (AllReviewResponse.Review review : response.getData().getReviews()) {
-             GeneratedReviewId = String.valueOf(review.getReviewId());
-             CompletedReviewId = review.getStatus();
-            if ("Generated".equalsIgnoreCase(CompletedReviewId)) {
-                System.out.println("Generated" +GeneratedReviewId);
-            } else if ("Completed".equalsIgnoreCase(CompletedReviewId)) {
-                System.out.println("Completed" + CompletedReviewId);
-            }
+  @Test(priority = 24)
+  public void All_Reviews() {
+      RequestSpecification res = given().spec(req)
+              .body(Adv_payload.AllReviews());
+      AllReviewResponse.Root response = res.when().post("/tools/portfolio-review/completed")
+              .then().log().all().spec(respec).extract().response().as(AllReviewResponse.Root.class);
 
-        }
-    }
+      // Initialize variables to store first Generated and Completed IDs
+      firstGeneratedReviewId = null;
+      firstCompletedReviewId = null;
+
+      for (AllReviewResponse.Review review : response.getData().getReviews()) {
+          String reviewId = String.valueOf(review.getReviewId());
+          String reviewStatus = review.getStatus();
+
+          if ("Generated".equalsIgnoreCase(reviewStatus)) {
+              if (firstGeneratedReviewId == null) {
+                  firstGeneratedReviewId = reviewId;
+                  System.out.println("First Generated ID: " + firstGeneratedReviewId);
+              }
+          } else if ("Completed".equalsIgnoreCase(reviewStatus)) {
+              if (firstCompletedReviewId == null) {
+                  firstCompletedReviewId = reviewId;
+                  System.out.println("First Completed ID: " + firstCompletedReviewId);
+              }
+          }
+          // Exit the loop if both first Generated and Completed IDs are found
+          if (firstGeneratedReviewId != null && firstCompletedReviewId != null) {
+              break;
+          }
+      }
+  }
     @Test(priority = 25)
     public void GeneratedPDFDownload() {
         RequestSpecification res = given().spec(req)
-                .queryParam("reviewId",GeneratedReviewId)
+                .queryParam("reviewId",firstGeneratedReviewId)
                 .queryParam("type","New");
         res.when().get("/core/portfolio-review/download")
                 .then().log().all().assertThat().contentType("application/pdf");
@@ -361,7 +362,7 @@ public class APIRegression extends AD_AccessPropertyFile{
     @Test(priority = 26)
     public void CompletedPDFDownload() {
         RequestSpecification res = given().spec(req)
-                .queryParam("reviewId",CompletedReviewId)
+                .queryParam("reviewId",firstCompletedReviewId)
                 .queryParam("type","New");
         res.when().get("/core/portfolio-review/download")
                 .then().log().all().assertThat().contentType("application/pdf");

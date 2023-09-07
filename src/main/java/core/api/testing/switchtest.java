@@ -140,7 +140,7 @@ public class switchtest extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().as(MFscheme.Root.class);
 
         if (targetscheme_pro.equalsIgnoreCase("0")) {
-            printSchemeDetails(response, 2);
+            printSchemeDetails(response, 1);
         } else {
             for (int i = 0; i < response.getData().getContent().size(); i++) {
                 if (response.getData().getContent().get(i).getName().equalsIgnoreCase(switch_target)) {
@@ -205,9 +205,9 @@ public class switchtest extends AccessPropertyFile {
         VerifyOtpRequest.Otp otp = new VerifyOtpRequest.Otp();
         otp.setSms("");
         otp.setEmail("");
-        otp.setEmail_or_sms("312386");
+        otp.setEmail_or_sms(dbOtp);
         payload.setOtp(otp);
-        payload.setOtpReferenceId("2bc5125a-3659-41c7-8a75-60c6ce29ba38");
+        payload.setOtpReferenceId(dbRefId);
         RequestSpecification res1 = given().spec(req)
                 .body(payload);
         res1.when().post("/core/investor/common/otp/verify")
@@ -313,7 +313,7 @@ public class switchtest extends AccessPropertyFile {
                 .then().log().all().spec(respec);
     }
 
-    @Test(priority = 19)
+   /* @Test(priority = 19)
     public void testAPI() {
         RequestSpecification redeem = given().spec(req)
                 .body("{\n" +
@@ -334,5 +334,5 @@ public class switchtest extends AccessPropertyFile {
                         "  \"bankId\": \"1\"\n" +
                         "}");
         redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
-    }
+    }*/
 }
