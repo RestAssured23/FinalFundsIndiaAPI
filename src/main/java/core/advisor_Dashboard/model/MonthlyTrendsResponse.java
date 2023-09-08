@@ -52,6 +52,9 @@ public class MonthlyTrendsResponse {
         public String uuid;
         public String email;
         public Lfy lfy;
+        public boolean moveIn;
+        public boolean moveOut;
+        public boolean referral;
     }
     @Getter@Setter
     public static class Summary{

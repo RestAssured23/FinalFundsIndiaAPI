@@ -7,7 +7,7 @@ public class BasePlatform {
  @Test
  public String setUp() {
      String os = System.getProperty("os.name").toLowerCase();
-     String path = System.getProperty("user.dir") + "/data/automation-testing/wifs/config/properties/local.properties";
+     String path = System.getProperty("user.dir") + "/data/automation-testing/wifs/config/properties/mf.properties";
 
      if (os.contains("win")) {
          path = path.replace("/", "\\");

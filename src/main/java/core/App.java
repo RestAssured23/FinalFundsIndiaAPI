@@ -13,16 +13,20 @@ public class App {
         String os = System.getProperty("os.name").toLowerCase();
 
         String xmlPath = System.getProperty("user.dir") + "/data/automation-testing/wifs/config/properties/testng.xml";
+        try {
+            if (os.contains("win")) {
+                xmlPath = xmlPath.replace("/", "\\");       // Convert to Windows path
+            } else if (!os.contains("mac") && !os.contains("linux")) {
+                throw new RuntimeException("OS Not Detected");
+            }
 
-        if (os.contains("win")) {
-            xmlPath = xmlPath.replace("/", "\\");       // Convert to Windows path
-        } else if (!os.contains("mac") && !os.contains("linux")) {
-            throw new RuntimeException("OS Not Detected");
+            xmlFiles.add(xmlPath);
+            runner.setTestSuites(xmlFiles);
+            runner.run();
         }
-
-        xmlFiles.add(xmlPath);
-        runner.setTestSuites(xmlFiles);
-        runner.run();
+        catch (Exception e){
+            System.out.println(e);
+        }
     }
 }
 /*public class App

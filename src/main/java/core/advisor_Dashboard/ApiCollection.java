@@ -68,20 +68,19 @@ public class ApiCollection extends AD_AccessPropertyFile{
         res.when().get("/core/portfolio-review/communications/content")
                 .then().log().all().spec(respec);
     }
-   /* @Test
+    @Test
     public void Communication_mail() {
         RequestSpecification res = given().spec(req)
-                .body("""
-                        {
-                            "reviewId":"3040",
-                            "from": "megha.n@fundsindia.com",
-                            "to": ["shamelikumarcr7@gmail.com"],
-                            "mobiles": ["09790790876"],
-                            "type":["whatsapp","email"]
-                        }""");
+                .body("{\n" +
+                        "                            \"reviewId\":\"3040\",\n" +
+                        "                            \"from\": \"megha.n@fundsindia.com\",\n" +
+                        "                            \"to\": [\"shamelikumarcr7@gmail.com\"],\n" +
+                        "                            \"mobiles\": [\"09790790876\"],\n" +
+                        "                            \"type\":[\"whatsapp\",\"email\"]\n" +
+                        "                        }");
         res.when().post("/core/portfolio-review/communications")
                 .then().log().all().spec(respec);
-    }*/
+    }
     @Test
     public void mail_content() {
         RequestSpecification res = given().spec(req)
@@ -90,69 +89,66 @@ public class ApiCollection extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
 
-  /*  @Test
+    @Test
     public void Review_Clients() {
         RequestSpecification res = given().spec(req)
-                .body("""
-                        {
-                          "page": 1,
-                          "size": 10,
-                          "due": "month",
-                          "status": [
-                            "in_progress"
-                          ],
-                          "fromDate": "string",
-                          "toDate": "string",
-                          "heads": [
-                            "string"
-                          ],
-                          "managers": [
-                            "string"
-                          ],
-                          "advisors": [
-                            "string"
-                          ]
-                        }""");
+                .body("{\n" +
+                        "                          \"page\": 1,\n" +
+                        "                          \"size\": 10,\n" +
+                        "                          \"due\": \"month\",\n" +
+                        "                          \"status\": [\n" +
+                        "                            \"in_progress\"\n" +
+                        "                          ],\n" +
+                        "                          \"fromDate\": \"string\",\n" +
+                        "                          \"toDate\": \"string\",\n" +
+                        "                          \"heads\": [\n" +
+                        "                            \"string\"\n" +
+                        "                          ],\n" +
+                        "                          \"managers\": [\n" +
+                        "                            \"string\"\n" +
+                        "                          ],\n" +
+                        "                          \"advisors\": [\n" +
+                        "                            \"string\"\n" +
+                        "                          ]\n" +
+                        "                        }");
         res.when().post("/core/portfolio-review/clients")
                 .then().log().all().spec(respec);
-    }*/
-  /*  @Test
+    }
+    @Test
     public void Review_communications() {
         RequestSpecification res = given().spec(req)
-                .body("""
-                        {
-                          "reviewId": "string",
-                          "from": "string",
-                          "to": [
-                            "string"
-                          ],
-                          "mobiles": [
-                            "string"
-                          ],
-                          "type": [
-                            "whatsapp"
-                          ]
-                        }""");
+                .body("{\n" +
+                        "                          \"reviewId\": \"string\",\n" +
+                        "                          \"from\": \"string\",\n" +
+                        "                          \"to\": [\n" +
+                        "                            \"string\"\n" +
+                        "                          ],\n" +
+                        "                          \"mobiles\": [\n" +
+                        "                            \"string\"\n" +
+                        "                          ],\n" +
+                        "                          \"type\": [\n" +
+                        "                            \"whatsapp\"\n" +
+                        "                          ]\n" +
+                        "                        }");
         res.when().post("/core/portfolio-review/communications")
                 .then().log().all().spec(respec);
-    }*/
-  /*  @Test
+    }
+    @Test
     public void Review_callback() {
         RequestSpecification res = given().spec(req)
-                .body("""
-                        {
-                          "data": [
-                            {
-                              "tableName": "string",
-                              "condition": "string",
-                              "set": "string",
-                              "upsert": true
-                            }
-                          ]
-                        }""");
+                .body("{\n" +
+                        "                          \"data\": [\n" +
+                        "                            {\n" +
+                        "                              \"tableName\": \"string\",\n" +
+                        "                              \"condition\": \"string\",\n" +
+                        "                              \"set\": \"string\",\n" +
+                        "                              \"upsert\": true\n" +
+                        "                            }\n" +
+                        "                          ]\n" +
+                        "                        }");
         res.when().post("/core/portfolio-review/callback")
                 .then().log().all().spec(respec);
-    }*/
+    }
   /*  @Test
     public void Review_completed() {
         RequestSpecification res = given().spec(req)
@@ -264,7 +260,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
     }
 
  //Monthly Trends
- @Test
+/* @Test
  public void MonthlyTrends_Investor() {
      RequestSpecification res = given().spec(req)
                      .queryParam("user_id","474062");
@@ -282,7 +278,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
                .body(payload);
     res.when().post("/tools/advisory-dashboard/monthly-trends/transactions")
               .then().log().all().spec(respec);
-    }
+    }*/
     @Test
     public void testClientSnapshot() {
         RequestSpecification requestSpec = given().spec(req)
@@ -384,7 +380,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
     }
     @Test
     public void web_hook_mail() {
-            List<Map<String, Object>> mailPayload = new ArrayList<>();      // Level 1
+            List<Map<String, Object>> mailPayload = new ArrayList<>();
             Map<String, Object> data = new HashMap<>();
                 data.put("email","tri.sharon01@gmail.com");
                 data.put("timestamp","1513299569");
