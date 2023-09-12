@@ -16,7 +16,7 @@ public class AD_AccessPropertyFile {
 
 
     static Properties properties = new Properties();
-    static String mailid,ccmailid;
+    static String mailid,ccmailid,searchphno,searchpan;
     @Test
     public String getADBasePath() {
         AD_BasePlatform uri = new AD_BasePlatform();
@@ -36,6 +36,9 @@ public class AD_AccessPropertyFile {
             properties.load(fis);
             mailid=properties.getProperty("investoremail");
             ccmailid=properties.getProperty("ccmail");
+            searchphno=properties.getProperty("searchmobile");
+            searchpan=properties.getProperty("searchpan");
+
             if (properties.getProperty("accesstoken").isEmpty()) {
                 //Login Payload
                 HashMap<String, String> login = new HashMap<>();

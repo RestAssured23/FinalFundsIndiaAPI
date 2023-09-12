@@ -6,6 +6,9 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.Test;
+import org.testng.asserts.Assertion;
+import org.testng.asserts.SoftAssert;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -18,6 +21,7 @@ public class APIRegression extends AD_AccessPropertyFile{
     private final List<String> investorIDList = new ArrayList<>();
     String investorId,reviewId,firstGeneratedReviewId,firstCompletedReviewId;  List<String> portfolioList;
     private final Map<String, List<String>> investorPortfolioMap = new HashMap<>();
+    SoftAssert softAssert = new SoftAssert();
     public APIRegression() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getADBasePath())
@@ -35,7 +39,6 @@ public class APIRegression extends AD_AccessPropertyFile{
     }
     @Test
     public void SearchInvestor() {
-
       RequestSpecification res = given().spec(req)
                 .body(Regressionpayload.SearchInvestor());
       SearchInvestorResponse.Root response=res.when()
@@ -291,7 +294,7 @@ public class APIRegression extends AD_AccessPropertyFile{
          payload.put("type",typedata);
         List<String>tomail=Arrays.asList(mailid);
          payload.put("to",tomail);
-        List<String> ccmail=Arrays.asList(ccmailid);
+        List<String> ccmail=Arrays.asList();
         payload.put("cc",ccmail);
 
         RequestSpecification res = given().spec(req)
@@ -313,12 +316,25 @@ public class APIRegression extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
     @Test(priority = 23)
-    public void All_Clients() {
-        RequestSpecification res = given().spec(req)
-                .body(Adv_payload.AllClients());
-        res.when().post("/tools/portfolio-review/clients")
-                .then().log().all().spec(respec);
+    public void AllClients() {
+        List<Map<String, Object>> payloads = Arrays.asList(
+                Regressionpayload.AllClients(),
+                Regressionpayload.AllClients_month(),
+                Regressionpayload.AllClients_Week(),
+                Regressionpayload.AllClients_overdue(),
+                Regressionpayload.AllClients_panSearch(),
+                Regressionpayload.AllClients_mobilesearch(),
+                Regressionpayload.AllClients_DateFilter()
+        );
+        for (Map<String, Object> payload : payloads) {
+            RequestSpecification res = given().spec(req)
+                    .body(payload);
+            AllClientsResponse.Root response= res.when().post("/tools/portfolio-review/clients")
+                    .then().log().all().spec(respec).extract().response().as(AllClientsResponse.Root.class);
+            }
     }
+
+
   @Test(priority = 24)
   public void All_Reviews() {
       RequestSpecification res = given().spec(req)

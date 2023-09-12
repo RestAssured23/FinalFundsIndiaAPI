@@ -1,12 +1,11 @@
 package core.advisor_Dashboard;
-import core.advisor_Dashboard.model.MonthlyTrendsResponse;
-import core.advisor_Dashboard.model.PortfolioExposureResponseBo;
-import core.advisor_Dashboard.model.clientSnapshot;
+import core.advisor_Dashboard.model.*;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -279,98 +278,97 @@ public class ApiCollection extends AD_AccessPropertyFile{
     res.when().post("/tools/advisory-dashboard/monthly-trends/transactions")
               .then().log().all().spec(respec);
     }*/
-    @Test
-    public void testClientSnapshot() {
-        RequestSpecification requestSpec = given().spec(req)
-                .body(Adv_payload.SnapshotPayload());
-        clientSnapshot.Root response = requestSpec
-                .when()
-                .post("/tools/advisory-dashboard/investors/snapshot")
-                .then()
-                .log()
-                .all()
-                .spec(respec)
-                .extract()
-                .response()
-                .as(clientSnapshot.Root.class);
+ @Test
+ public void testClientSnapshot() {
+     RequestSpecification requestSpec = given().spec(req)
+             .body(Adv_payload.SnapshotPayload());
+     clientSnapshot.Root response = requestSpec
+             .when()
+             .post("/tools/advisory-dashboard/investors/snapshot")
+             .then()
+             .log()
+             .all()
+             .spec(respec)
+             .extract()
+             .response()
+             .as(clientSnapshot.Root.class);
 
-        List<clientSnapshot.Row> rows = response.getData().getRows();
-        int rowCount = rows.size();
+     List<clientSnapshot.Row> rows = response.getData().getRows();
+     int rowCount = rows.size();
 
-        DecimalFormat decimalFormat = new DecimalFormat("0");
+     DecimalFormat decimalFormat = new DecimalFormat("0");
 
-        double totalNetflow = 0;
-        double totalInflow = 0;
-        double totalOutflow = 0;
-        double totalBaseAum = 0;
-        double totalMtm = 0;
-        double totalCurrentAum = 0;
-        double totalNetgrowthper = 0;
-        double totalAumgrowthper = 0;
-        double totalMtmper = 0;
+     // Initialize variables with descriptive names
+     double totalInflow = 0;
+     double totalOutflow = 0;
+     double totalBaseAum = 0;
+     double totalNetflow = 0;
+     double totalNetgrowthper = 0;
+     double totalAumgrowthper = 0;
+     double totalMtm = 0;
+     double totalCurrentAum = 0;
+     double totalMtmper = 0;
 
-        for (clientSnapshot.Row rowData : rows) {
-            totalInflow += addToTotal(parseDouble(rowData.getInflow()));
-            totalOutflow += addToTotal(parseDouble(rowData.getOutflow()));
-            totalBaseAum += addToTotal(parseDouble(rowData.getBaseAum()));
-            totalNetflow += addToTotal(parseDouble(rowData.getNetflow()));
+     // Iterate through rows and accumulate totals
+     for (clientSnapshot.Row rowData : rows) {
+         totalInflow += parseDouble(rowData.getInflow());
+         totalOutflow += parseDouble(rowData.getOutflow());
+         totalBaseAum += parseDouble(rowData.getBaseAum());
+       //  totalNetflow += parseDouble(rowData.getNetflow());
 
+         String netflowStr = rowData.getNetflow();
+         if (netflowStr != null) {
+             totalNetflow += parseDouble(netflowStr);
+         }
 
-            totalNetgrowthper += addToTotal(parseDouble(rowData.getNetflowGrowthPercentage())) / rowCount;
-            totalAumgrowthper += addToTotal(parseDouble(rowData.getAumGrowthPercentage())) / rowCount;
+         totalNetgrowthper += parseDouble(rowData.getNetflowGrowthPercentage()) / rowCount;
+         totalAumgrowthper += parseDouble(rowData.getAumGrowthPercentage()) / rowCount;
 
-            String mtmPercentageStr = rowData.getMtmPercentage();
-            if (!mtmPercentageStr.isEmpty()) {
-                totalMtmper += addToTotal(parseDouble(rowData.getMtmPercentage())) / rowCount;
-            }
+         String mtmPercentageStr = rowData.getMtmPercentage();
+         if (!mtmPercentageStr.isEmpty()) {
+             totalMtmper += parseDouble(mtmPercentageStr) / rowCount;
+         }
 
-            String mtmStr = rowData.getMtm();
-            if (!mtmStr.isEmpty()) {
-                totalMtm += addToTotal(parseDouble(rowData.getMtm()));
-            }
+         String mtmStr = rowData.getMtm();
+         if (!mtmStr.isEmpty()) {
+             totalMtm += parseDouble(mtmStr);
+         }
 
-            String aumStr = rowData.getCurrentAum();
-            if (!aumStr.isEmpty()) {
-                totalCurrentAum += addToTotal(parseDouble(rowData.getCurrentAum()));
-            }
-        }
+         String aumStr = rowData.getCurrentAum();
+         if (!aumStr.isEmpty()) {
+             totalCurrentAum += parseDouble(aumStr);
+         }
 
-        printTotal("OutFlow", totalOutflow, decimalFormat);
-        printTotal("NETFLOW", totalNetflow, decimalFormat);
-        printTotal("BASEAUM", totalBaseAum, decimalFormat);
-        printTotal("netflowGrowthPercentage", totalNetgrowthper);
-        printTotal("MTM", totalMtm, decimalFormat);
-        printTotal("TOTAL CUR_AUM", totalCurrentAum, decimalFormat);
-        printTotal("mtmPercentage", totalMtmper);
-        printTotal("aumGrowthPercentage", totalAumgrowthper);
-        printTotal("INFLOW", totalInflow, decimalFormat);
+     }
 
-        List<clientSnapshot.Summary> summaries = response.getData().getSummary();
-        SoftAssert softAssert = new SoftAssert();
+   /*  // Print totals with labels
+     printTotal("OutFlow", totalOutflow, decimalFormat);
+     printTotal("NETFLOW", totalNetflow, decimalFormat);
+     printTotal("BASEAUM", totalBaseAum, decimalFormat);
+     printTotal("netflowGrowthPercentage", totalNetgrowthper);
+     printTotal("MTM", totalMtm, decimalFormat);
+     printTotal("TOTAL CUR_AUM", totalCurrentAum, decimalFormat);
+     printTotal("mtmPercentage", totalMtmper);
+     printTotal("aumGrowthPercentage", totalAumgrowthper);
+     printTotal("INFLOW", totalInflow, decimalFormat);*/
 
-        for (clientSnapshot.Summary summaryData : summaries) {
-            softAssert.assertEquals(decimalFormat.format(totalOutflow), summaryData.getOutflow(), "OutFlow : ");
-            softAssert.assertEquals(decimalFormat.format(totalNetflow), summaryData.getNetflow(), "TotalNetflow :");
-            softAssert.assertEquals(decimalFormat.format(totalBaseAum), summaryData.getBaseAum(), "TotalBaseAum :");
-            softAssert.assertEquals(decimalFormat.format(totalMtm), summaryData.getMtm(), "MTM :");
-            softAssert.assertEquals(decimalFormat.format(totalCurrentAum), summaryData.getCurrentAum(), "CurrentAum :");
-            softAssert.assertEquals(decimalFormat.format(totalInflow), summaryData.getInflow(), "Inflow :");
-            softAssert.assertEquals(totalNetgrowthper, Double.parseDouble(summaryData.getNetflowGrowthPercentage()),0.000001, "NetflowGrowthPercentage :");
-            softAssert.assertEquals(totalMtmper, Double.parseDouble(summaryData.getMtmPercentage()),0.000001, "MtmPercentage : ");
-            softAssert.assertEquals(totalAumgrowthper, Double.parseDouble(summaryData.getAumGrowthPercentage()),0.000001, "AumGrowthPercentage :");
-        }
-        softAssert.assertAll();
-    }
-    private double addToTotal(double value) {
-        return value;
-    }
-    private void printTotal(String label, double value, DecimalFormat decimalFormat) {
-        System.out.println(label + ": " + decimalFormat.format(value));
-    }
-    private void printTotal(String label, double value) {
-        System.out.println(label + ": " + value);
-    }
+     List<clientSnapshot.Summary> summaries = response.getData().getSummary();
+     SoftAssert softAssert = new SoftAssert();
 
+     // Assertions for summaries
+     for (clientSnapshot.Summary summaryData : summaries) {
+         softAssert.assertEquals(decimalFormat.format(totalOutflow), summaryData.getOutflow(), "OutFlow : ");
+         softAssert.assertEquals(decimalFormat.format(totalNetflow), summaryData.getNetflow(), "TotalNetflow :");
+         softAssert.assertEquals(decimalFormat.format(totalBaseAum), summaryData.getBaseAum(), "TotalBaseAum :");
+         softAssert.assertEquals(decimalFormat.format(totalMtm), summaryData.getMtm(), "MTM :");
+         softAssert.assertEquals(decimalFormat.format(totalCurrentAum), summaryData.getCurrentAum(), "CurrentAum :");
+         softAssert.assertEquals(decimalFormat.format(totalInflow), summaryData.getInflow(), "Inflow :");
+         softAssert.assertEquals(totalNetgrowthper, Double.parseDouble(summaryData.getNetflowGrowthPercentage()), 0.000001, "NetflowGrowthPercentage :");
+         softAssert.assertEquals(totalMtmper, Double.parseDouble(summaryData.getMtmPercentage()), 0.000001, "MtmPercentage : ");
+         softAssert.assertEquals(totalAumgrowthper, Double.parseDouble(summaryData.getAumGrowthPercentage()), 0.000001, "AumGrowthPercentage :");
+     }
+     softAssert.assertAll();
+ }
     @Test
     public void MonthlyTrends_Get() {
         RequestSpecification res = given().spec(req)
@@ -399,7 +397,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
     @Test
-    public void Advisory_MonthlyTrends() {
+    public void MonthlyTrends() {
         RequestSpecification res = given().spec(req)
                         .body(Adv_payload.Monthly_Trends());
        MonthlyTrendsResponse.Root response= res.when().post("/tools/advisory-dashboard/monthly-trends")
@@ -428,11 +426,35 @@ public class ApiCollection extends AD_AccessPropertyFile{
     }
 
     @Test
-    public void Overview_MonthlyTrends() {
+    public void AUM_Overview() {
         RequestSpecification res = given().spec(req)
                         .body(Adv_payload.OverviewPayload());
         res.when().post("/tools/advisory-dashboard/growth/aum/overview")
                 .then().log().all().spec(respec);
+    }
+    @Test
+    public void AUM() {
+
+        double aumGrowthPercent,sipGrowthPercent;
+        long baseAum,currentAum;
+        RequestSpecification res = given().spec(req)
+                .body(Adv_payload.AUM());
+        AUMSummaryResponse.Root resposne=res.when().post("/tools/advisory-dashboard/growth/aum")
+                .then().log().all().spec(respec).extract().response().as(AUMSummaryResponse.Root.class);
+
+        baseAum=resposne.getData().getCurrent().get(0).getBaseAum();
+        currentAum=resposne.getData().getCurrent().get(0).getCurrentAum();
+        aumGrowthPercent = ((double)(currentAum - baseAum) / baseAum) * 100;
+        sipGrowthPercent = ((double)(currentAum - baseAum) / baseAum) * 100;
+
+        System.out.println("BASEAUM :"+baseAum);
+        System.out.println("Current AUM :"+currentAum);
+        System.out.println(aumGrowthPercent);
+        System.out.println(sipGrowthPercent);
+
+        softAssert.assertEquals(resposne.getData().getAumGrowth(),aumGrowthPercent);
+        softAssert.assertEquals(resposne.getData().getSipGrowth(),sipGrowthPercent);
+        softAssert.assertAll();
     }
 }
 
