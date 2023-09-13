@@ -424,7 +424,6 @@ public class ApiCollection extends AD_AccessPropertyFile{
         res.when().delete("/tools/advisory-dashboard/filters")
                 .then().log().all().spec(respec);
     }
-
     @Test
     public void AUM_Overview() {
         RequestSpecification res = given().spec(req)
@@ -434,7 +433,6 @@ public class ApiCollection extends AD_AccessPropertyFile{
     }
     @Test
     public void AUM() {
-
         double aumGrowthPercent,sipGrowthPercent;
         long baseAum,currentAum;
         RequestSpecification res = given().spec(req)

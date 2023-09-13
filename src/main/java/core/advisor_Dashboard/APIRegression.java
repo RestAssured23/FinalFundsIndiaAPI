@@ -261,7 +261,7 @@ public class APIRegression extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
     @Test(priority = 18)
-    public void OldPDF() {
+    public void DownloadOldPDF() {
         RequestSpecification res = given().spec(req)
                 .queryParam("reviewId",reviewId)
                 .queryParam("type","old");
@@ -269,7 +269,7 @@ public class APIRegression extends AD_AccessPropertyFile{
                 .then().log().all().assertThat().contentType("application/pdf");
     }
     @Test(priority = 18)
-    public void NewPDF() {
+    public void DownloadNewPDF() {
         RequestSpecification res = given().spec(req)
                 .queryParam("reviewId",reviewId)
                 .queryParam("type","New");
@@ -333,7 +333,6 @@ public class APIRegression extends AD_AccessPropertyFile{
                     .then().log().all().spec(respec).extract().response().as(AllClientsResponse.Root.class);
             }
     }
-
 
   @Test(priority = 24)
   public void All_Reviews() {

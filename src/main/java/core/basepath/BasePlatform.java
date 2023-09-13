@@ -3,19 +3,21 @@ import org.testng.annotations.Test;
 import java.io.File;
 
 public class BasePlatform {
- //   public static String propertyfile="local.properties";
+
  @Test
  public String setUp() {
      String os = System.getProperty("os.name").toLowerCase();
-     String path = System.getProperty("user.dir") + "/data/automation-testing/wifs/config/properties/mf.properties";
+     String basepath = System.getProperty("user.dir") + "/data/automation-testing/wifs/config/properties/";
+
+     String path ;
 
      if (os.contains("win")) {
-         path = path.replace("/", "\\");
+         basepath = basepath.replace("/", "\\");
      } else if (!os.contains("mac") && !os.contains("linux")) {
          System.out.println("OS Not Detected");
-         path = "";
+         basepath = "";
      }
-
+        path=basepath + "dev.properties";
      return path;
  }
 
