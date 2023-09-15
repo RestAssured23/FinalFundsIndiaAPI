@@ -357,7 +357,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
 
      // Assertions for summaries
      for (clientSnapshot.Summary summaryData : summaries) {
-         softAssert.assertEquals(decimalFormat.format(totalOutflow), summaryData.getOutflow(), "OutFlow : ");
+         softAssert.assertEquals(decimalFormat.format(totalOutflow), Double.parseDouble(summaryData.getOutflow()), "OutFlow : ");
          softAssert.assertEquals(decimalFormat.format(totalNetflow), summaryData.getNetflow(), "TotalNetflow :");
          softAssert.assertEquals(decimalFormat.format(totalBaseAum), summaryData.getBaseAum(), "TotalBaseAum :");
          softAssert.assertEquals(decimalFormat.format(totalMtm), summaryData.getMtm(), "MTM :");

@@ -1,10 +1,11 @@
 package core.advisor_Dashboard;
-import java.awt.image.ImageProducer;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.*;
 
 public class Adv_payload extends AD_AccessPropertyFile{
+  static List<String> headid = Arrays.asList("187458");                 //2152531 / 187458
+  static   List<String> managerid = Arrays.asList("1871006");           //Manager -> 1871006
+  static   List<String> advisorid = Arrays.asList("300210", "335339", "1041112", "2402884", "131919","2443123","2589046","2443125","1871006");
 
     public static Map<String, Object> AllClients() {
         Map<String, Object> payload = new LinkedHashMap<>();
@@ -14,10 +15,6 @@ public class Adv_payload extends AD_AccessPropertyFile{
                                             //"silver", "gold", "platinum", "digital", "n/a"
             List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
                                             // "not_started","in_progress","completed","overdue","not_reviewed"
-            List<String> headid = Arrays.asList("187458");
-            List<String> managerid = Arrays.asList();
-            List<String> advisorid = Arrays.asList();
-
         payload.put("segments", segment);
         payload.put("status", status);
         payload.put("heads", headid);
@@ -25,185 +22,6 @@ public class Adv_payload extends AD_AccessPropertyFile{
         payload.put("advisors", advisorid);
         payload.put("sortBy", "user_name");
         payload.put("sortType", "asc");                      // [asc, desc]
-        return payload;
-    }
-    public static Map<String, Object> AllClients_month() {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("page", 1);
-        payload.put("size", 20);
-        payload.put("due", "month");
-        List<String> segment = Arrays.asList("silver","platinum","gold","digital");
-        //"silver", "gold", "platinum", "digital", "n/a"
-        List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
-        // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
-
-        payload.put("segments", segment);
-        payload.put("status", status);
-        payload.put("heads", headid);
-        payload.put("managers", managerid);
-        payload.put("advisors", advisorid);
-        payload.put("sortBy", "user_name");
-        payload.put("sortType", "asc");                      // [asc, desc]
-        return payload;
-    }
-    public static Map<String, Object> AllClients_Week() {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("page", 1);
-        payload.put("size", 20);
-        payload.put("due", "week");
-        List<String> segment = Arrays.asList("silver","platinum","gold","digital");
-        //"silver", "gold", "platinum", "digital", "n/a"
-        List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
-        // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
-
-        payload.put("segments", segment);
-        payload.put("status", status);
-        payload.put("heads", headid);
-        payload.put("managers", managerid);
-        payload.put("advisors", advisorid);
-        payload.put("sortBy", "user_name");
-        payload.put("sortType", "asc");                      // [asc, desc]
-        return payload;
-    }
-    public static Map<String, Object> AllClients_overdue() {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("page", 1);
-        payload.put("size", 20);
-        payload.put("due", "overdue");
-        List<String> segment = Arrays.asList("silver","platinum","gold","digital");
-        //"silver", "gold", "platinum", "digital", "n/a"
-        List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
-        // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
-
-        payload.put("segments", segment);
-        payload.put("status", status);
-        payload.put("heads", headid);
-        payload.put("managers", managerid);
-        payload.put("advisors", advisorid);
-        payload.put("sortBy", "user_name");
-        payload.put("sortType", "asc");                      // [asc, desc]
-        return payload;
-    }
-    public static Map<String, Object> AllClients_mailsearch() {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("page", 1);
-        payload.put("size", 20);
-
-        List<String> segment = Arrays.asList("silver","platinum","gold","digital");
-        //"silver", "gold", "platinum", "digital", "n/a"
-        List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
-        // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458","2152531");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
-
-        payload.put("segments", segment);
-        payload.put("status", status);
-        payload.put("heads", headid);
-        payload.put("managers", managerid);
-        payload.put("advisors", advisorid);
-        payload.put("sortBy", "user_name");
-        payload.put("sortType", "asc");                      // [asc, desc]
-
-        Map<String,Object>searchdata=new HashMap<>();
-        searchdata.put("query",mailid);
-        searchdata.put("type","email");
-        payload.put("search",searchdata);
-        return payload;
-    }
-    public static Map<String, Object> AllClients_mobilesearch() {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("page", 1);
-        payload.put("size", 20);
-
-        List<String> segment = Arrays.asList("silver","platinum","gold","digital");
-        //"silver", "gold", "platinum", "digital", "n/a"
-        List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
-        // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458","2152531");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
-
-        payload.put("segments", segment);
-        payload.put("status", status);
-        payload.put("heads", headid);
-        payload.put("managers", managerid);
-        payload.put("advisors", advisorid);
-        payload.put("sortBy", "user_name");
-        payload.put("sortType", "asc");                      // [asc, desc]
-
-        Map<String,Object>searchdata=new HashMap<>();
-        searchdata.put("query",searchphno);
-        searchdata.put("type","mobile");
-        payload.put("search",searchdata);
-        return payload;
-    }
-    public static Map<String, Object> AllClients_panSearch() {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("page", 1);
-        payload.put("size", 20);
-
-        List<String> segment = Arrays.asList("silver","platinum","gold","digital");
-        //"silver", "gold", "platinum", "digital", "n/a"
-        List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
-        // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458","2152531");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
-
-        payload.put("segments", segment);
-        payload.put("status", status);
-        payload.put("heads", headid);
-        payload.put("managers", managerid);
-        payload.put("advisors", advisorid);
-        payload.put("sortBy", "user_name");
-        payload.put("sortType", "asc");                      // [asc, desc]
-
-        Map<String,Object>searchdata=new HashMap<>();
-        searchdata.put("query",searchpan);
-        searchdata.put("type","pan");
-        payload.put("search",searchdata);
-        return payload;
-    }
-    public static Map<String, Object> AllClients_DateFilter() {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        LocalDateTime fromdate = LocalDateTime.now().minusDays(30);
-        LocalDateTime todate = LocalDateTime.now();
-        String startdate = fromdate.format(formatter);
-        String endate = todate.format(formatter);
-
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("page", 1);
-        payload.put("size", 20);
-
-        List<String> segment = Arrays.asList("silver","platinum","gold","digital");
-        //"silver", "gold", "platinum", "digital", "n/a"
-        List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
-        // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458","2152531");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
-
-        payload.put("segments", segment);
-        payload.put("status", status);
-        payload.put("heads", headid);
-        payload.put("managers", managerid);
-        payload.put("advisors", advisorid);
-        payload.put("sortBy", "user_name");
-        payload.put("sortType", "asc");                      // [asc, desc]
-
-       payload.put("fromDate",startdate);
-       payload.put("toDate",endate);
         return payload;
     }
     public static Map<String, Object> AllReviews() {
@@ -213,9 +31,7 @@ public class Adv_payload extends AD_AccessPropertyFile{
             List<String> segment = Arrays.asList("silver","platinum","gold","digital");
                                                  //"silver", "gold", "platinum", "digital", "n/a"
             List<String> status = Arrays.asList("all","draft","generated","completed");
-            List<String> headid = Arrays.asList("187458");
-            List<String> managerid = Arrays.asList();
-            List<String> advisorid = Arrays.asList();
+
         payload.put("segments", segment);
         payload.put("status", status);
         payload.put("heads", headid);
@@ -247,23 +63,19 @@ public class Adv_payload extends AD_AccessPropertyFile{
     }
 
     public static  Map<String, Object> level0() {
-
         Map<String,Object> payload= new LinkedHashMap<>();
         payload.put("page",1);
         payload.put("size",500);
         payload.put("userRole","string");
-            List<String> heads = Arrays.asList("187458");
-            List<String> managers = Arrays.asList("182424");           //Manager -> 1871006
-            List<String> advisors = Arrays.asList();
-        payload.put("heads",heads);
-        payload.put("managers",managers);
-        payload.put("advisors",advisors);
+             payload.put("heads",headid);
+        payload.put("managers",managerid);
+        payload.put("advisors",advisorid);
         payload.put("financialYear","2023-2024");
-        payload.put("type","scheme_name");
+        payload.put("type","amc");
                     //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
         payload.put("aggregateBy","investment_amount");
                     //investor_count / investment_amount
-        payload.put("sortBy","scheme_name");
+        payload.put("sortBy","amc");
                          //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
         payload.put("order","asc");
        /* Map<String,Object> search= new LinkedHashMap<>();
@@ -279,12 +91,10 @@ public class Adv_payload extends AD_AccessPropertyFile{
         payload.put("page",1);
         payload.put("size",500);
         payload.put("userRole","Manager");
-        List<String> heads = Arrays.asList("187458");
-        List<String> managers = Arrays.asList();
-        List<String> advisors = Arrays.asList();
-        payload.put("heads",heads);
-        payload.put("managers",managers);
-        payload.put("advisors",advisors);
+
+        payload.put("heads",headid);
+        payload.put("managers",managerid);
+        payload.put("advisors",advisorid);
         payload.put("financialYear","2023-2024");
         payload.put("type","category");
         //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
@@ -306,12 +116,9 @@ public class Adv_payload extends AD_AccessPropertyFile{
         payload.put("page",1);
         payload.put("size",500);
         payload.put("userRole","string");
-            List<String> heads = Arrays.asList("187458");
-            List<String> managers = Arrays.asList();
-            List<String> advisors = Arrays.asList("86808");
-        payload.put("heads",heads);
-        payload.put("managers",managers);
-        payload.put("advisors",advisors);
+          payload.put("heads",headid);
+        payload.put("managers",managerid);
+        payload.put("advisors",advisorid);
         payload.put("financialYear","2023-2024");
         payload.put("type","amc");
             //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
@@ -342,14 +149,9 @@ public class Adv_payload extends AD_AccessPropertyFile{
         payload.put("size",500);
         payload.put("userRole","string");
 
-            List<String> heads = Arrays.asList("187458");
-            List<String> managers = Arrays.asList();
-            List<String> advisors = Arrays.asList();
-
-        payload.put("heads",heads);
-        payload.put("managers",managers);
-        payload.put("heads",heads);
-        payload.put("advisors",advisors);
+        payload.put("heads",headid);
+        payload.put("managers",managerid);
+        payload.put("advisors",advisorid);
 
         payload.put("financialYear","2023-2024");
         payload.put("type","scheme_name");
@@ -376,15 +178,12 @@ public class Adv_payload extends AD_AccessPropertyFile{
     public static Map<String, Object> SnapshotPayload() {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("page", 1);
-        payload.put("size", 362);
+        payload.put("size", 100);
         payload.put("sortBy", "name");
                      //[name / advisor_name / inflow /outflow / netflow_percentage /mtm / mtm_percentage / current_aum /aum_growth / base_aum]
         payload.put("sortType", "asc");                      // [asc, desc]
 
         List<String> segment = Arrays.asList("silver", "gold", "platinum", "digital");     //"silver", "gold", "platinum", "digital"
-        List<String> headid = Arrays.asList("187458","2152531");
-        List<String> managerid = Arrays.asList("359296");
-        List<String> advisorid = Arrays.asList();
 
  /*  //Search Data
         Map<String, Object> search = new HashMap<>();             //[ name, mobile, pan, email ]
@@ -423,19 +222,17 @@ public class Adv_payload extends AD_AccessPropertyFile{
     public static Map<String, Object> Monthly_Trends() {
         Map<String,Object> payload= new LinkedHashMap<>();
         payload.put("page",1);
-        payload.put("size",50);
+        payload.put("size",100);
         payload.put("financialYear","2023-2024");
-        payload.put("sortBy","months");         // name / advisorName / lfy /ytd / months
-        payload.put("sortType","desc");          //asc , desc
+        payload.put("sortBy","name");         // name / advisorName / lfy /ytd / months /aum /inflow / outflow
+        payload.put("sortType","asc");          //asc , desc
 
 /*        List<String> segment = Arrays.asList("silver");     //"silver", "gold", "platinum", "digital"
         payload.put("segments",segment);*/
-        List<String> heads = Arrays.asList("187458");
-        payload.put("heads",heads);
-        List<String> managers = Arrays.asList();
-        payload.put("managers",managers);
-        List<String> advisors = Arrays.asList();
-        payload.put("advisors",advisors);
+
+        payload.put("heads",headid);
+        payload.put("managers",managerid);
+        payload.put("advisors",advisorid);
 
         Map<String,Object> trendsdata=new LinkedHashMap<>();
                  //INFLOW
@@ -467,7 +264,7 @@ public class Adv_payload extends AD_AccessPropertyFile{
                             payload.put("search", search);*/
         payload.put("trendsBy",trendsdata);
 
-        //Filter Integration
+     /*   //Filter Integration
         Map<String, Object> filter = new LinkedHashMap<>();
         filter.put("name", "current_month");
         filter.put("source", "MonthlyTrends");
@@ -479,8 +276,8 @@ public class Adv_payload extends AD_AccessPropertyFile{
         filterdata.put("type","or");                  //  or, and
         Map<String,Object>condi_data=new LinkedHashMap<>();
         condi_data.put("type","is_less_than");
-                                        /*    is_less_than, is_greater_than, is_equal_to, is_less_than_or_equal_to,
-                                              is_greater_than_or_equal_to,contains, in_range_between   */
+                                        *//*    is_less_than, is_greater_than, is_equal_to, is_less_than_or_equal_to,
+                                              is_greater_than_or_equal_to,contains, in_range_between   *//*
         condi_data.put("value1","2000");
         //      condi_data.put("value2","");
         //      condi_data.put("enums","string");
@@ -488,7 +285,7 @@ public class Adv_payload extends AD_AccessPropertyFile{
         parameter.add(filterdata);
         filter.put("filters",parameter);
         payload.put("filters",filter);
-
+*/
         return payload;
     }
     public static Map<String, Object> Filters() {
@@ -518,14 +315,12 @@ public class Adv_payload extends AD_AccessPropertyFile{
 
     public static Map<String, Object>   OverviewPayload() {
         Map<String, Object> payload = new LinkedHashMap<>();
-            payload.put("count",false);
-            payload.put("type","netflow");          // [ aum, netflow ]
+            payload.put("count",true);
+        payload.put("includeTeam",true);
+            payload.put("type","aum");          // [ aum, netflow ]
             payload.put("financialYear","2023-2024");
-        List<String> headid = Arrays.asList("187458");          //187458 ,2152531
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
-           payload.put("heads", headid);
+        payload.put("heads", headid);
             payload.put("managers", managerid);
             payload.put("advisors", advisorid);
 
@@ -536,9 +331,6 @@ public class Adv_payload extends AD_AccessPropertyFile{
         Map<String, Object> payload = new LinkedHashMap<>();
 
         payload.put("financialYear","2023-2024");
-       List<String> headid = Arrays.asList("187458");          //187458 ,2152531
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
         payload.put("heads", headid);
         payload.put("managers", managerid);

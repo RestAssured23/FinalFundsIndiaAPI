@@ -155,7 +155,7 @@ public class Test_Adv extends AD_AccessPropertyFile{
                 payload.put("page", 1);
                 payload.put("size", 500);
                 payload.put("userRole", "string");
-                List<String> heads = Arrays.asList("187458", "2152531");
+                List<String> heads = Arrays.asList("187458");
                 payload.put("heads", heads);
 
                 List<String> managers = Arrays.asList(managerId);

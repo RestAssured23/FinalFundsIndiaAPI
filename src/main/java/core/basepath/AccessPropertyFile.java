@@ -55,7 +55,6 @@ public class AccessPropertyFile {
         switch_target = properties.getProperty("targetscheme");
 
 
-
    //SIP Details and Invest more
         sipDate= Integer.parseInt(properties.getProperty("sipdate"));
         alertStartdate=properties.getProperty("startdate");

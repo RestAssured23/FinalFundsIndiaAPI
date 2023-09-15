@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class TestBasePlatform {
 
-    @Test
+
     public Properties setUp(String environment) {
         Properties properties = new Properties();
 

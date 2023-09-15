@@ -1,6 +1,5 @@
 package core.basepath;
 import org.testng.annotations.Test;
-import java.io.File;
 
 public class BasePlatform {
 
@@ -17,13 +16,11 @@ public class BasePlatform {
          System.out.println("OS Not Detected");
          basepath = "";
      }
-        path=basepath + "dev.properties";
+        path=basepath + "scrum.properties";
      return path;
  }
-
     @Test
     public String platform() {
-        String Test_Login = setUp();
-        return Test_Login;
+           return setUp();
     }
 }

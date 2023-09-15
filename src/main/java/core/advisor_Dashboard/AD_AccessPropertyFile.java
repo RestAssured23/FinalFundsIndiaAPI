@@ -1,6 +1,5 @@
 package core.advisor_Dashboard;
 
-import core.basepath.BasePlatform;
 import core.model.Signin;
 import io.restassured.RestAssured;
 import org.testng.annotations.Test;

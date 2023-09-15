@@ -4,6 +4,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Regressionpayload  extends AD_AccessPropertyFile {
+    static List<String> headid = Arrays.asList("187458");
+    static List<String> managerid = Arrays.asList("182424");
+    static List<String> advisorid = Arrays.asList("179758");
+
 
     public static Map<String, Object> SearchInvestor() {
         Map<String, Object> payload = new LinkedHashMap<>();
@@ -19,9 +23,6 @@ public class Regressionpayload  extends AD_AccessPropertyFile {
         //"silver", "gold", "platinum", "digital", "n/a"
         List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
         // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
         payload.put("segments", segment);
         payload.put("status", status);
@@ -41,9 +42,6 @@ public class Regressionpayload  extends AD_AccessPropertyFile {
         //"silver", "gold", "platinum", "digital", "n/a"
         List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
         // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
         payload.put("segments", segment);
         payload.put("status", status);
@@ -63,9 +61,6 @@ public class Regressionpayload  extends AD_AccessPropertyFile {
         //"silver", "gold", "platinum", "digital", "n/a"
         List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
         // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
         payload.put("segments", segment);
         payload.put("status", status);
@@ -85,9 +80,6 @@ public class Regressionpayload  extends AD_AccessPropertyFile {
         //"silver", "gold", "platinum", "digital", "n/a"
         List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
         // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
         payload.put("segments", segment);
         payload.put("status", status);
@@ -107,9 +99,6 @@ public class Regressionpayload  extends AD_AccessPropertyFile {
         //"silver", "gold", "platinum", "digital", "n/a"
         List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
         // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458","2152531");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
         payload.put("segments", segment);
         payload.put("status", status);
@@ -134,9 +123,6 @@ public class Regressionpayload  extends AD_AccessPropertyFile {
         //"silver", "gold", "platinum", "digital", "n/a"
         List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
         // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458","2152531");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
         payload.put("segments", segment);
         payload.put("status", status);
@@ -161,9 +147,6 @@ public class Regressionpayload  extends AD_AccessPropertyFile {
         //"silver", "gold", "platinum", "digital", "n/a"
         List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
         // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458","2152531");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
         payload.put("segments", segment);
         payload.put("status", status);
@@ -195,9 +178,6 @@ public class Regressionpayload  extends AD_AccessPropertyFile {
         //"silver", "gold", "platinum", "digital", "n/a"
         List<String> status = Arrays.asList("not_started","in_progress","completed","overdue","not_reviewed");
         // "not_started","in_progress","completed","overdue","not_reviewed"
-        List<String> headid = Arrays.asList("187458","2152531");
-        List<String> managerid = Arrays.asList();
-        List<String> advisorid = Arrays.asList();
 
         payload.put("segments", segment);
         payload.put("status", status);

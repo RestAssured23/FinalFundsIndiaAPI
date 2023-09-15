@@ -5,9 +5,13 @@ import org.testng.TestNG;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 public class App {
-    public static void main(String[] args) throws IOException {
+
+ public static void main(String[] args) throws IOException {
+
         TestNG runner = new TestNG();
         List<String> xmlFiles = new ArrayList<>();
 

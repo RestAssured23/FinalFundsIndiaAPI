@@ -39,7 +39,7 @@ public class jsoncompare extends AccessPropertyFile {
     public void compare() throws IOException {
         BasePlatform uri = new BasePlatform();
         Properties properties = new Properties();
-        FileInputStream fis = new FileInputStream(uri.platform());
+        FileInputStream fis = new FileInputStream(uri.setUp());
         properties.load(fis);
         String obj1 = "{\n" +
                 "  \"code\": 0,\n" +
