@@ -8,15 +8,11 @@ import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import static io.restassured.RestAssured.given;
-import static junit.framework.Assert.assertTrue;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 
 public class APIRegression extends AD_AccessPropertyFile{
     private final RequestSpecification req;
@@ -564,7 +560,7 @@ public class APIRegression extends AD_AccessPropertyFile{
         softAssert.assertFalse(response.getData().getSummary().isEmpty(), "Summary getting Empty Data :");
         softAssert.assertAll();
     }
-    @Test
+    @Test(priority = 36)
     public void MonthlyTrends() {
         RequestSpecification res = given().spec(req)
                 .body(Regressionpayload.Monthly_Trends());
