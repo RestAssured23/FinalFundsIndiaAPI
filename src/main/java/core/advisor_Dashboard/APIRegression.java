@@ -6,14 +6,17 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.Test;
-import org.testng.asserts.Assertion;
 import org.testng.asserts.SoftAssert;
 
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import static io.restassured.RestAssured.given;
+import static junit.framework.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 public class APIRegression extends AD_AccessPropertyFile{
     private final RequestSpecification req;
@@ -50,6 +53,7 @@ public class APIRegression extends AD_AccessPropertyFile{
               .extract().response().as(SearchInvestorResponse.Root.class);
       for(SearchInvestorResponse.UserIdList user:response.getData().getUserIdList()){
           investorIDList.add(String.valueOf(user.getId()));
+          System.out.println(investorIDList);
           System.out.println(investorIDList);
       }
 
@@ -294,7 +298,7 @@ public class APIRegression extends AD_AccessPropertyFile{
          payload.put("type",typedata);
         List<String>tomail=Arrays.asList(mailid);
          payload.put("to",tomail);
-        List<String> ccmail=Arrays.asList();
+        List<String> ccmail=Arrays.asList(ccmailid);
         payload.put("cc",ccmail);
 
         RequestSpecification res = given().spec(req)
@@ -317,55 +321,108 @@ public class APIRegression extends AD_AccessPropertyFile{
     }
     @Test(priority = 23)
     public void AllClients() {
+
         List<Map<String, Object>> payloads = Arrays.asList(
                 Regressionpayload.AllClients(),
                 Regressionpayload.AllClients_month(),
                 Regressionpayload.AllClients_Week(),
                 Regressionpayload.AllClients_overdue(),
                 Regressionpayload.AllClients_panSearch(),
+                Regressionpayload.AllClients_mailsearch(),
                 Regressionpayload.AllClients_mobilesearch(),
                 Regressionpayload.AllClients_DateFilter()
         );
-        for (Map<String, Object> payload : payloads) {
+
+        List<String> payloadNames = Arrays.asList(
+                "AllClients",
+                "Month",
+                "Week",
+                "OverDue",
+                "PAN Search",
+                "Mail Search",
+                "Mobile Search",
+                "DateFilter"
+        );
+        for (int i = 0; i < payloads.size(); i++) {
+            Map<String, Object> payload = payloads.get(i);
+            String payloadName = payloadNames.get(i);
+
             RequestSpecification res = given().spec(req)
                     .body(payload);
-            AllClientsResponse.Root response= res.when().post("/tools/portfolio-review/clients")
+            AllClientsResponse.Root response = res.when().post("/tools/portfolio-review/clients")
                     .then().log().all().spec(respec).extract().response().as(AllClientsResponse.Root.class);
-            }
+
+            softAssert.assertFalse(response.getData().getClients().isEmpty(),  payloadName + "' is getting Empty Data");
+        }
+        softAssert.assertAll();
     }
 
   @Test(priority = 24)
-  public void All_Reviews() {
+  public void All_Reviews_Allflows() {
+      List<Map<String, Object>> payloads = Arrays.asList(
+              Regressionpayload.AllReviews(),
+              Regressionpayload.AllReviews_RecentReview(),
+              Regressionpayload.AllReviews_Draft(),
+              Regressionpayload.AllReviews_panSearch(),
+              Regressionpayload.AllReviews_mailsearch(),
+              Regressionpayload.AllReviews_mobilesearch(),
+              Regressionpayload.AllReviews_DateFilter()
+      );
+      List<String> payloadNames = Arrays.asList(
+              "AllReviews",
+              "AllReviews_RecentReview",
+              "AllReviews_Draft",
+              "AllReviews_panSearch",
+              "AllReviews_mailsearch",
+              "AllReviews_mobilesearch",
+              "AllReviews_DateFilter"
+      );
+      for (int i = 0; i < payloads.size(); i++) {
+          Map<String, Object> payload = payloads.get(i);
+          String payloadName = payloadNames.get(i);
+
       RequestSpecification res = given().spec(req)
-              .body(Adv_payload.AllReviews());
+              .body(payload);
       AllReviewResponse.Root response = res.when().post("/tools/portfolio-review/completed")
               .then().log().all().spec(respec).extract().response().as(AllReviewResponse.Root.class);
 
-      // Initialize variables to store first Generated and Completed IDs
-      firstGeneratedReviewId = null;
-      firstCompletedReviewId = null;
-
-      for (AllReviewResponse.Review review : response.getData().getReviews()) {
-          String reviewId = String.valueOf(review.getReviewId());
-          String reviewStatus = review.getStatus();
-
-          if ("Generated".equalsIgnoreCase(reviewStatus)) {
-              if (firstGeneratedReviewId == null) {
-                  firstGeneratedReviewId = reviewId;
-                  System.out.println("First Generated ID: " + firstGeneratedReviewId);
-              }
-          } else if ("Completed".equalsIgnoreCase(reviewStatus)) {
-              if (firstCompletedReviewId == null) {
-                  firstCompletedReviewId = reviewId;
-                  System.out.println("First Completed ID: " + firstCompletedReviewId);
-              }
-          }
-          // Exit the loop if both first Generated and Completed IDs are found
-          if (firstGeneratedReviewId != null && firstCompletedReviewId != null) {
-              break;
-          }
+          softAssert.assertFalse(response.getData().getReviews().isEmpty(), payloadName + "' is getting Empty Data");
       }
-  }
+      softAssert.assertAll();
+      }
+    @Test(priority = 24)
+    public void All_Reviews() {
+
+            RequestSpecification res = given().spec(req)
+                    .body(Regressionpayload.AllReviews());
+            AllReviewResponse.Root response = res.when().post("/tools/portfolio-review/completed")
+                    .then().log().all().spec(respec).extract().response().as(AllReviewResponse.Root.class);
+
+            // Initialize variables to store first Generated and Completed IDs
+            firstGeneratedReviewId = null;
+            firstCompletedReviewId = null;
+
+            for (AllReviewResponse.Review review : response.getData().getReviews()) {
+                String reviewId = String.valueOf(review.getReviewId());
+                String reviewStatus = review.getStatus();
+
+                if ("Generated".equalsIgnoreCase(reviewStatus)) {
+                    if (firstGeneratedReviewId == null) {
+                        firstGeneratedReviewId = reviewId;
+                        System.out.println("First Generated ID: " + firstGeneratedReviewId);
+                    }
+                } else if ("Completed".equalsIgnoreCase(reviewStatus)) {
+                    if (firstCompletedReviewId == null) {
+                        firstCompletedReviewId = reviewId;
+                        System.out.println("First Completed ID: " + firstCompletedReviewId);
+                    }
+                }
+                // Exit the loop if both first Generated and Completed IDs are found
+                if (firstGeneratedReviewId != null && firstCompletedReviewId != null) {
+                    break;
+                }
+            }
+    }
     @Test(priority = 25)
     public void GeneratedPDFDownload() {
         RequestSpecification res = given().spec(req)
@@ -448,6 +505,71 @@ public class APIRegression extends AD_AccessPropertyFile{
                 .body(payload);
         res.when().post("/tools/portfolio-review/quality")
                 .then().log().all().spec(respec);
+    }
+    @Test(priority = 32)
+    public void Exposure_level0() {
+        RequestSpecification res = given().spec(req)
+                .body(Regressionpayload.level0());
+     ExposureLevel0.Root response= res.when().post("/tools/portfolio-exposure/l0")
+                .then().log().all().spec(respec).extract().response().as(ExposureLevel0.Root.class);
+        softAssert.assertFalse(response.getData().getRows().isEmpty(), "Rows getting Empty Data :");
+        softAssert.assertAll();
+    }
+    @Test(priority = 33)
+    public void Exposure_level1() {
+        double aum=0.0,cust = 0.0;
+        RequestSpecification res = given().spec(req)
+                .body(Regressionpayload.level1());
+        ExposureLevel1.Root response= res.when().post("/tools/portfolio-exposure/l1")
+                .then().log().all().spec(respec).extract().response().as(ExposureLevel1.Root.class);
+
+        for (ExposureLevel1.Row rowData : response.getData().getRows()) {
+
+            double CusPercentage = Double.parseDouble(String.valueOf(rowData.getData().get(1).getValue()));
+            double AumPercentage = Double.parseDouble(String.valueOf(rowData.getData().get(3).getValue()));
+            aum += AumPercentage;
+            cust += CusPercentage;
+        }
+        System.out.println("Total Customer Percentage: " + cust);
+        System.out.println("Total AUM Percentage: " + aum);
+        softAssert.assertEquals(cust,100.0);
+        softAssert.assertEquals(aum,100.0);
+        softAssert.assertAll();
+    }
+    @Test(priority = 34)
+    public void Exposure_level2() {
+        RequestSpecification res = given().spec(req)
+                .body(Regressionpayload.level2());
+       ExposureLevel2.Root response= res.when().post("/tools/portfolio-exposure/l2")
+                .then().log().all().spec(respec).extract().response().as(ExposureLevel2.Root.class);
+        softAssert.assertFalse(response.getData().getRows().isEmpty(), "Rows getting Empty Data :");
+        softAssert.assertAll();
+    }
+    @Test(priority = 35)
+    public void ClientSnapshot() {
+        RequestSpecification requestSpec = given().spec(req)
+                .body(Adv_payload.SnapshotPayload());
+        clientSnapshot.Root response = requestSpec
+                .when()
+                .post("/tools/advisory-dashboard/investors/snapshot")
+                .then()
+                .log()
+                .all()
+                .spec(respec)
+                .extract()
+                .response()
+                .as(clientSnapshot.Root.class);
+
+        softAssert.assertFalse(response.getData().getRows().isEmpty(), "Rows getting Empty Data :");
+        softAssert.assertFalse(response.getData().getSummary().isEmpty(), "Summary getting Empty Data :");
+        softAssert.assertAll();
+    }
+    @Test
+    public void MonthlyTrends() {
+        RequestSpecification res = given().spec(req)
+                .body(Regressionpayload.Monthly_Trends());
+        MonthlyTrendsResponse.Root response= res.when().post("/tools/advisory-dashboard/monthly-trends")
+                .then().log().all().spec(respec).extract().response().as(MonthlyTrendsResponse.Root.class);
     }
 }
 

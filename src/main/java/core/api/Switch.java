@@ -42,6 +42,8 @@ public class Switch extends AccessPropertyFile {
                 .expectStatusCode(200)
                 .expectContentType(ContentType.JSON)
                 .build();
+
+
     }
     @Test(priority = 10)
     public void holdingProfile() {
@@ -226,6 +228,7 @@ public class Switch extends AccessPropertyFile {
         requestData.put("fromSchemeCode", fromSchemeCode);
         requestData.put("toSchemeName", toSchemeName);
         requestData.put("toSchemeCode", toSchemeCode);
+        requestData.put("toGoalId","461366");
         requestData.put("bankId", bankId);
         requestData.put("otpReferenceId", dbRefId);
 
@@ -265,7 +268,6 @@ public class Switch extends AccessPropertyFile {
             default:
                 throw new IllegalArgumentException("Invalid switch combination");
         }
-
         RequestSpecification redeem = given().spec(req).body(requestData);
         redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
     }

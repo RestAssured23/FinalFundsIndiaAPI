@@ -5,7 +5,6 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -231,10 +230,10 @@ public class ApiCollection extends AD_AccessPropertyFile{
         double aum=0.0,cust = 0.0;
         RequestSpecification res = given().spec(req)
                 .body(Adv_payload.level1());
-     PortfolioExposureResponseBo.Root response= res.when().post("/tools/portfolio-exposure/l1")
-                .then().log().all().spec(respec).extract().response().as(PortfolioExposureResponseBo.Root.class);
+     ExposureLevel1.Root response= res.when().post("/tools/portfolio-exposure/l1")
+                .then().log().all().spec(respec).extract().response().as(ExposureLevel1.Root.class);
 
-        for (PortfolioExposureResponseBo.Row rowData : response.getData().getRows()) {
+        for (ExposureLevel1.Row rowData : response.getData().getRows()) {
             /*System.out.println(rowData.getData().get(0).getValue());
             System.out.println(rowData.getData().get(1).getValue());
             System.out.println(rowData.getData().get(3).getValue());*/
@@ -259,26 +258,54 @@ public class ApiCollection extends AD_AccessPropertyFile{
     }
 
  //Monthly Trends
-/* @Test
+@Test
  public void MonthlyTrends_Investor() {
      RequestSpecification res = given().spec(req)
-                     .queryParam("user_id","474062");
-     res.when().get("/advisory-dashboard/monthly-trends/investor")
-             .then().log().all().spec(respec);
+                     .queryParam("user_id","431340");
+     ClientDetailsResponse.Root response=res.when().get("/tools/advisory-dashboard/monthly-trends/investor")
+             .then().spec(respec).extract().response().as(ClientDetailsResponse.Root.class);
+    System.out.println(response.getData().getSummary().get(0).getYtd());
  }
+    /*    @Test
+       public void MonthlyTrends_Transaction() {
+           Map<String,Object> payload= new LinkedHashMap<>();
+           payload.put("userId","474062");
+           payload.put("month","");
+           List<String> type = Arrays.asList();
+           payload.put("types",type);
+       RequestSpecification res = given().spec(req)
+                  .body(payload);
+       res.when().post("/tools/advisory-dashboard/monthly-trends/transactions")
+                 .then().log().all().spec(respec);
+       }*/
+
     @Test
-    public void MonthlyTrends_Transaction() {
-        Map<String,Object> payload= new LinkedHashMap<>();
-        payload.put("userId","474062");
-        payload.put("month","");
-        List<String> type = Arrays.asList();
-        payload.put("types",type);
-    RequestSpecification res = given().spec(req)
-               .body(payload);
-    res.when().post("/tools/advisory-dashboard/monthly-trends/transactions")
-              .then().log().all().spec(respec);
-    }*/
- @Test
+    public void ClientSnapshot() {
+        RequestSpecification requestSpec = given().spec(req)
+                .body(Adv_payload.SnapshotPayload());
+        clientSnapshot.Root response = requestSpec
+                .when()
+                .post("/tools/advisory-dashboard/investors/snapshot")
+                .then()
+                .log()
+                .all()
+                .spec(respec)
+                .extract()
+                .response()
+                .as(clientSnapshot.Root.class);
+    }
+    @Test
+    public void MonthlyTrends() {
+        RequestSpecification res = given().spec(req)
+           //     .body("{\"financialYear\":\"2023-2024\",\"page\":1,\"size\":500,\"heads\":[\"187458\"],\"managers\":[\"86808\"],\"advisors\":[\"2437747\"],\"sortBy\":\"lfy\",\"sortType\":\"desc\",\"trendsBy\":{\"aum\":{\"enabled\":true}}}");
+                .body(Adv_payload.Monthly_Trends());
+        MonthlyTrendsResponse.Root response= res.when().post("/tools/advisory-dashboard/monthly-trends")
+                .then().log().all().spec(respec).extract().response().as(MonthlyTrendsResponse.Root.class);
+    }
+
+
+
+    @Test
  public void testClientSnapshot() {
      RequestSpecification requestSpec = given().spec(req)
              .body(Adv_payload.SnapshotPayload());
@@ -396,13 +423,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
         res.when().post("/tools/advisory-dashboard/web-hook/mail")
                 .then().log().all().spec(respec);
     }
-    @Test
-    public void MonthlyTrends() {
-        RequestSpecification res = given().spec(req)
-                        .body(Adv_payload.Monthly_Trends());
-       MonthlyTrendsResponse.Root response= res.when().post("/tools/advisory-dashboard/monthly-trends")
-                .then().log().all().spec(respec).extract().response().as(MonthlyTrendsResponse.Root.class);
-    }
+
 
     @Test
     public void Advisory_Filters() {            //post
@@ -432,7 +453,14 @@ public class ApiCollection extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
     @Test
-    public void AUM() {
+    public void Growth_Overview() {
+        RequestSpecification res = given().spec(req)
+                        .queryParam("includeTeam",false);
+        res.when().get("/tools/advisory-dashboard/growth/overview")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void Growth_AUM() {
         double aumGrowthPercent,sipGrowthPercent;
         long baseAum,currentAum;
         RequestSpecification res = given().spec(req)
@@ -454,5 +482,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
         softAssert.assertEquals(resposne.getData().getSipGrowth(),sipGrowthPercent);
         softAssert.assertAll();
     }
+
+
 }
 

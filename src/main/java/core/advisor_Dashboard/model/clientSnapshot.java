@@ -1,5 +1,6 @@
 package core.advisor_Dashboard.model;
 
+import io.restassured.path.json.JsonPath;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +27,8 @@ public class clientSnapshot {
         public String type;
         public String name;
         public Data data;
+
+
     }
     @Getter@Setter
     public static class Row{

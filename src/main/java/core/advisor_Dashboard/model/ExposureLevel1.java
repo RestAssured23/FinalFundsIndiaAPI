@@ -1,13 +1,11 @@
 package core.advisor_Dashboard.model;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class PortfolioExposureResponseBo {
+public class ExposureLevel1 {
     @Getter@Setter
     public static class Data{
         public String sortBy;

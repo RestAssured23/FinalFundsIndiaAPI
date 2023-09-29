@@ -4,8 +4,8 @@ import java.util.*;
 
 public class Adv_payload extends AD_AccessPropertyFile{
   static List<String> headid = Arrays.asList("187458");                 //2152531 / 187458
-  static   List<String> managerid = Arrays.asList("1871006");           //Manager -> 1871006
-  static   List<String> advisorid = Arrays.asList("300210", "335339", "1041112", "2402884", "131919","2443123","2589046","2443125","1871006");
+  static   List<String> managerid = Arrays.asList();           //Manager -> 1871006
+  static   List<String> advisorid = Arrays.asList();
 
     public static Map<String, Object> AllClients() {
         Map<String, Object> payload = new LinkedHashMap<>();
@@ -179,9 +179,10 @@ public class Adv_payload extends AD_AccessPropertyFile{
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("page", 1);
         payload.put("size", 100);
-        payload.put("sortBy", "name");
+        payload.put("financialYear","2023-2024");
+        payload.put("sortBy", "current_aum");
                      //[name / advisor_name / inflow /outflow / netflow_percentage /mtm / mtm_percentage / current_aum /aum_growth / base_aum]
-        payload.put("sortType", "asc");                      // [asc, desc]
+        payload.put("sortType", "desc");                      // [asc, desc]
 
         List<String> segment = Arrays.asList("silver", "gold", "platinum", "digital");     //"silver", "gold", "platinum", "digital"
 
@@ -197,7 +198,7 @@ public class Adv_payload extends AD_AccessPropertyFile{
         payload.put("advisors", advisorid);
 
  //Filter Integration
-        Map<String, Object> filter = new LinkedHashMap<>();
+    /*    Map<String, Object> filter = new LinkedHashMap<>();
         filter.put("name", "current_month");
         filter.put("source", "MonthlyTrends");
             List<Map<String, Object>> parameter = new ArrayList<>();
@@ -208,23 +209,23 @@ public class Adv_payload extends AD_AccessPropertyFile{
             filterdata.put("type","or");                  //  or, and
             Map<String,Object>condi_data=new LinkedHashMap<>();
             condi_data.put("type","is_less_than");
-                                        /*    is_less_than, is_greater_than, is_equal_to, is_less_than_or_equal_to,
-                                              is_greater_than_or_equal_to,contains, in_range_between   */
+                                        *//*    is_less_than, is_greater_than, is_equal_to, is_less_than_or_equal_to,
+                                              is_greater_than_or_equal_to,contains, in_range_between   *//*
             condi_data.put("value1","2000");
             //      condi_data.put("value2","");
             //      condi_data.put("enums","string");
             filterdata.put("condition",condi_data);
             parameter.add(filterdata);
         filter.put("filters",parameter);
-        payload.put("filters",filter);
+        payload.put("filters",filter);*/
         return payload;
     }
     public static Map<String, Object> Monthly_Trends() {
         Map<String,Object> payload= new LinkedHashMap<>();
         payload.put("page",1);
-        payload.put("size",100);
-        payload.put("financialYear","2023-2024");
-        payload.put("sortBy","name");         // name / advisorName / lfy /ytd / months /aum /inflow / outflow
+        payload.put("size",200);
+        payload.put("financialYear","2022-2023");
+        payload.put("sortBy","name");         // name / advisor_name / lfy /ytd / months /aum /inflow / outflow
         payload.put("sortType","asc");          //asc , desc
 
 /*        List<String> segment = Arrays.asList("silver");     //"silver", "gold", "platinum", "digital"

@@ -1,21 +1,15 @@
 package core.advisor_Dashboard;
-import core.advisor_Dashboard.model.AllReviewResponse;
-import core.advisor_Dashboard.model.PortfolioExposureResponseBo;
+import core.advisor_Dashboard.model.ClientDetailsResponse;
 import core.advisor_Dashboard.model.clientSnapshot;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import java.text.DecimalFormat;
-import java.util.*;
-
 import static io.restassured.RestAssured.given;
-import static java.lang.Double.parseDouble;
 
 public class Test_Adv extends AD_AccessPropertyFile{
     private final RequestSpecification req;
@@ -36,243 +30,207 @@ public class Test_Adv extends AD_AccessPropertyFile{
                 .expectContentType(ContentType.JSON)
                 .build();
     }
-
     @Test
-    public void Head_level0() {
-        List<String> managerIds = Arrays.asList("1871006", "182424", "359296", "86808", "343573");
+    public void ClientSnapshot_percentageCheck() {
+        int aumYTD,aumLFY,totalinflowYTD,totalinflowLFY,
+                sipYTD,sipLFY,lumYTD,lumLFY,t_inYTD,t_inLFY,
+                totaloutflowYTD,totaloutflowLFY,redemYTD,redemLFY,swpYTD,
+                swpLFY,netflowYDT,netflowLFY,netperYDT,netperLFY,t_outYTD,t_outLFY;
 
-        for (String managerId : managerIds) {
-            Map<String, Object> payload = new LinkedHashMap<>();
-            payload.put("page", 1);
-            payload.put("size", 500);
-            payload.put("userRole", "string");
-            List<String> heads = Arrays.asList("187458", "2152531");
-            payload.put("heads", heads);
-            List<String> advisors = Arrays.asList();
-            payload.put("advisors", advisors);
 
-            List<String> managers = Arrays.asList(managerId);
-            payload.put("managers", managers);
+        String inflow,outflow,netpercentage,mtm,mtmpercentage,aumgrowthpercentage,clientname,userid;
+        double curaum,startaum;
+        RequestSpecification requestSpec = given().spec(req)
+                .body(Adv_payload.SnapshotPayload());
+        clientSnapshot.Root response = requestSpec
+                .when()
+                .post("/tools/advisory-dashboard/investors/snapshot")
+                .then().log().all().spec(respec)
+                .extract()
+                .response()
+                .as(clientSnapshot.Root.class);
 
-            payload.put("financialYear", "2023-2024");
-            payload.put("type", "scheme_name");
-            //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-            payload.put("aggregateBy", "investment_amount");
-            //investor_count / investment_amount
-            payload.put("sortBy", "scheme_name");
-            //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-            payload.put("order", "asc");
+        int index=10;
+        userid=response.getData().getRows().get(index).getUserId();
+        clientname= response.getData().getRows().get(index).getName();
+        startaum= Double.parseDouble(response.getData().getRows().get(index).getBaseAum());
+        inflow=response.getData().getRows().get(index).getInflow();
+        outflow=response.getData().getRows().get(index).getOutflow();
+        netpercentage=response.getData().getRows().get(index).getNetflowGrowthPercentage();
+        mtm=response.getData().getRows().get(index).getMtm();
+        mtmpercentage=response.getData().getRows().get(index).getMtmPercentage();
+        curaum= Double.parseDouble(response.getData().getRows().get(index).getCurrentAum());
+        aumgrowthpercentage=response.getData().getRows().get(index).getAumGrowthPercentage();
 
-            RequestSpecification res = given().spec(req)
-                    .body(payload);
-            res.when().post("/tools/portfolio-exposure/l0")
-                    .then().log().all().spec(respec);
-        }
+       /* double AUMGrowthPercentage =((curaum - startaum) / startaum) * 100;
+        double roundedAUMGrowthPercentage = Math.floor(AUMGrowthPercentage * 100.0) / 100.0;
+        System.out.println(userid);
+        System.out.println("AUMgrowthpercentage " +roundedAUMGrowthPercentage);
+        softAssert.assertEquals(aumgrowthpercentage,roundedAUMGrowthPercentage);
+        //  Assert.assertEquals(roundedAUMGrowthPercentage,aumgrowthpercentage);*/
+
+
+//Get Client Details
+        RequestSpecification res1 = given().spec(req)
+                .queryParam("user_id",userid);
+        ClientDetailsResponse.Root clientresponse=res1.when().get("/tools/advisory-dashboard/monthly-trends/investor")
+                .then().log().all().spec(respec).extract().response().as(ClientDetailsResponse.Root.class);
+        aumYTD= (int) clientresponse.getData().getSummary().get(0).getYtd();
+        aumLFY= (int) clientresponse.getData().getSummary().get(0).getLfy().getValue();
+
+        totalinflowYTD= (int) clientresponse.getData().getSummary().get(1).getYtd();
+        totalinflowLFY= (int) clientresponse.getData().getSummary().get(1).getLfy().getValue();
+
+        sipYTD= (int) clientresponse.getData().getSummary().get(2).getYtd();
+        sipLFY= (int) clientresponse.getData().getSummary().get(2).getLfy().getValue();
+
+        lumYTD= (int) clientresponse.getData().getSummary().get(3).getYtd();
+        lumLFY= (int) clientresponse.getData().getSummary().get(3).getLfy().getValue();
+
+        swpYTD= (int) clientresponse.getData().getSummary().get(5).getYtd();
+        swpLFY= (int) clientresponse.getData().getSummary().get(5).getLfy().getValue();
+
+        totaloutflowYTD= (int) clientresponse.getData().getSummary().get(4).getYtd();
+        totaloutflowLFY= (int) clientresponse.getData().getSummary().get(4).getLfy().getValue();
+
+        redemYTD= (int) clientresponse.getData().getSummary().get(6).getYtd();
+        redemLFY= (int) clientresponse.getData().getSummary().get(6).getLfy().getValue();
+
+        netflowYDT= (int) clientresponse.getData().getSummary().get(7).getYtd();
+        netflowLFY= (int) clientresponse.getData().getSummary().get(7).getLfy().getValue();
+
+        netperYDT = (int) clientresponse.getData().getSummary().get(8).getYtd();
+        String YDT = Integer.toString(netperYDT);
+
+        String valueAsString = (String) clientresponse.getData().getSummary().get(8).getLfy().getValue();
+        netperLFY = Integer.parseInt(valueAsString);
+
+        int netflowpercentagecalculation,aumGrowthPercentagecalculation,mtmcalculationcalculation,mtppercentagecalculation,
+                aumwithoutmtmcalculation,aumwithoutmtmpercentagecalculation,sipgrowthpercentagecalculation,
+                lumgrowthpercentagecalculation,inflowcalculation,outflowcalculation;
+//calculation
+netflowpercentagecalculation = (int) (((double) netflowYDT / aumLFY) * 100);
+aumGrowthPercentagecalculation= (int) (((curaum-aumLFY)/aumLFY)*100);
+mtmcalculationcalculation= (int) (curaum-aumLFY);
+mtppercentagecalculation=(int) (curaum-aumLFY)/(aumLFY*100);
+inflowcalculation=sipYTD+lumYTD;
+outflowcalculation=redemYTD+swpYTD;
+//sipgrowthpercentagecalculation=(sipYTD/sipLFY)*100;
+//lumgrowthpercentagecalculation=(lumYTD/lumLFY)*100;
+
+
+
+
+softAssert.assertEquals(netflowpercentagecalculation, Double.parseDouble(netpercentage),0.001,"clientsnapshotNetflow %");
+softAssert.assertEquals(aumGrowthPercentagecalculation, Double.parseDouble(aumgrowthpercentage),0.001,"clientsnapshotAUMgrowth%");
+//softAssert.assertEquals(mtmcalculationcalculation, Double.parseDouble(mtm),0.001,"clientsnapshotMTM");
+softAssert.assertEquals(inflowcalculation, Double.parseDouble(inflow),0.001,"clientsnapshotinflow");
+softAssert.assertEquals(outflowcalculation, Double.parseDouble(outflow),0.001,"clientsnapshotoutflow");
+
+        System.out.println("mtppercentagecalculation :"+mtppercentagecalculation);
+    //   System.out.println(aumwithoutmtmpercentagecalculation);
+
+        softAssert.assertAll();
+
     }
 
 
-    @Test
-    public void surentharManager_level0() {     //surenthar
-
-        List<String> managerIds = Arrays.asList("182424");
-        List<String> advisorIds = Arrays.asList("1853018", "290727", "182943", "2312804", "179758", "182424", "355401", "299133");
 
 
-        for (String managerId : managerIds) {
-            for (String advisorId : advisorIds) {
-                Map<String, Object> payload = new LinkedHashMap<>();
-                payload.put("page", 1);
-                payload.put("size", 500);
-                payload.put("userRole", "string");
-                List<String> heads = Arrays.asList("187458","2152531");
-                payload.put("heads", heads);
 
-                List<String> managers = Arrays.asList(managerId);
-                payload.put("managers", managers);
-                List<String> advisors = Arrays.asList(advisorId);
-                payload.put("advisors", advisors);
 
-                payload.put("financialYear", "2023-2024");
-                payload.put("type", "scheme_name");
-                //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("aggregateBy", "investment_amount");
-                //investor_count / investment_amount
-                payload.put("sortBy", "scheme_name");
-                //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("order", "asc");
 
-                RequestSpecification res = given().spec(req)
-                        .body(payload);
-                res.when().post("/tools/portfolio-exposure/l0")
-                        .then().log().all().spec(respec);
-            }
-        }
-    }
+
+
+
+
+
+
 
     @Test
-    public void sowmiyaManager_level0() {     //sowmiya
-        List<String> managerIds = Arrays.asList("359296");
-        List<String> advisorIds = Arrays.asList("187458","1991926","98300","1063336","359296","293316","485280","2312691");
+    public void testMonthlyTrends_Investor() {
+        int aumYTD,aumLFY,totalinflowYTD,totalinflowLFY,
+                sipYTD,sipLFY,lumYTD,lumLFY,t_inYTD,t_inLFY,
+                totaloutflowYTD,totaloutflowLFY,redemYTD,redemLFY,swpYTD,
+                swpLFY,netflowYDT,netflowLFY,netperYDT,netperLFY,t_outYTD,t_outLFY;
 
-        for (String managerId : managerIds) {
-            for (String advisorId : advisorIds) {
-                Map<String, Object> payload = new LinkedHashMap<>();
-                payload.put("page", 1);
-                payload.put("size", 500);
-                payload.put("userRole", "string");
-                List<String> heads = Arrays.asList("187458", "2152531");
-                payload.put("heads", heads);
 
-                List<String> managers = Arrays.asList(managerId);
-                payload.put("managers", managers);
-                List<String> advisors = Arrays.asList(advisorId);
-                payload.put("advisors", advisors);
+        RequestSpecification res1 = given().spec(req)
+                .queryParam("user_id","431340");
+        ClientDetailsResponse.Root clientresponse=res1.when().get("/tools/advisory-dashboard/monthly-trends/investor")
+                .then().log().all().spec(respec).extract().response().as(ClientDetailsResponse.Root.class);
+        aumYTD= (int) clientresponse.getData().getSummary().get(0).getYtd();
+        aumLFY= (int) clientresponse.getData().getSummary().get(0).getLfy().getValue();
 
-                payload.put("financialYear", "2023-2024");
-                payload.put("type", "scheme_name");
-                //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("aggregateBy", "investment_amount");
-                //investor_count / investment_amount
-                payload.put("sortBy", "scheme_name");
-                //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("order", "asc");
+        totalinflowYTD= (int) clientresponse.getData().getSummary().get(1).getYtd();
+        totalinflowLFY= (int) clientresponse.getData().getSummary().get(1).getLfy().getValue();
 
-                RequestSpecification res = given().spec(req)
-                        .body(payload);
-                res.when().post("/tools/portfolio-exposure/l0")
-                        .then().log().all().spec(respec);
-            }
-        }
-    }
-    @Test
-    public void surajjainManager_level0() {     //surajjain
-        List<String> managerIds = Arrays.asList("1871006");
-        List<String> advisorIds = Arrays.asList( "300210", "335339", "1041112", "2402884", "131919","2443123","2589046","2443125","1871006");
+        sipYTD= (int) clientresponse.getData().getSummary().get(2).getYtd();
+        sipLFY= (int) clientresponse.getData().getSummary().get(2).getLfy().getValue();
 
-        for (String managerId : managerIds) {
-            for (String advisorId : advisorIds) {
-                Map<String, Object> payload = new LinkedHashMap<>();
-                payload.put("page", 1);
-                payload.put("size", 500);
-                payload.put("userRole", "string");
-                List<String> heads = Arrays.asList("187458");
-                payload.put("heads", heads);
+        lumYTD= (int) clientresponse.getData().getSummary().get(3).getYtd();
+        lumLFY= (int) clientresponse.getData().getSummary().get(3).getLfy().getValue();
 
-                List<String> managers = Arrays.asList(managerId);
-                payload.put("managers", managers);
-                List<String> advisors = Arrays.asList(advisorId);
-                payload.put("advisors", advisors);
+        swpYTD= (int) clientresponse.getData().getSummary().get(5).getYtd();
+        swpLFY= (int) clientresponse.getData().getSummary().get(5).getLfy().getValue();
 
-                payload.put("financialYear", "2023-2024");
-                payload.put("type", "scheme_name");
-                //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("aggregateBy", "investment_amount");
-                //investor_count / investment_amount
-                payload.put("sortBy", "scheme_name");
-                //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("order", "asc");
+        totaloutflowYTD= (int) clientresponse.getData().getSummary().get(4).getYtd();
+        totaloutflowLFY= (int) clientresponse.getData().getSummary().get(4).getLfy().getValue();
 
-                RequestSpecification res = given().spec(req)
-                        .body(payload);
-                res.when().post("/tools/portfolio-exposure/l0")
-                        .then().log().all().spec(respec);
-            }
-        }
-    }
-    @Test
-    public void sonikumariManager_level0() {     //sonikumari
-        List<String> managerIds = Arrays.asList("86808");
-        List<String> advisorIds = Arrays.asList("1848508","2126808", "2437767","1816472","2437747","2578086","86808","2098351");
+        redemYTD= (int) clientresponse.getData().getSummary().get(6).getYtd();
+        redemLFY= (int) clientresponse.getData().getSummary().get(6).getLfy().getValue();
 
-        for (String managerId : managerIds) {
-            for (String advisorId : advisorIds) {
-                Map<String, Object> payload = new LinkedHashMap<>();
-                payload.put("page", 1);
-                payload.put("size", 500);
-                payload.put("userRole", "string");
-                List<String> heads = Arrays.asList("187458", "2152531");
-                payload.put("heads", heads);
+        netflowYDT= (int) clientresponse.getData().getSummary().get(7).getYtd();
+        netflowLFY= (int) clientresponse.getData().getSummary().get(7).getLfy().getValue();
 
-                List<String> managers = Arrays.asList(managerId);
-                payload.put("managers", managers);
-                List<String> advisors = Arrays.asList(advisorId);
-                payload.put("advisors", advisors);
+     /*   netperYDT= (int) response.getData().getSummary().get(8).getYtd();
+        netperLFY= (int) response.getData().getSummary().get(8).getLfy().getValue();*/
 
-                payload.put("financialYear", "2023-2024");
-                payload.put("type", "scheme_name");
-                //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("aggregateBy", "investment_amount");
-                //investor_count / investment_amount
-                payload.put("sortBy", "amc");
-                //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("order", "asc");
+        netperYDT = (int) clientresponse.getData().getSummary().get(8).getYtd();
+        String YDT = Integer.toString(netperYDT);
 
-                RequestSpecification res = given().spec(req)
-                        .body(payload);
-                res.when().post("/tools/portfolio-exposure/l0")
-                        .then().log().all().spec(respec);
-            }
-        }
-    }
-    @Test
-    public void meenakshiManager_level0() {     //meenakshi
-        List<String> managerIds = Arrays.asList("343573");
-        List<String> advisorIds = Arrays.asList( "2084062","2437769", "343573","2126807", "1466042");
+        String valueAsString = (String) clientresponse.getData().getSummary().get(8).getLfy().getValue();
+        netperLFY = Integer.parseInt(valueAsString);
 
-        for (String managerId : managerIds) {
-            for (String advisorId : advisorIds) {
-                Map<String, Object> payload = new LinkedHashMap<>();
-                payload.put("page", 1);
-                payload.put("size", 500);
-                payload.put("userRole", "string");
-                List<String> heads = Arrays.asList("187458", "2152531");
-                payload.put("heads", heads);
 
-                List<String> managers = Arrays.asList(managerId);
-                payload.put("managers", managers);
-                List<String> advisors = Arrays.asList(advisorId);
-                payload.put("advisors", advisors);
+     /*   netperLFY= (int) response.getData().getSummary().get(8).getLfy().getValue();
+        System.out.println(netperLFY);*/
 
-                payload.put("financialYear", "2023-2024");
-                payload.put("type", "scheme_name");
-                //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("aggregateBy", "investment_amount");
-                //investor_count / investment_amount
-                payload.put("sortBy", "scheme_name");
-                //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
-                payload.put("order", "asc");
+ /*       t_inYTD= (int) response.getData().getSummary().get(12).getYtd();
+        t_inLFY= (int) response.getData().getSummary().get(12).getLfy().getValue();*/
 
-                RequestSpecification res = given().spec(req)
-                        .body(payload);
-                res.when().post("/tools/portfolio-exposure/l0")
-                        .then().log().all().spec(respec);
-            }
-        }
+/*        t_outYTD= (int) response.getData().getSummary().get(13).getYtd();
+        t_outLFY= (int) response.getData().getSummary().get(13).getLfy().getValue();*/
+
+
+        System.out.println("aum YTD:"+aumYTD);
+        System.out.println("aum LFY:"+aumLFY);
+        System.out.println("inflow YTD:"+totalinflowYTD);
+        System.out.println("inflow LFY:"+totalinflowLFY);
+        System.out.println("sipYTD :"+sipYTD);
+        System.out.println("sipLFY :"+sipLFY);
+        System.out.println("lumYTD :"+lumYTD);
+        System.out.println("lumLFY :" +lumLFY);
+
+      /*  System.out.println("t_inYTD :"+t_inYTD);
+        System.out.println("t_inLFY :"+t_inLFY);*/
+
+        System.out.println("outflowYTD :"+totaloutflowYTD);
+        System.out.println("outflowLFY :"+totaloutflowLFY);
+        System.out.println("redemYTD :"+redemYTD);
+        System.out.println("redemLFY :"+redemLFY);
+
+        System.out.println("swpYTD :"+swpYTD);
+        System.out.println("swpLFY :"+swpLFY);
+        /*System.out.println("t_outYTD :"+t_outYTD);
+        System.out.println("t_outLFY :"+t_outLFY);*/
+
+        System.out.println("netflowYDT :"+netflowYDT);
+        System.out.println("netflowLFY :"+netflowLFY);
+        System.out.println("NetflowPercentage YDT : " + netperYDT);
+        System.out.println("Netflow percentage LFY :"+netperLFY);
+
     }
 
-    @Test
-    public void All_Reviews() {
-        RequestSpecification res = given().spec(req)
-                .body("{\"page\":1,\"size\":20,\"segments\":[\"platinum\",\"gold\",\"silver\",\"digital\"],\"types\":\"all\",\"status\":[\"all\",\"draft\",\"generated\",\"completed\"],\"heads\":[\"187458\",\"2152531\"],\"managers\":[],\"advisors\":[],\"sortBy\":\"advisor_name\",\"sortType\":\"asc\",\"search\":{\"query\":\"rupamlaldas@gmail.com\",\"type\":\"email\"}}");
-                //   .body(Adv_payload.AllReviews());
-        AllReviewResponse.Root response = res.when().post("/tools/portfolio-review/completed")
-                .then().log().all().spec(respec).extract().response().as(AllReviewResponse.Root.class);
-
-        for (AllReviewResponse.Review review : response.getData().getReviews()) {
-            String advisorName=review.getAdvisorName();
-            String status =review.getStatus();
-            for (AllReviewResponse.Investor investor : review.getInvestors()) {
-                String investorName = investor.getName();
-
-              //  System.out.println(investorName);
-              //  System.out.println(advisorName);
-              //  System.out.println(status);
-                if (investorName.isEmpty()||advisorName.isEmpty()||status.isEmpty()) {
-                    String message = "Investor / Advisor /Status is blank. Email: " + investor.getEmail() + ", PAN: " + investor.getPan();
-                     Assert.fail(message); // This assertion will fail the test
-                }
-            }
-        }
-    }
 }
 
