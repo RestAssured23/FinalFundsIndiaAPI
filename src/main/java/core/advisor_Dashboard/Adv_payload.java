@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Adv_payload extends AD_AccessPropertyFile{
   static List<String> headid = Arrays.asList("187458");                 //2152531 / 187458
-  static   List<String> managerid = Arrays.asList();           //Manager -> 1871006
+  static   List<String> managerid = Arrays.asList("1871006");           //Manager -> 1871006
   static   List<String> advisorid = Arrays.asList();
 
     public static Map<String, Object> AllClients() {
@@ -71,12 +71,14 @@ public class Adv_payload extends AD_AccessPropertyFile{
         payload.put("managers",managerid);
         payload.put("advisors",advisorid);
         payload.put("financialYear","2023-2024");
+    //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
         payload.put("type","amc");
-                    //type possibility==> scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
+    //investor_count / investment_amount
         payload.put("aggregateBy","investment_amount");
-                    //investor_count / investment_amount
+    /*month wise sorting --> "sortBy":"2023-05_1" / "2023-05_2",(upto 12 months Apr to March)
+      list of sorting -->      scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style*/
         payload.put("sortBy","amc");
-                         //scheme_name, amc, category, fi_rating, credit_quality, asset_allocation, fi_style
+
         payload.put("order","asc");
        /* Map<String,Object> search= new LinkedHashMap<>();
         search.put("type","category");         //only applicable for amc, category, scheme_name
@@ -178,7 +180,7 @@ public class Adv_payload extends AD_AccessPropertyFile{
     public static Map<String, Object> SnapshotPayload() {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("page", 1);
-        payload.put("size", 100);
+        payload.put("size", 1585);
         payload.put("financialYear","2023-2024");
         payload.put("sortBy", "current_aum");
                      //[name / advisor_name / inflow /outflow / netflow_percentage /mtm / mtm_percentage / current_aum /aum_growth / base_aum]
@@ -224,7 +226,7 @@ public class Adv_payload extends AD_AccessPropertyFile{
         Map<String,Object> payload= new LinkedHashMap<>();
         payload.put("page",1);
         payload.put("size",200);
-        payload.put("financialYear","2022-2023");
+        payload.put("financialYear","2023-2024");
         payload.put("sortBy","name");         // name / advisor_name / lfy /ytd / months /aum /inflow / outflow
         payload.put("sortType","asc");          //asc , desc
 

@@ -176,7 +176,7 @@ public class GetAPI extends AccessPropertyFile {
     @Test(priority = 1)
     public void authorization() {
         RequestSpecification res = given().spec(req)
-                .queryParam("holdingProfileId", holdingId);
+                .queryParam("holdingProfileId", "1403821");
        response= res.when().get("/core/investor/transactions/authorization")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
@@ -484,8 +484,24 @@ public class GetAPI extends AccessPropertyFile {
         res.when().get("/core/investor/banks")
                 .then().log().all().spec(respec);
     }
-
-
+    @Test(priority = 1)
+    public void ListBank() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("investorId", InvestorId);
+        //       .queryParam("userBankId", 1);
+        response = res.when().get("/core/investor/banks")
+                .then().log().all().spec(respec).extract().response().asString();
+        Reporter.log(response);
+    }
+    @Test(priority = 1)
+    public void QRBank() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("investorId", InvestorId)
+                .queryParam("source", "ADD_BANK");
+        response = res.when().get("/core/investor/banks/qr")
+                .then().log().all().spec(respec).extract().response().asString();
+        Reporter.log(response);
+    }
   /*  @Test         // Rest API
     public void main_dashboard_restAPI() throws IOException
     {

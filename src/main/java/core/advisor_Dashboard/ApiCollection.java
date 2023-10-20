@@ -297,8 +297,7 @@ public class ApiCollection extends AD_AccessPropertyFile{
     @Test
     public void MonthlyTrends() {
         RequestSpecification res = given().spec(req)
-           //     .body("{\"financialYear\":\"2023-2024\",\"page\":1,\"size\":500,\"heads\":[\"187458\"],\"managers\":[\"86808\"],\"advisors\":[\"2437747\"],\"sortBy\":\"lfy\",\"sortType\":\"desc\",\"trendsBy\":{\"aum\":{\"enabled\":true}}}");
-                .body(Adv_payload.Monthly_Trends());
+                 .body(Adv_payload.Monthly_Trends());
         MonthlyTrendsResponse.Root response= res.when().post("/tools/advisory-dashboard/monthly-trends")
                 .then().log().all().spec(respec).extract().response().as(MonthlyTrendsResponse.Root.class);
     }
@@ -399,7 +398,8 @@ public class ApiCollection extends AD_AccessPropertyFile{
     @Test
     public void MonthlyTrends_Get() {
         RequestSpecification res = given().spec(req)
-                .queryParam("user_id","114723");
+                .queryParam("user_id","1020690")
+                .queryParam("financialYear","2023-2024");
         res.when().get("/tools/advisory-dashboard/monthly-trends/investor")
                 .then().log().all().spec(respec);
     }

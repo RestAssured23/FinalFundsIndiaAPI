@@ -286,9 +286,9 @@ public class APIRegression extends AD_AccessPropertyFile{
     @Test(priority = 20)
     public void SendEmail() {
         Map<String, Object>payload=new HashMap<>();
-        payload.put("reviewId",reviewId);
-        payload.put("from","qateam@fundsindia.com");
-        payload.put("attachmentName",mailid+"-"+reviewId+".pdf");
+            payload.put("reviewId",reviewId);
+            payload.put("from","qateam@fundsindia.com");
+            payload.put("attachmentName",mailid+"-"+reviewId+".pdf");
 
         List<String> typedata=Arrays.asList("email");
          payload.put("type",typedata);
@@ -502,7 +502,7 @@ public class APIRegression extends AD_AccessPropertyFile{
         res.when().post("/tools/portfolio-review/quality")
                 .then().log().all().spec(respec);
     }
-    @Test(priority = 32)
+  @Test(priority = 32)
     public void Exposure_level0() {
         RequestSpecification res = given().spec(req)
                 .body(Regressionpayload.level0());
@@ -567,5 +567,53 @@ public class APIRegression extends AD_AccessPropertyFile{
         MonthlyTrendsResponse.Root response= res.when().post("/tools/advisory-dashboard/monthly-trends")
                 .then().log().all().spec(respec).extract().response().as(MonthlyTrendsResponse.Root.class);
     }
-}
+    @Test(priority = 37)
+    public void AUM_Overview() {
+        RequestSpecification res = given().spec(req)
+                .body(Adv_payload.OverviewPayload());
+        res.when().post("/tools/advisory-dashboard/growth/aum/overview")
+                .then().log().all().spec(respec);
+    }
+    @Test(priority = 38)
+    public void Growth_Overview() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("includeTeam",false);
+        res.when().get("/tools/advisory-dashboard/growth/overview")
+                .then().log().all().spec(respec);
+    }
+    @Test(priority = 39)
+    public void Growth_AUM() {
+        double aumGrowthPercent,sipGrowthPercent;
+        long baseAum,currentAum;
+        double delta = 0.0001;      // Adjust the delta based on your desired precision
 
+        RequestSpecification res = given().spec(req)
+                .body(Adv_payload.AUM());
+        AUMSummaryResponse.Root resposne=res.when().post("/tools/advisory-dashboard/growth/aum")
+                .then().log().all().spec(respec).extract().response().as(AUMSummaryResponse.Root.class);
+
+        baseAum=resposne.getData().getCurrent().get(0).getBaseAum();
+        currentAum=resposne.getData().getCurrent().get(0).getCurrentAum();
+        aumGrowthPercent = ((double)(currentAum - baseAum) / baseAum) * 100;
+        sipGrowthPercent = ((double)(currentAum - baseAum) / baseAum) * 100;
+
+        double foundAumGrowth = Math.round(aumGrowthPercent * 1000.0) / 1000.0;
+       // double foundSipGrowth = Math.round(sipGrowthPercent * 1000.0) / 1000.0;
+
+        System.out.println("BASEAUM :"+baseAum);
+        System.out.println("Current AUM :"+currentAum);
+        System.out.println("AUM Growth %" +aumGrowthPercent);
+       // System.out.println(sipGrowthPercent);
+
+        softAssert.assertEquals(resposne.getData().getAumGrowth(),foundAumGrowth,delta);
+      //  softAssert.assertEquals(resposne.getData().getSipGrowth(),foundSipGrowth,delta);
+        softAssert.assertAll();
+    }
+  /*  @Test(priority = 40)
+    public void Advisory_Filters() {            //post
+        RequestSpecification res = given().spec(req)
+                .body(Adv_payload.Filters());
+        res.when().post("/tools/advisory-dashboard/filters")
+                .then().log().all().spec(respec);
+    }*/
+}

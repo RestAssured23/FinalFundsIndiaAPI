@@ -16,7 +16,7 @@ public class BasePlatform {
          System.out.println("OS Not Detected");
          basepath = "";
      }
-        path=basepath + "mf.properties";
+        path=basepath + "scrum.properties";
      return path;
  }
     @Test
