@@ -14,6 +14,7 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
 import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
@@ -33,8 +34,8 @@ public class SwitchGoalChange extends AccessPropertyFile {
                 .setBaseUri(getBasePath())
                 .addHeader("x-api-version", "2.0")
                 .addHeader("channel-id", getChannelID())
-                .addHeader("x-fi-access-token", getAccessToken())
-                .setContentType(ContentType.JSON)
+               .addHeader("x-fi-access-token", getAccessToken())
+               .setContentType(ContentType.JSON)
                 .build()
                 .log()
                 .all();
@@ -115,7 +116,7 @@ public class SwitchGoalChange extends AccessPropertyFile {
                 "  \"goalId\": \"461041\",\n" +
                 "  \"toGoalId\": \"461366\",\n" +
                 "  \"fromSchemeCode\": \"23913\",\n" +
-                "  \"toSchemeCode\": \"31059\",\n" +
+                "  \"toSchemeCode\": \"31059\",\n" +                         //31059
                 "  \"toDividendOption\": \"Payout\",\n" +
                 "  \"toOption\": \"Dividend\",\n" +
                 "  \"bankId\": \"1\"\n" +
@@ -124,17 +125,54 @@ public class SwitchGoalChange extends AccessPropertyFile {
         redeem.when().post("/core/investor/switch").then().log().all().spec(respec);
     }
 
-    @Test(priority = 19)
+    @Test(priority = 18)
+    public void recentTransactions() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("holdingProfileId", "183318");
+        response=res.when().get("/core/investor/recent-transactions")
+                .then().log().all().spec(respec).extract().response().asString();
+        Reporter.log(response);
+    }
+
+ /*   @Test(priority = 19)
     public void Cancel_Switch() {
         Map<String, String> del = new HashMap<>();
         del.put("action", "cancel");
-        del.put("referenceNo", "1382270");
+        del.put("referenceNo", "1382540");
 
         RequestSpecification res=given().spec(req)
                 .body(del);
         res.when().post("/core/investor/recent-transactions")
                 .then().log().all().spec(respec);
+    }*/
+
+
+
+    @Test(priority = 17)
+    public void testswitch_save(){
+        String payload="{\n" +
+                "  \"goalName\": \"SwitchTest\",\n" +
+                "  \"toSchemeName\": \"HDFC Banking and PSU Debt Fund-Reg(IDCW)\",\n" +
+                "  \"fromSchemeName\": \"HDFC Banking and PSU Debt Fund-Reg(G)\",\n" +
+                "  \"units\": 1,\n" +
+                "  \"fromOption\": \"Growth\",\n" +
+                "  \"switchType\": \"regular\",\n" +
+                "  \"switchMode\": \"partial\",\n" +
+                "  \"otpReferenceId\": \"\",\n" +
+                "  \"holdingProfileId\": \"183318\",\n" +
+                "  \"folio\": \"94764646/46\",\n" +
+                "  \"goalId\": \"461041\",\n" +
+                "  \"toGoalId\": \"461366\",\n" +
+                "  \"fromSchemeCode\": \"23913\",\n" +
+                "  \"toSchemeCode\": \"28075\",\n" +
+                "  \"toDividendOption\": \"Reinvestment\",\n" +
+                "  \"toOption\": \"Dividend\",\n" +
+                "  \"bankId\": \"1\"\n" +
+                "}";
+        RequestSpecification redeem = given().spec(req).body(payload);
+        redeem.when().post("/core/investor/save").then().log().all().spec(respec);
     }
+
 
  /*   @Test(priority = 14)
     public void Common_OTP_Test() {

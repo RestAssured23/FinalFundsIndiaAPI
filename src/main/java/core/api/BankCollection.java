@@ -129,11 +129,25 @@ public class BankCollection extends AccessPropertyFile {
         Reporter.log(response);
     }
 
+//DocumentDownload
+    @Test(priority = 1)
+    public void admin_Doc_Download_GetAPI() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("documentType","investor-cancelled-cheque");
+        response = res.when().get("/core/investor/documents/download")
+                .then().log().all().spec(respec).extract().response().asString();
+        Reporter.log(response);
+    }
     @Test(priority = 1)
     public void admin_Doc_Download() {
+        Map<String,Object>payload=new HashMap<>();
+        payload.put("documentId","3");
+        payload.put("documentType","investor-cancelled-cheque");
+        payload.put("referenceId","investorId");
+        payload.put("idType","287096");
+
         RequestSpecification res = given().spec(req)
-                .queryParam("documentType","investor-cancelled-cheque")
-                .queryParam("documentId","3");
+                .body(payload);
         response = res.when().get("/core/investor/documents/download")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
@@ -152,5 +166,22 @@ public class BankCollection extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
+
+
+    @Test(priority = 1)
+    public void EKO_verification() {
+        Map<String,Object>payload=new HashMap<>();
+        payload.put("ifsc","");
+        payload.put("accountNo","");
+        payload.put("investorId","287096");
+      //  payload.put("serviceProvider","");
+
+        RequestSpecification res = given().spec(req)
+                .body(payload);
+        response = res.when().get("/core/investor/banks/verification")
+                .then().log().all().spec(respec).extract().response().asString();
+        Reporter.log(response);
+    }
+
 }
 

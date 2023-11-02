@@ -2,6 +2,7 @@ package core.basepath;
 
 import core.model.Signin;
 import io.restassured.RestAssured;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.FileInputStream;
@@ -90,6 +91,7 @@ public class AccessPropertyFile {
                         .when()
                         .post("/core/auth/sign-in")
                         .then()
+                        .log().all()
                         .assertThat()
                         .statusCode(200)
                         .header("Content-Type", "application/json")
@@ -126,14 +128,14 @@ public class AccessPropertyFile {
                     .body(login)
                     .when()
                     .post("/core/auth/sign-in")
-                    .then()
+                    .then().log().all()
                     .assertThat()
                     .statusCode(200)
                     .header("Content-Type", "application/json")
                     .extract()
                     .response()
                     .as(Signin.Root.class);
-            return response.getData().getAccessToken();
+           return response.getData().getAccessToken();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -34,7 +34,6 @@ public class GetAPI extends AccessPropertyFile {
                 .expectContentType(ContentType.JSON)
                 .build();
     }
-
     @Test
     public void feature() {
         RequestSpecification res = given().spec(req);

@@ -3,13 +3,20 @@ import core.advisor_Dashboard.model.*;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.given;
 import static java.lang.Double.parseDouble;
@@ -18,6 +25,8 @@ public class ApiCollection extends AD_AccessPropertyFile{
     private final RequestSpecification req;
     private final ResponseSpecification respec;
     SoftAssert softAssert = new SoftAssert();
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    private boolean isCompleted = false;
     public ApiCollection() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getADBasePath())
@@ -484,5 +493,281 @@ public class ApiCollection extends AD_AccessPropertyFile{
     }
 
 
+//Sprint : Adv_Dashboard_30.10.23
+
+    @Test
+    public void portfolio_monitor_ClientsSummary(){
+        RequestSpecification res = given().spec(req);
+        res.when().get("/tools/portfolio-monitor/clients/summary")
+                .then().log().all().spec(respec);
+    }
+ @Test
+public void portfolio_monitor_clients(){
+        Map<String,Object> payload=new LinkedHashMap<>();
+        payload.put("page",1);
+        payload.put("size",500);
+        payload.put("userRole","string");
+        payload.put("sortBy","debt_exposure_credit_risk");
+        payload.put("order","desc");    //[asc ,desc]
+    // payload.put("financialYear","2023-2024");
+                 List<String> headId = Arrays.asList("187458");
+      //          List<String> managerId = Arrays.asList("2444599");
+      //         List<String> advisorid = Arrays.asList("2444599");
+        payload.put("heads",headId);
+    //    payload.put("managers",managerId);
+   //    payload.put("advisors",advisorid);
+            Map<String,Object> search_data=new HashMap<>();
+            search_data.put("type","name");
+            search_data.put("query","Megha");                    // [ name, mobile, pan, email]
+        payload.put("search",search_data);
+
+ //Filter integration
+     Map<String, Object> filterpayload = new LinkedHashMap<>();
+     //  filterpayload.put("id", "");
+     filterpayload.put("name", "YTD");
+     filterpayload.put("source", "MonthlyTrends");
+
+     List<Map<String, Object>> parameter = new ArrayList<>();
+
+     Map<String,Object>filterdata=new LinkedHashMap<>();
+     filterdata.put("month","current_month");                 // mtd, lfy, ytd, current_month, previous_month, other_month
+   //  filterdata.put("monthName","Sep");
+     filterdata.put("field","lumpsum");                //sip, lumpsum, inflow, outflow, transfer_in, transfer_out, redemption, swp
+     filterdata.put("type","or");                  //  or, and
+         Map<String,Object>condi_data=new LinkedHashMap<>();
+         condi_data.put("type","is_greater_than");
+                                          /*  is_less_than, is_greater_than, is_equal_to, is_less_than_or_equal_to,
+                                              is_greater_than_or_equal_to,contains, in_range_between   */
+         condi_data.put("value1","2000");
+         //      condi_data.put("value2","");
+         //      condi_data.put("enums","string");
+         filterdata.put("condition",condi_data);
+     parameter.add(filterdata);
+     filterpayload.put("filters",parameter);
+
+payload.put("filters",filterpayload);
+
+    RequestSpecification res = given().spec(req)
+                    .body(payload);
+    res.when().post("/tools/portfolio-monitor/clients")
+            .then().log().all().spec(respec);
+    }
+
+    @Test
+    public void portfolio_monitor_monthlyDetails(){
+        RequestSpecification res = given().spec(req)
+                .queryParam("uuid","65326");              //152389	 triveni   1133466--> megha
+        res.when().get("/tools/portfolio-monitor/clients/monthly-details")
+                .then().log().all().spec(respec);
+    }
+
+
+    @Test
+    public void portfolio_monitorClients_MoreDetails(){
+        Map<String,Object> payload=new LinkedHashMap<>();
+        payload.put("groupBy","amc");           // [ category, sub_category, scheme, amc }
+        payload.put("type","debt_exposure_credit_risk");
+        payload.put("uuid","1133466");
+
+        RequestSpecification res = given().spec(req)
+                .body(payload);
+        res.when().post("/tools/portfolio-monitor/clients/more-details")
+                .then().log().all().spec(respec);
+    }
+
+    @Test
+    public void portfolio_monitorClients_MoreDetailsAMC(){
+        Map<String,Object> payload=new LinkedHashMap<>();
+        payload.put("groupBy","amc");           // [ category, sub_category, scheme, amc }
+        payload.put("type","debt_exposure_credit_risk");
+        payload.put("uuid","1133466");
+
+
+        RequestSpecification res = given().spec(req)
+                .body(payload);
+        res.when().post("/tools/portfolio-monitor/clients/more-details/amc")
+                .then().log().all().spec(respec);
+    }
+
+    @Test
+    public void portfolio_monitor_clients_test() throws InterruptedException {
+      //  ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("page", 1);
+        payload.put("size", 500);
+        payload.put("userRole", "string");
+        payload.put("order", "desc");
+    // Modify the sortBy field based on the sortFields array
+        String[] sortFields = {
+                "aum","name", "netflow_ytd", "netflow_growth", "riskscore", "returns", "abc", "target_exposure", "equity_deviation",
+                "assets_equity", "assets_debt", "assets_others", "cash_allocation", "quality_ratings1", "quality_ratings2", "quality_ratings_below_3",
+                "quality_ratings0", "quality_select_funds", "total_funds_non_debt", "total_funds_all", "liquidity_lock_in", "liquidity_elss",
+                "equity_exposure_equity", "equity_exposure_active_large_cap", "equity_exposure_thematic", "equity_exposure_small_cap",
+                "equity_exposure_ratings1", "equity_exposure_ratings2", "equity_exposure_ratings_below_3", "equity_exposure_ratings0",
+                "equity_exposure_select_funds", "equity_exposure_ratings4", "equity_exposure_ratings5", "equity_exposure_blend",
+                "equity_exposure_quality", "equity_exposure_value", "equity_exposure_mid_small", "equity_exposure_global",
+                "equity_exposure_others", "debt_exposure_debt", "debt_exposure_net_ytm", "debt_exposure_aaa_equivalent",
+                "debt_exposure_liquid_overnight", "debt_exposure_ust", "debt_exposure_low_duration", "debt_exposure_short_duration",
+                "debt_exposure_medium_duration", "debt_exposure_long_duration",  "debt_exposure_credit_risk", "debt_exposure_dynamic_funds",
+                "debt_exposure_conservative_hybrid", "debt_exposure_others", "debt_exposure_ratings1", "debt_exposure_ratings2",
+                "debt_exposure_ratings_below_3", "debt_exposure_ratings0", "debt_exposure_select_funds", "debt_exposure_ratings4",
+                "debt_exposure_ratings5", "sip_book_total", "sip_book_ratings1", "sip_book_ratings2", "sip_book_ratings_below_3",
+                "sip_book_ratings0", /*"sip_book_select_funds",*/ "sip_book_ratings4", "sip_book_ratings5", "sip_book_equity", "sip_book_debt",
+                "sip_book_others", "quality4", "quality5", "highest_amc_exposure", "highest_fund_exposure", "expense_ratio"
+        };
+        for (String sortField : sortFields) {
+            payload.put("sortBy", sortField);
+
+            List<String> headId = Arrays.asList("187458");
+            payload.put("heads", headId);
+
+            Map<String, Object> search_data = new HashMap<>();
+            search_data.put("type", "name");
+            search_data.put("query", "Megha"); // [ name, mobile, pan, email, scheme_name, amc, category ]
+            payload.put("search", search_data);
+
+            RequestSpecification res = given().spec(req).body(payload);
+            PortfolioMonitorClientsBO.Root response = res.when().post("/tools/portfolio-monitor/clients")
+                   .then().log().all().spec(respec).extract().response().as(PortfolioMonitorClientsBO.Root.class);
+            System.out.println(response.getCode());
+            Assert.assertEquals(200, response.getCode());
+            Thread.sleep(5000);
+        }
+       // softAssert.assertAll();
+    }
+    @Test
+    public void portfolio_monitorClients_MoreDetails_test() throws InterruptedException {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("groupBy", "amc");           // [ category, sub_category, scheme, amc }
+        payload.put("uuid", "1133466");
+
+        String[] sortFields = {
+                "assets_equity","assets_debt","assets_others", "cash_allocation", "quality_ratings1",
+                "quality_ratings2", "quality_ratings_below_3", "quality_ratings0", "quality_select_funds",
+                "total_funds_non_debt", "total_funds_all", "liquidity_lock_in", "liquidity_elss", "equity_exposure_equity",
+                "equity_exposure_active_large_cap", "equity_exposure_thematic", "equity_exposure_small_cap", "equity_exposure_ratings1",
+                "equity_exposure_ratings2", "equity_exposure_ratings_below_3", "equity_exposure_ratings0", "equity_exposure_select_funds",
+                "equity_exposure_ratings4", "equity_exposure_ratings5", "equity_exposure_blend", "equity_exposure_quality",
+                "equity_exposure_value", "equity_exposure_mid_small", "equity_exposure_global", "equity_exposure_others",
+                "debt_exposure_debt", "debt_exposure_net_ytm", "debt_exposure_aaa_equivalent", "debt_exposure_liquid_overnight",
+                "debt_exposure_ust", "debt_exposure_low_duration", "debt_exposure_short_duration", "debt_exposure_medium_duration",
+                "debt_exposure_long_duration", "debt_exposure_credit_risk", "debt_exposure_dynamic_funds",
+                "debt_exposure_conservative_hybrid", "debt_exposure_others", "debt_exposure_ratings1", "debt_exposure_ratings2",
+                "debt_exposure_ratings_below_3", "debt_exposure_ratings0", "debt_exposure_select_funds", "debt_exposure_ratings4",
+                "debt_exposure_ratings5", "sip_book_total", "sip_book_ratings1", "sip_book_ratings2", "sip_book_ratings_below_3",
+                "sip_book_ratings0", "sip_book_select_funds", "sip_book_ratings4", "sip_book_ratings5", "sip_book_equity", "sip_book_debt",
+                "sip_book_others"
+        };
+        for (String sortField : sortFields) {
+            payload.put("type", sortField);
+            RequestSpecification res = given().spec(req)
+                    .body(payload);
+            PortfolioMonitorClientsMoreDetailsBO.Root response=  res.when()
+                    .post("/tools/portfolio-monitor/clients/more-details")
+                    .then().log().all().spec(respec).extract().response().as(PortfolioMonitorClientsMoreDetailsBO.Root.class);
+            System.out.println(response.getCode());
+            Assert.assertEquals(200, response.getCode());
+            Thread.sleep(5000);
+        }
+    }
+    @Test
+    public void portfolio_monitorClients_MoreDetailsAMC_test() throws InterruptedException {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("groupBy", "amc");           // [ category, sub_category, scheme, amc }
+        payload.put("uuid", "1133466");
+
+        String[] sortFields = {
+                "assets_equity", "assets_debt", "assets_others", "cash_allocation", "quality_ratings1", "quality_ratings2",
+                "quality_ratings_below_3", "quality_ratings0", "quality_select_funds", "total_funds_non_debt", "total_funds_all",
+                "liquidity_lock_in", "liquidity_elss", "equity_exposure_equity", "equity_exposure_active_large_cap",
+                "equity_exposure_thematic", "equity_exposure_small_cap", "equity_exposure_ratings1", "equity_exposure_ratings2",
+                "equity_exposure_ratings_below_3", "equity_exposure_ratings0", "equity_exposure_select_funds", "equity_exposure_ratings4",
+                "equity_exposure_ratings5", "equity_exposure_blend", "equity_exposure_quality", "equity_exposure_value",
+                "equity_exposure_mid_small", "equity_exposure_global", "equity_exposure_others", "debt_exposure_debt",
+                "debt_exposure_net_ytm", "debt_exposure_aaa_equivalent", "debt_exposure_liquid_overnight", "debt_exposure_ust",
+                "debt_exposure_low_duration", "debt_exposure_short_duration", "debt_exposure_medium_duration",
+                "debt_exposure_long_duration", "debt_exposure_credit_risk", "debt_exposure_dynamic_funds",
+                "debt_exposure_conservative_hybrid", "debt_exposure_others", "debt_exposure_ratings1", "debt_exposure_ratings2",
+                "debt_exposure_ratings_below_3", "debt_exposure_ratings0", "debt_exposure_select_funds", "debt_exposure_ratings4",
+                "debt_exposure_ratings5", "sip_book_total", "sip_book_ratings1", "sip_book_ratings2", "sip_book_ratings_below_3",
+                "sip_book_ratings0", "sip_book_select_funds", "sip_book_ratings4", "sip_book_ratings5", "sip_book_equity", "sip_book_debt",
+                "sip_book_others"
+        };
+
+        for (String sortField : sortFields) {
+            payload.put("type", sortField);
+
+            RequestSpecification res = given().spec(req)
+                    .body(payload);
+            PortfolioMonitorClientsAMCBO.Root response = res.when()
+                    .post("/tools/portfolio-monitor/clients/more-details/amc")
+                    .then().log().all().spec(respec).extract().response().as(PortfolioMonitorClientsAMCBO.Root.class);
+            System.out.println(response.getCode());
+            Assert.assertEquals(200, response.getCode());
+            Thread.sleep(5000);
+        }
+    }
+
+    @Test
+    public void portfolio_monitor_clients_emptytest(){
+        Map<String,Object> payload=new LinkedHashMap<>();
+        payload.put("page",1);
+        payload.put("size",500);
+        payload.put("userRole","string");
+        payload.put("sortBy","debt_exposure_credit_risk");
+        payload.put("order","desc");    //[asc ,desc]
+        // payload.put("financialYear","2023-2024");
+        List<String> headId = Arrays.asList("187458");
+                  List<String> managerId = Arrays.asList("2444599");
+        //         List<String> advisorid = Arrays.asList("2444599");
+        payload.put("heads",headId);
+            payload.put("managers",managerId);
+        //    payload.put("advisors",advisorid);
+        Map<String,Object> search_data=new HashMap<>();
+        search_data.put("type","name");
+        search_data.put("query","Megha");                    // [ name, mobile, pan, email]
+        payload.put("search",search_data);
+
+        //Filter integration
+        Map<String, Object> filterpayload = new LinkedHashMap<>();
+        //  filterpayload.put("id", "");
+        filterpayload.put("name", "YTD");
+        filterpayload.put("source", "MonthlyTrends");
+
+        List<Map<String, Object>> parameter = new ArrayList<>();
+
+        Map<String,Object>filterdata=new LinkedHashMap<>();
+        filterdata.put("month","current_month");                 // mtd, lfy, ytd, current_month, previous_month, other_month
+        //  filterdata.put("monthName","Sep");
+        filterdata.put("field","lumpsum");                //sip, lumpsum, inflow, outflow, transfer_in, transfer_out, redemption, swp
+        filterdata.put("type","or");                  //  or, and
+        Map<String,Object>condi_data=new LinkedHashMap<>();
+        condi_data.put("type","is_greater_than");
+                                          /*  is_less_than, is_greater_than, is_equal_to, is_less_than_or_equal_to,
+                                              is_greater_than_or_equal_to,contains, in_range_between   */
+        condi_data.put("value1","2000");
+        //      condi_data.put("value2","");
+        //      condi_data.put("enums","string");
+        filterdata.put("condition",condi_data);
+        parameter.add(filterdata);
+        filterpayload.put("filters",parameter);
+
+        payload.put("filters",filterpayload);
+
+        RequestSpecification res = given().spec(req)
+                .body(payload);
+       PortfolioMonitorClientsBO.Root response= res.when().post("/tools/portfolio-monitor/clients")
+                .then().log().all().spec(respec).extract().response().as(PortfolioMonitorClientsBO.Root.class);
+       Assert.assertEquals(response.getData().getClients(),"Clients should not be empty");
+
+
+    }
+
+
+
 }
+
+
+
 
