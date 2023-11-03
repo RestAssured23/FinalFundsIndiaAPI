@@ -7,6 +7,7 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import core.model.HoldingProfile;
+import lombok.Value;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
 
