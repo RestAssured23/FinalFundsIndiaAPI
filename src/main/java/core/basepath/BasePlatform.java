@@ -18,6 +18,7 @@ public class BasePlatform {
      }
         path=basepath + "scrum.properties";
      return path;
+
  }
     @Test
     public String platform() {
