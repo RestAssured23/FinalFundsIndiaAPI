@@ -20,10 +20,12 @@ import static io.restassured.RestAssured.given;
 import static core.api.CommonVariable.*;
 public class GetAPI extends AccessPropertyFile {
 
+
+
     public GetAPI() throws IOException {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
-                .addHeader("x-api-version", "2.0")
+                .addHeader("x-api-version", "1.0")
                 .addHeader("channel-id", getChannelID())
                 .addHeader("x-fi-access-token", getAccessToken())
                 .setContentType(ContentType.JSON)

@@ -1,6 +1,7 @@
 package core.dbconnection;
 
 import core.basepath.AccessPropertyFile;
+import org.testng.annotations.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,7 +22,7 @@ public class DatabaseConnection extends AccessPropertyFile {
         this.url = dburl + databasename + (encrypt ? "encrypt=true;trustServerCertificate=true" : "");
         this.driverName = dbdrivername;
     }
-
+@Test
     public Connection getConnection() {
         Connection con = null;
         try {

@@ -1,4 +1,4 @@
-package core.api;
+package core.advisor_Dashboard.BankCollection;
 
 import core.basepath.AccessPropertyFile;
 import core.model.HoldingProfile;
@@ -10,6 +10,8 @@ import org.testng.Reporter;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +36,6 @@ public class BankCollection extends AccessPropertyFile {
                 .expectContentType(ContentType.JSON)
                 .build();
     }
-
 
     @Test
     public void holdingProfile() {
@@ -63,11 +64,14 @@ public class BankCollection extends AccessPropertyFile {
         }
     }
 
-
+  /*  manually --/core/investor/banks -- NRE , Joint
+    eko --> NRO / RI : --> name score 1-5 checq updload true , 6-9 check upload false (we are not activate bank)
+    qrcallback ,
+*/
     @Test(priority = 1)
     public void ListBank() {
         RequestSpecification res = given().spec(req)
-                .queryParam("investorId", 287096);
+                .queryParam("investorId", 287109);       //282306 5 bank active (sathi@gmail.com)
         response = res.when().get("/core/investor/banks")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
@@ -75,7 +79,7 @@ public class BankCollection extends AccessPropertyFile {
     @Test(priority = 1)
     public void investorMandates() {
         RequestSpecification res = given().spec(req)
-                .queryParam("investorId", "287096");
+                .queryParam("investorId", "287603");
         response=  res.when().get("/core/investor/mandates")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
@@ -83,8 +87,8 @@ public class BankCollection extends AccessPropertyFile {
     @Test(priority = 1)
     public void QRBank() {
         RequestSpecification res = given().spec(req)
-                .queryParam("investorId", 287096)
-               .queryParam("source", "ADD_BANK");
+                .queryParam("investorId", 287633)
+              .queryParam("source", "ADD_BANK");     // ONBOARDING / ADD_BANK
         response = res.when().get("/core/investor/banks/qr")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
@@ -92,26 +96,81 @@ public class BankCollection extends AccessPropertyFile {
     @Test(priority = 1)
     public void QRCallBack() {
         RequestSpecification res = given().spec(req)
-                .queryParam("investorId", 287096)
-                .queryParam("id", "56e9bc0a-95ea-4fe5-8b9d-8f3381e4e2c9");
+                .queryParam("investorId", 287623)
+                .queryParam("id", "04761e90-f045-4204-ad25-694c35422a30");
         response = res.when().get("/core/investor/banks/qr/callback")
                 .then().log().all().spec(respec).extract().response().asString();
-        Reporter.log(response);
+    }
+    @Test(priority = 1)
+    public void addBank_Manully() throws IOException {
+        String content = new String(Files.readAllBytes(Paths.get("C:\\Users\\Fi-User\\fi-repositories\\fi-test-automation\\src\\main\\java\\core\\advisor_Dashboard\\BankCollection\\test.txt")));
+
+        Map<String, Object> paylaod=new HashMap<>();
+        paylaod.put("investorId","287109");
+        paylaod.put("bankId","");
+        paylaod.put("type","others");                   // primary, secondary, others
+        paylaod.put("ifsc","HDFC0000183");
+        paylaod.put("accountNo","987456321021457");
+        paylaod.put("accountType","Individual");        // Joint, Individual, Either_Or_Survivor
+        paylaod.put("bankAccountType","Savings");       // NRE, NRO, Savings, Current
+
+            Map<String, Object> paylaod1=new HashMap<>();
+            paylaod1.put("name","IOS.jpg");
+            paylaod1.put("content",content);
+        paylaod.put("cheque",paylaod1);
+
+        RequestSpecification res = given().spec(req)
+                .queryParam("investorId", 287623)
+                .queryParam("source","ADD_BANK")            // ADD_BANK / ONBOARDING
+                .body(paylaod);
+
+        response = res.when().post("/core/investor/banks")
+                .then().log().all().spec(respec).extract().response().asString();
+    }
+
+    @Test(priority = 1)
+    public void QR_AddBank() throws IOException {
+        String content = new String(Files.readAllBytes(Paths.get("C:\\Users\\Fi-User\\fi-repositories\\fi-test-automation\\src\\main\\java\\core\\advisor_Dashboard\\BankCollection\\test.txt")));
+
+        Map<String, Object> paylaod=new HashMap<>();
+        paylaod.put("investorId","287633");
+        paylaod.put("id","cc08983f-bbdf-45d5-a749-8eb62d79ae3f");
+        paylaod.put("bankAccountType","Savings");       // NRE, NRO, Savings, Current
+
+        Map<String, Object> paylaod1=new HashMap<>();
+        paylaod1.put("name","IOS.jpg");
+        paylaod1.put("content",content);
+        paylaod.put("cheque",paylaod1);
+
+        RequestSpecification res = given().spec(req)
+                .body(paylaod);
+
+        response = res.when().post("/core/investor/banks")
+                .then().log().all().spec(respec).extract().response().asString();
+    }
+
+
+    @Test
+    public void Delete_Bank() {
+        RequestSpecification res = given().spec(req)
+                .queryParam("investorId", 287623)
+                .queryParam("userBankId",4);
+        response = res.when().delete("/core/investor/banks")
+                .then().log().all().spec(respec).extract().response().asString();
     }
 
     @Test(priority = 1)
     public void User_StatusChange() {
-        Map<String,Object>payload=new HashMap<>();
-        payload.put("investorId","287096");
-        payload.put("userBankId","2");
-        payload.put("type","make_as_primary");      //  make_as_primary
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("investorId", "287633");
+        payload.put("userBankId", "3");
+        payload.put("type", "make_as_primary");      //  make_as_primary
         //  payload.put("remarks","Test");
 
         RequestSpecification res = given().spec(req)
                 .body(payload);
         response = res.when().post("/core/investor/banks/features")
                 .then().log().all().spec(respec).extract().response().asString();
-        Reporter.log(response);
     }
 
     @Test(priority = 1)

@@ -48,8 +48,8 @@ public class AD_AccessPropertyFile {
                 //Login API
                 RestAssured.baseURI = properties.getProperty("baseURI");
                 Signin.Root response = given().log().all()
-                        .header("x-api-version", "2.0")
-                        .header("channel-id", "10")
+                        .header("x-api-version", "1.0")
+                        .header("channel-id", "11")
                         .header("Content-Type", "application/json")
                         .body(login)
                         .when()

@@ -27,12 +27,18 @@ public class ApiCollection extends AD_AccessPropertyFile{
     SoftAssert softAssert = new SoftAssert();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private boolean isCompleted = false;
+
+  // String token="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIzODkiLCJzY29wZXMiOiJyZWFkLHdyaXRlIiwibmFtZSI6IlRyaXZlbmkiLCJlbWFpbCI6InRyaS5zaGFyb24wMUBnbWFpbC5jb20iLCJtb2JpbGUiOiI5ODQxNTM0MDk5IiwibWFuYWdlbWVudC11c2VyLWlkIjoxODkwNzQzLCJtYW5hZ2VtZW50LXVzZXItcm9sZXMiOiJhZG1pbiIsImlzcyI6ImZ1bmRzaW5kaWEuY29tIiwianRpIjoiZWQ5MGQ4ZmEtNGFlNy00OWRlLTlmNTUtNzgxMDZlZDBlYzc1IiwiaWF0IjoxNzAwODE2NzU3LCJleHAiOjE3MDA4MjA0MTd9._ohysuc-hwjN6h1W7Mji_28EC1Z4xYvLlSiuoNNHGd306IEGb2dscr2acjlWN-0phuUNugZ9KIwhe6qaEIMERQ";
+
+
+
     public ApiCollection() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getADBasePath())
-                .addHeader("x-api-version", "2.0")
-                .addHeader("channel-id", "10")
-                .addHeader("x-fi-access-token", getAdminAccessToken())
+                .addHeader("x-api-version", "1.0")
+                .addHeader("channel-id", "11")
+              // .addHeader("x-fi-access-token", token)
+               .addHeader("x-fi-access-token", getAdminAccessToken())
                 .setContentType(ContentType.JSON)
                 .build()
                 .log()
@@ -556,7 +562,7 @@ payload.put("filters",filterpayload);
     @Test
     public void portfolio_monitor_monthlyDetails(){
         RequestSpecification res = given().spec(req)
-                .queryParam("uuid","65326");              //152389	 triveni   1133466--> megha
+                .queryParam("uuid","152389");              //152389	 triveni   1133466--> megha
         res.when().get("/tools/portfolio-monitor/clients/monthly-details")
                 .then().log().all().spec(respec);
     }
@@ -566,8 +572,8 @@ payload.put("filters",filterpayload);
     public void portfolio_monitorClients_MoreDetails(){
         Map<String,Object> payload=new LinkedHashMap<>();
         payload.put("groupBy","amc");           // [ category, sub_category, scheme, amc }
-        payload.put("type","debt_exposure_credit_risk");
-        payload.put("uuid","1133466");
+        payload.put("type","assets_debt");
+        payload.put("uuid","152389");
 
         RequestSpecification res = given().spec(req)
                 .body(payload);
@@ -579,7 +585,7 @@ payload.put("filters",filterpayload);
     public void portfolio_monitorClients_MoreDetailsAMC(){
         Map<String,Object> payload=new LinkedHashMap<>();
         payload.put("groupBy","amc");           // [ category, sub_category, scheme, amc }
-        payload.put("type","debt_exposure_credit_risk");
+        payload.put("type","assets_debt");
         payload.put("uuid","1133466");
 
 
@@ -763,8 +769,6 @@ payload.put("filters",filterpayload);
 
 
     }
-
-
 
 }
 

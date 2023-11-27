@@ -153,7 +153,7 @@ public class SWP_FLow extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().as(CommonOTP.Root.class);
         otpRefid = responce.getData().getOtpReferenceId();
     }
-    @Test(priority = 5)
+  /*  @Test(priority = 5)
     public void DB_Connection() throws SQLException {
         System.out.println("DB Connection Name: "+dbusr);
         Statement s1 = null;
@@ -178,7 +178,7 @@ public class SWP_FLow extends AccessPropertyFile {
             if (rs != null) rs.close();
             if (con != null) con.close();
         }
-    }
+    }*/
     @Test(priority = 6)
     public void Verify_OTP() {
         VerifyOtpRequest.Root payload = new VerifyOtpRequest.Root();

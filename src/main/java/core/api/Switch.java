@@ -31,7 +31,7 @@ public class Switch extends AccessPropertyFile {
     public Switch() {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
-                .addHeader("x-api-version", "1.0")
+                .addHeader("x-api-version", "2.0")
                 .addHeader("channel-id", getChannelID())
                 .addHeader("x-fi-access-token", getAccessToken())
                 .setContentType(ContentType.JSON)
