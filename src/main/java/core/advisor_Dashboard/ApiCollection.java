@@ -766,8 +766,6 @@ payload.put("filters",filterpayload);
        PortfolioMonitorClientsBO.Root response= res.when().post("/tools/portfolio-monitor/clients")
                 .then().log().all().spec(respec).extract().response().as(PortfolioMonitorClientsBO.Root.class);
        Assert.assertEquals(response.getData().getClients(),"Clients should not be empty");
-
-
     }
 
 }

@@ -24,9 +24,6 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private boolean isCompleted = false;
 
-  // String token="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIzODkiLCJzY29wZXMiOiJyZWFkLHdyaXRlIiwibmFtZSI6IlRyaXZlbmkiLCJlbWFpbCI6InRyaS5zaGFyb24wMUBnbWFpbC5jb20iLCJtb2JpbGUiOiI5ODQxNTM0MDk5IiwibWFuYWdlbWVudC11c2VyLWlkIjoxODkwNzQzLCJtYW5hZ2VtZW50LXVzZXItcm9sZXMiOiJhZG1pbiIsImlzcyI6ImZ1bmRzaW5kaWEuY29tIiwianRpIjoiZWQ5MGQ4ZmEtNGFlNy00OWRlLTlmNTUtNzgxMDZlZDBlYzc1IiwiaWF0IjoxNzAwODE2NzU3LCJleHAiOjE3MDA4MjA0MTd9._ohysuc-hwjN6h1W7Mji_28EC1Z4xYvLlSiuoNNHGd306IEGb2dscr2acjlWN-0phuUNugZ9KIwhe6qaEIMERQ";
-
-
 
     public PortfolioBuilder() {
         req = new RequestSpecBuilder()
@@ -49,14 +46,14 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     public void postRequirement(){
      Map<String,Object> reqPayload=new HashMap<>();
         Map<String,Object> basicData=new HashMap<>();
-        basicData.put("name","saravanan E");
+        basicData.put("name","Testing Investor");
         basicData.put("age",35);
         basicData.put("email","sathi@gmail.com");
         basicData.put("mobile","9790790876");
         basicData.put("location","chennai");
-        basicData.put("occupation","manager");
-        basicData.put("family","testing");
-        basicData.put("parents","Father");
+        basicData.put("occupation","vhjnfjh");
+        basicData.put("family","kdajhkdaj");
+   //     basicData.put("parents","Father");
     //    basicData.put("spouse","testspouse");
 
         Map<String,Object> reqData=new HashMap<>();
@@ -97,9 +94,9 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void getRequirement(){
         RequestSpecification res=given().spec(req)
-                .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864")
-                .queryParam("email","sathi@gmail.com")
-                .queryParam("mobile","9790790876");
+            //    .queryParam("requirementId","23c1a9c6-1ff2-477f-8a89-75e1b5947411")
+          //      .queryParam("email","sathi@gmail.com")
+               .queryParam("mobile","9790790876");
 
         res.get("/tools/portfolios/builder/requirements").then().log().all().spec(respec);
     }
@@ -107,14 +104,14 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     public void putRequirement(){
         Map<String,Object> updatePayload=new HashMap<>();
         Map<String,Object> basicData=new HashMap<>();
-        basicData.put("name","saravanan E");
+        basicData.put("name","updated investor");
         basicData.put("age",35);
         basicData.put("email","sathi@gmail.com");
         basicData.put("mobile","9790790876");
         basicData.put("location","chennai");
         basicData.put("occupation","Manager");
         basicData.put("family","testing");
-        basicData.put("parents","Father");
+ //       basicData.put("parents","Father");
    //     basicData.put("spouse","testspouse");
 
         Map<String,Object> reqData=new HashMap<>();
@@ -132,7 +129,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         Map<String,Object> portfolioData=new HashMap<>();
         portfolioData.put("amount",0);
         portfolioData.put("equity",0);
-        portfolioData.put("debt","");
+        portfolioData.put("debt",0);
         portfolioData.put("emiPercentage",0);
 
         Map<String,Object> riskData=new HashMap<>();
@@ -140,8 +137,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         riskData.put("downTrendPortfolio","string");
         riskData.put("duringCovid","string");
         riskData.put("comments","string");
-
-    updatePayload.put("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66");
+    updatePayload.put("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864");
     updatePayload.put("basic",basicData);
     updatePayload.put("requirement",reqData);
     updatePayload.put("history",hisData);
@@ -155,9 +151,9 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     }
     @Test
     public void deleteRequirement(){
-        RequestSpecification res=given()
-                .queryParam("requirementId ","3caa0891-a1d4-4f23-8c8f-53a35335c864")
-                .spec(req);
+        RequestSpecification res=given().spec(req)
+                .queryParam("requirementId","982333a1-0d05-4a02-8bc6-a015bc8942a0");
+
         res.delete("/tools/portfolios/builder/requirements")
                 .then().log().all().spec(respec);
     }
@@ -180,7 +176,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void getMoney_Box(){
         RequestSpecification res=given().spec(req)
-                .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864");
+                .queryParam("requirementId","982333a1-0d05-4a02-8bc6-a015bc8942a0");
         res.get("/tools/portfolios/builder/money-box").then().log().all().spec(respec);
 
     }
@@ -222,6 +218,72 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
                 .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864").spec(req);
         res.get("/tools/portfolios/builder/wealth-equation").then().log().all().spec(respec);
     }
+    @Test
+    public void postSafetyBox(){
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("requirementId", "3caa0891-a1d4-4f23-8c8f-53a35335c864");
+        payload.put("comments", "string");
+        // MF
+        Map<String, Object> mf = new HashMap<>();
+        List<Map<String, Object>> emergencyList = new ArrayList<>();
+        Map<String, Object> emergency = new HashMap<>();
+        emergency.put("schemeCode", "string");
+        emergency.put("schemeName", "string");
+        emergency.put("ratings", 4);
+        emergency.put("category", "string");
+        emergency.put("subCategory", "string");
+        emergency.put("sip", 0);
+        emergency.put("lumpsum", 0);
+        emergencyList.add(emergency);
+        mf.put("emergency", emergencyList);
+        payload.put("mf", mf);
+
+        // Insurance
+        Map<String, Object> insurance = new HashMap<>();
+        List<Map<String, Object>> healthList = new ArrayList<>();
+        Map<String, Object> health = new HashMap<>();
+        health.put("name", "string");
+        health.put("companyName", "string");
+        health.put("cover", 1);
+        health.put("yearly", 1);
+        healthList.add(health);
+        insurance.put("health", healthList);
+        payload.put("insurance", insurance);
+
+        // Rationals
+        Map<String, Object> rationals = new HashMap<>();
+        List<Map<String, Object>> emergencyRationalsList = new ArrayList<>();
+        Map<String, Object> emergencyRational = new HashMap<>();
+        emergencyRational.put("schemeCode", "string");
+        emergencyRational.put("schemeName", "string");
+        emergencyRational.put("category", "string");
+        emergencyRational.put("subCategory", "string");
+        emergencyRational.put("rationale", "string");
+        emergencyRational.put("ratings", 4);
+        emergencyRationalsList.add(emergencyRational);
+
+        List<Map<String, Object>> insuranceRationalsList = new ArrayList<>();
+        Map<String, Object> insuranceRational = new HashMap<>();
+        insuranceRational.put("schemeCode", "string");
+        insuranceRational.put("schemeName", "string");
+        insuranceRational.put("category", "string");
+        insuranceRational.put("subCategory", "string");
+        insuranceRational.put("rationale", "string");
+        insuranceRational.put("ratings", 5);
+        insuranceRationalsList.add(insuranceRational);
+
+        rationals.put("emergency", emergencyRationalsList);
+        rationals.put("insurance", insuranceRationalsList);
+        payload.put("rationals", rationals);
+
+        RequestSpecification res=given().spec(req)
+                .body(payload);
+        res.post("/tools/portfolios/builder/suggested-portfolio/safety-box")
+                .then()
+                .log()
+                .all()
+                .spec(respec);
+    }
 
     @Test
     public void getSafetyBox(){
@@ -232,58 +294,68 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
     @Test
-    public void postSafetyBox(){
+    public void postShortTerm(){
+        Map<String, Object> safetyPayload = new HashMap<>();
+        safetyPayload.put("requirementId", "3caa0891-a1d4-4f23-8c8f-53a35335c864");
+        safetyPayload.put("comments", "String");
+
+        List<Map<String, Object>> listdata = new ArrayList<>();
+            Map<String, Object> threeYear = new HashMap<>();
+            threeYear.put("schemeCode", "4567");
+            threeYear.put("schemeName", "ICICI Prudential Equity Savings Fund");
+            threeYear.put("ratings", 1);
+            threeYear.put("category", "MF");
+            threeYear.put("subCategory", "Blend");
+            threeYear.put("sip", 5000);
+            threeYear.put("lumpsum", 10000);
+         listdata.add(threeYear);
+
+        List<Map<String, Object>> listdata2 = new ArrayList<>();
+        Map<String, Object> fiveYear = new HashMap<>();
+            fiveYear.put("schemeCode", "1234");
+            fiveYear.put("schemeName", "ICICI Prudential BAF");
+            fiveYear.put("ratings", 4);
+            fiveYear.put("category", "MF");
+            fiveYear.put("subCategory", "Quality");
+            fiveYear.put("sip", 0);
+            fiveYear.put("lumpsum", 0);
+        listdata2.add(fiveYear);
+
+        Map<String, Object> rationalPayload = new HashMap<>();
+
+        List<Map<String, Object>> listdata3 = new ArrayList<>();
+            Map<String, Object> rThreeYear = new HashMap<>();
+                rThreeYear.put("schemeCode", "4567");
+                rThreeYear.put("schemeName", "ICICI Prudential Equity Savings Fund");
+                rThreeYear.put("category", "string");
+                rThreeYear.put("subCategory", "Blend");
+                rThreeYear.put("rationale", "rationale");
+                rThreeYear.put("ratings", 4);
+        listdata3.add(rThreeYear);
+
+        List<Map<String, Object>> listdata4 = new ArrayList<>();
+            Map<String, Object> rFiveYear = new HashMap<>();
+                rFiveYear.put("schemeCode", "1234");
+                rFiveYear.put("schemeName", "ICICI Prudential BAF");
+                rFiveYear.put("category", "string");
+                rFiveYear.put("subCategory", "Blend");
+                rFiveYear.put("rationale", "rational");
+                rFiveYear.put("ratings", 6);
+        listdata4.add(rFiveYear);
+
+        Map<String, Object> listPayload = new HashMap<>();
+        listPayload.put("oneToThreeYears", listdata3);
+        listPayload.put("threeToFiveYears", listdata4);
+        rationalPayload.put("rationals", listPayload);
+
+        safetyPayload.put("oneToThreeYears", listdata);
+        safetyPayload.put("threeToFiveYears", listdata2);
+        safetyPayload.put("rationals", listPayload);
+
+
         RequestSpecification res=given().spec(req)
-                .body("{\n" +
-                        "  \"requirementId\": \"3caa0891-a1d4-4f23-8c8f-53a35335c864\",\n" +
-                        "  \"mf\": {\n" +
-                        "    \"emergency\": [\n" +
-                        "      {\n" +
-                        "        \"schemeCode\": \"9876\",\n" +
-                        "        \"schemeName\": \"Kotak Arbitage Fund\",\n" +
-                        "        \"ratings\": 5,\n" +
-                        "        \"category\": \"MF\",\n" +
-                        "        \"subCategory\": \"Qualtity\",\n" +
-                        "        \"sip\": 1000,\n" +
-                        "        \"lumpsum\": 2000\n" +
-                        "      }\n" +
-                        "    ]\n" +
-                        "  },\n" +
-                        "  \"insurance\": {\n" +
-                        "    \"health\": [\n" +
-                        "      {\n" +
-                        "        \"name\": \"name\",\n" +
-                        "        \"companyName\": \"HDFC Ergo Term Plan\",\n" +
-                        "        \"cover\": 100,\n" +
-                        "        \"yearly\": 5\n" +
-                        "      }\n" +
-                        "    ]\n" +
-                        "  },\n" +
-                        "  \"rationals\": {\n" +
-                        "    \"emergency\": [\n" +
-                        "      {\n" +
-                        "        \"schemeCode\": \"9876\",\n" +
-                        "        \"schemeName\": \"Kotak Arbitage Fund\",\n" +
-                        "        \"category\": \"MF\",\n" +
-                        "        \"subCategory\": \"string\",\n" +
-                        "        \"rationale\": \"string\",\n" +
-                        "        \"ratings\": 2\n" +
-                        "      }\n" +
-                        "    ],\n" +
-                        "    \"insurance\": [\n" +
-                        "      {\n" +
-                        "        \"schemeCode\": \"9876\",\n" +
-                        "        \"schemeName\": \"HDFC Ergo Term Plan\",\n" +
-                        "        \"category\": \"insurance\",\n" +
-                        "        \"subCategory\": \"Value\",\n" +
-                        "        \"rationale\": \"rationale\",\n" +
-                        "        \"ratings\": 1\n" +
-                        "      }\n" +
-                        "    ]\n" +
-                        "  },\n" +
-                        "  \"comments\": \"string\"\n" +
-                        "}");
-        res.post("/tools/portfolios/builder/suggested-portfolio/safety-box")
+                        .body(safetyPayload);
+        res.post("/tools/portfolios/builder/suggested-portfolio/short-term-box")
                 .then().log().all().spec(respec);
     }
     @Test
@@ -292,6 +364,228 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
                 .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864")
                 .spec(req);
         res.get("/tools/portfolios/builder/suggested-portfolio/short-term-box")
+                .then()
+                .log()
+                .all()
+                .spec(respec);
+    }
+    @Test
+    public void postLongTermBox(){
+        Map<String, Object> payload = new HashMap<>();
+        // Set values for the outermost fields
+        payload.put("presetId", "string");
+        payload.put("presetName", "string");
+        payload.put("lumpsum", 0);
+        payload.put("sip", 0);
+        payload.put("requirementId", "3caa0891-a1d4-4f23-8c8f-53a35335c864");
+        payload.put("rebalance", "string");
+        payload.put("comment", "string");
+
+        // Create a nested map for "assetAllocation"
+        Map<String, Object> assetAllocationMap = new HashMap<>();
+        assetAllocationMap.put("equity", 0);
+        assetAllocationMap.put("debt", 0);
+
+        // Create a nested map for "portfolioConstruction" inside "assetAllocation"
+        Map<String, Object> portfolioConstructionMap = new HashMap<>();
+        portfolioConstructionMap.put("equity", "string");
+        portfolioConstructionMap.put("debt", "string");
+
+        assetAllocationMap.put("portfolioConstruction", portfolioConstructionMap);
+        payload.put("assetAllocation", assetAllocationMap);
+
+        // Create a nested map for "allocations"
+        Map<String, Object> allocationsMap = new HashMap<>();
+
+        // Create a nested map for "equity" inside "allocations"
+        Map<String, Object> equityMap = new HashMap<>();
+
+        // Create a nested map for "sip" inside "equity"
+        Map<String, Object> sipMap = new HashMap<>();
+        sipMap.put("amount", 0);
+        sipMap.put("percentage", 0);
+        sipMap.put("execution", "string");
+
+        // Create a nested map for "lumpsum" inside "equity"
+        Map<String, Object> lumpsumMap = new HashMap<>();
+        lumpsumMap.put("amount", 0);
+        lumpsumMap.put("percentage", 0);
+        lumpsumMap.put("execution", "string");
+
+        equityMap.put("sip", sipMap);
+        equityMap.put("lumpsum", lumpsumMap);
+
+        // Create a list for "schemes" inside "equity"
+        List<Map<String, Object>> schemesList = new ArrayList<>();
+        Map<String, Object> schemesMap = new HashMap<>();
+        schemesMap.put("schemeCode", "string");
+        schemesMap.put("schemeName", "string");
+        schemesMap.put("ratings", 0);
+        schemesMap.put("category", "string");
+        schemesMap.put("subCategory", "string");
+
+        // Create a nested map for "sip" inside "schemes"
+        Map<String, Object> sipSchemeMap = new HashMap<>();
+        sipSchemeMap.put("amount", 0);
+        sipSchemeMap.put("percentage", 0);
+        sipSchemeMap.put("execution", "string");
+
+        // Create a nested map for "lumpsum" inside "schemes"
+        Map<String, Object> lumpsumSchemeMap = new HashMap<>();
+        lumpsumSchemeMap.put("amount", 0);
+        lumpsumSchemeMap.put("percentage", 0);
+        lumpsumSchemeMap.put("execution", "string");
+
+        schemesMap.put("sip", sipSchemeMap);
+        schemesMap.put("lumpsum", lumpsumSchemeMap);
+
+        schemesList.add(schemesMap);
+        equityMap.put("schemes", schemesList);
+
+        allocationsMap.put("equity", equityMap);
+
+        payload.put("allocations", allocationsMap);
+
+        // Create a nested map for "invest"
+        Map<String, Object> investMap = new HashMap<>();
+        investMap.put("debt", "string");
+        investMap.put("equity", "string");
+        payload.put("invest", investMap);
+
+        // Create a nested map for "rationals"
+        Map<String, Object> rationalsMap = new HashMap<>();
+
+        // Create a list for "equity" inside "rationals"
+        List<Map<String, Object>> equityRationalsList = new ArrayList<>();
+        Map<String, Object> equityRationalsMap = new HashMap<>();
+        equityRationalsMap.put("schemeCode", "string");
+        equityRationalsMap.put("schemeName", "string");
+        equityRationalsMap.put("category", "string");
+        equityRationalsMap.put("subCategory", "string");
+        equityRationalsMap.put("rationale", "string");
+        equityRationalsMap.put("ratings", 0);
+
+        equityRationalsList.add(equityRationalsMap);
+        rationalsMap.put("equity", equityRationalsList);
+
+
+        payload.put("rationals", rationalsMap);
+
+        RequestSpecification res=given() .spec(req)
+                .body(payload);
+        res.post("/tools/portfolios/builder/suggested-portfolio/long-term")
+                .then()
+                .log()
+                .all()
+                .spec(respec);
+    }
+    @Test
+    public void getLongTermBox(){
+        RequestSpecification res=given()
+                .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864")
+                .spec(req);
+        res.get("/tools/portfolios/builder/suggested-portfolio/long-term")
+                .then()
+                .log()
+                .all()
+                .spec(respec);
+    }
+    @Test
+    public void postHighRisk(){
+        Map<String, Object> payload = new HashMap<>();
+
+        // Set values for the outermost fields
+        payload.put("presetId", "string");
+        payload.put("presetName", "string");
+        payload.put("lumpsum", 0);
+        payload.put("sip", 0);
+        payload.put("rebalance", "string");
+        payload.put("comments", "string");
+        payload.put("requirementId", "3caa0891-a1d4-4f23-8c8f-53a35335c864");
+        payload.put("comment", "string");
+
+        // Create a nested map for "allocations"
+        Map<String, Object> allocationsMap = new HashMap<>();
+
+        // Create a nested map for "equity" inside "allocations"
+        Map<String, Object> equityMap = new HashMap<>();
+
+        // Create a nested map for "sip" inside "equity"
+        Map<String, Object> sipMap = new HashMap<>();
+        sipMap.put("amount", 0);
+        sipMap.put("percentage", 0);
+        sipMap.put("execution", "string");
+
+        // Create a nested map for "lumpsum" inside "equity"
+        Map<String, Object> lumpsumMap = new HashMap<>();
+        lumpsumMap.put("amount", 0);
+        lumpsumMap.put("percentage", 0);
+        lumpsumMap.put("execution", "string");
+
+        equityMap.put("sip", sipMap);
+        equityMap.put("lumpsum", lumpsumMap);
+
+        // Create a list for "schemes" inside "equity"
+        List<Map<String, Object>> schemesList = new ArrayList<>();
+        Map<String, Object> schemesMap = new HashMap<>();
+        schemesMap.put("schemeCode", "string");
+        schemesMap.put("schemeName", "string");
+        schemesMap.put("ratings", 0);
+        schemesMap.put("category", "string");
+        schemesMap.put("subCategory", "string");
+
+        // Create a nested map for "sip" inside "schemes"
+        Map<String, Object> sipSchemeMap = new HashMap<>();
+        sipSchemeMap.put("amount", 0);
+        sipSchemeMap.put("percentage", 0);
+        sipSchemeMap.put("execution", "string");
+
+        // Create a nested map for "lumpsum" inside "schemes"
+        Map<String, Object> lumpsumSchemeMap = new HashMap<>();
+        lumpsumSchemeMap.put("amount", 0);
+        lumpsumSchemeMap.put("percentage", 0);
+        lumpsumSchemeMap.put("execution", "string");
+
+        schemesMap.put("sip", sipSchemeMap);
+        schemesMap.put("lumpsum", lumpsumSchemeMap);
+
+        schemesList.add(schemesMap);
+        equityMap.put("schemes", schemesList);
+
+        // Create a nested map for "debt" inside "allocations"
+        Map<String, Object> debtMap = new HashMap<>();
+
+        allocationsMap.put("equity", equityMap);
+        allocationsMap.put("debt", debtMap);
+
+        payload.put("allocations", allocationsMap);
+
+        // Create a nested map for "rationals"
+        Map<String, Object> rationalsMap = new HashMap<>();
+
+        // Create a list for "equity" inside "rationals"
+        List<Map<String, Object>> equityRationalsList = new ArrayList<>();
+        Map<String, Object> equityRationalsMap = new HashMap<>();
+        equityRationalsMap.put("schemeCode", "string");
+        equityRationalsMap.put("schemeName", "string");
+        equityRationalsMap.put("category", "string");
+        equityRationalsMap.put("subCategory", "string");
+        equityRationalsMap.put("rationale", "string");
+        equityRationalsMap.put("ratings", 0);
+
+        equityRationalsList.add(equityRationalsMap);
+        rationalsMap.put("equity", equityRationalsList);
+
+        payload.put("rationals", rationalsMap);
+
+        // Create a nested map for "invest"
+        Map<String, Object> investMap = new HashMap<>();
+        investMap.put("debt", "string");
+        investMap.put("equity", "string");
+        payload.put("invest", investMap);
+        RequestSpecification res=given().spec(req)
+                .body(payload);
+        res.post("/tools/portfolios/builder/suggested-portfolio/high-risk")
                 .then().log().all().spec(respec);
     }
     @Test
@@ -302,32 +596,24 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         res.get("/tools/portfolios/builder/suggested-portfolio/high-risk")
                 .then().log().all().spec(respec);
     }
-    @Test
-    public void getLongTerm(){
-        RequestSpecification res=given()
-                .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864")
-                .spec(req);
-        res.get("/tools/portfolios/builder/suggested-portfolio/long-term")
-                .then().log().all().spec(respec);
-    }
 
     @Test
     public void getDiscussionAttachement(){
         RequestSpecification res=given()
-                .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864")
+                .queryParam("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66")
                 .spec(req);
         res.get("/tools/portfolios/builder/discussion/attachments")
                 .then().log().all().spec(respec);
     }
     @Test
     public void postDiscussionAttachement(){
-        String url="https://data-team-dumps.s3.ap-south-1.amazonaws.com/advisory_dashboard/portfolio-builder/track_record/202310+-+FundsIndia+Research+-+Performance+Track+Record.pdf";
+
         Map<String,Object> payload=new HashMap<>();
-        payload.put("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864");
-        payload.put("documentId","5");
-        payload.put("name","Track Record");
-        payload.put("url",url);
-        payload.put("category","track_record");
+        payload.put("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66");
+        payload.put("documentId","1");
+        payload.put("name","Wealth");
+        payload.put("url","d1yefw7zveme14.cloudfront.net/Advisory_Dashboard/Portfolio_Builder/FundsIndia_Wealth_Conversations.pdf");
+        payload.put("category","wealth_conversation");
 
         RequestSpecification res=given().spec(req)
                 .body(payload);
@@ -337,7 +623,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void getDiscussion(){
         RequestSpecification res=given()
-                .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864")
+                .queryParam("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66")
                 .spec(req);
         res.get("/tools/portfolios/builder/discussion")
                 .then().log().all().spec(respec);
