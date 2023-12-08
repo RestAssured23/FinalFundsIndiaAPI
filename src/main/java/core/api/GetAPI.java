@@ -20,8 +20,6 @@ import static io.restassured.RestAssured.given;
 import static core.api.CommonVariable.*;
 public class GetAPI extends AccessPropertyFile {
 
-
-
     public GetAPI() throws IOException {
         req = new RequestSpecBuilder()
                 .setBaseUri(getBasePath())
@@ -80,7 +78,7 @@ public class GetAPI extends AccessPropertyFile {
     @Test(priority = 1)
     public void dashboard() {
             RequestSpecification res = given().spec(req)
-                    .queryParam("holdingProfileId", "holdingId");
+                    .queryParam("holdingProfileId", holdingId);
             response = res.when().get("/core/investor/dashboard")
                     .then().log().all().spec(respec).extract().response().asString();
             Reporter.log(response);
@@ -104,7 +102,7 @@ public class GetAPI extends AccessPropertyFile {
     @Test(priority = 1)
     public void investedSchemes() {
         RequestSpecification res = given().spec(req)
-                .queryParam("holdingProfileId", holdingId);
+                .queryParam("holdingProfileId", 179461);
         response=res.when().get("/core/investor/invested-schemes")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);

@@ -167,18 +167,18 @@ public class SwitchGoalChange extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
-/*    @Test(priority = 19)
+    @Test(priority = 19)
     public void Cancel_Switch() {
         Map<String, String> del = new HashMap<>();
         del.put("action", "cancel");
-        del.put("referenceNo", "1382766");
+     //   del.put("referenceNo", "1382766");
 
         RequestSpecification res=given().spec(req)
                 .header("x-api-version","1.0")
                 .body(del);
         res.when().post("/core/investor/recent-transactions")
                 .then().log().all().spec(respec);
-    }*/
+    }
 
 
 

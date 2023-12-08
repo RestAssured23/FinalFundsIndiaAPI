@@ -42,17 +42,17 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
                 .build();
     }
 
-    @Test
+    @Test   //d38070c5-d440-49d6-bd69-1c15fe2f56ed
     public void postRequirement(){
      Map<String,Object> reqPayload=new HashMap<>();
         Map<String,Object> basicData=new HashMap<>();
-        basicData.put("name","Testing Investor");
-        basicData.put("age",35);
-        basicData.put("email","sathi@gmail.com");
-        basicData.put("mobile","9790790876");
+        basicData.put("name","post test");
+        basicData.put("age",40);
+        basicData.put("email","post@gmail.com");
+        basicData.put("mobile","6000000000");
         basicData.put("location","chennai");
-        basicData.put("occupation","vhjnfjh");
-        basicData.put("family","kdajhkdaj");
+        basicData.put("occupation","occupation");
+        basicData.put("family","family Name");
    //     basicData.put("parents","Father");
     //    basicData.put("spouse","testspouse");
 
@@ -94,9 +94,9 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void getRequirement(){
         RequestSpecification res=given().spec(req)
-            //    .queryParam("requirementId","23c1a9c6-1ff2-477f-8a89-75e1b5947411")
-          //      .queryParam("email","sathi@gmail.com")
-               .queryParam("mobile","9790790876");
+              .queryParam("requirementId","d38070c5-d440-49d6-bd69-1c15fe2f56ed");
+          //     .queryParam("email","post1@gmail.com");
+         //      .queryParam("mobile","6000000000");
 
         res.get("/tools/portfolios/builder/requirements").then().log().all().spec(respec);
     }
@@ -104,10 +104,10 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     public void putRequirement(){
         Map<String,Object> updatePayload=new HashMap<>();
         Map<String,Object> basicData=new HashMap<>();
-        basicData.put("name","updated investor");
+        basicData.put("name","updated post investor");
         basicData.put("age",35);
-        basicData.put("email","sathi@gmail.com");
-        basicData.put("mobile","9790790876");
+        basicData.put("email","post1@gmail.com");
+        basicData.put("mobile","6000000001");
         basicData.put("location","chennai");
         basicData.put("occupation","Manager");
         basicData.put("family","testing");
@@ -137,7 +137,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         riskData.put("downTrendPortfolio","string");
         riskData.put("duringCovid","string");
         riskData.put("comments","string");
-    updatePayload.put("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864");
+    updatePayload.put("requirementId","d38070c5-d440-49d6-bd69-1c15fe2f56ed");
     updatePayload.put("basic",basicData);
     updatePayload.put("requirement",reqData);
     updatePayload.put("history",hisData);
@@ -151,8 +151,8 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     }
     @Test
     public void deleteRequirement(){
-        RequestSpecification res=given().spec(req)
-                .queryParam("requirementId","982333a1-0d05-4a02-8bc6-a015bc8942a0");
+        RequestSpecification res=given().spec(req);
+            //    .queryParam("requirementId","982333a1-0d05-4a02-8bc6-a015bc8942a0");
 
         res.delete("/tools/portfolios/builder/requirements")
                 .then().log().all().spec(respec);
@@ -161,7 +161,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void postMoney_Box(){
         Map<String,Object>moneyBoxPayload=new HashMap<>();
-        moneyBoxPayload.put("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864");
+        moneyBoxPayload.put("requirementId","d38070c5-d440-49d6-bd69-1c15fe2f56ed");
         moneyBoxPayload.put("type","less_than_30");           //[ less_than_30, greater_or_equal_to_30 ]
         moneyBoxPayload.put("option1",true);
         moneyBoxPayload.put("option2",false);
@@ -176,7 +176,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void getMoney_Box(){
         RequestSpecification res=given().spec(req)
-                .queryParam("requirementId","982333a1-0d05-4a02-8bc6-a015bc8942a0");
+                .queryParam("requirementId","d38070c5-d440-49d6-bd69-1c15fe2f56ed");
         res.get("/tools/portfolios/builder/money-box").then().log().all().spec(respec);
 
     }
@@ -199,12 +199,14 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void postWealth_Equation(){
         Map<String,Object> payload=new HashMap<>();
-        payload.put("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864");
+        payload.put("requirementId","d38070c5-d440-49d6-bd69-1c15fe2f56ed");
         payload.put("current",50000);
         payload.put("sip",1000);
         payload.put("yearlyLumpsum",10000);
-        payload.put("yearlyIncreaseLumpsum",10);
-        payload.put("yearlyIncreaseSip",0);
+        payload.put("yearlyIncreaseLumpsum",1000);
+        List<Integer> data=new ArrayList<>();
+        data.add(4);
+        payload.put("years",data);
         payload.put("type","total_investment");     //[ total_investment, one_time_investment, monthly_savings, yearly_one_time_investment ]
 
         RequestSpecification res=given().spec(req)
@@ -215,25 +217,26 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void getWealth_Equation(){
         RequestSpecification res=given()
-                .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864").spec(req);
+                .queryParam("requirementId","d38070c5-d440-49d6-bd69-1c15fe2f56ed").spec(req);
         res.get("/tools/portfolios/builder/wealth-equation").then().log().all().spec(respec);
     }
     @Test
     public void postSafetyBox(){
+
         Map<String, Object> payload = new HashMap<>();
         payload.put("requirementId", "3caa0891-a1d4-4f23-8c8f-53a35335c864");
         payload.put("comments", "string");
         // MF
         Map<String, Object> mf = new HashMap<>();
         List<Map<String, Object>> emergencyList = new ArrayList<>();
-        Map<String, Object> emergency = new HashMap<>();
-        emergency.put("schemeCode", "string");
-        emergency.put("schemeName", "string");
-        emergency.put("ratings", 4);
-        emergency.put("category", "string");
-        emergency.put("subCategory", "string");
-        emergency.put("sip", 0);
-        emergency.put("lumpsum", 0);
+            Map<String, Object> emergency = new HashMap<>();
+            emergency.put("schemeCode", "8029");
+            emergency.put("schemeName", "Axis Liquid Fund-Reg(G)");
+            emergency.put("ratings", 5);
+            emergency.put("category", "Liquid");
+            emergency.put("subCategory", "Debt - Liquid Fund");
+            emergency.put("sip", 1000);
+            emergency.put("lumpsum", 10000);
         emergencyList.add(emergency);
         mf.put("emergency", emergencyList);
         payload.put("mf", mf);
@@ -254,12 +257,12 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         Map<String, Object> rationals = new HashMap<>();
         List<Map<String, Object>> emergencyRationalsList = new ArrayList<>();
         Map<String, Object> emergencyRational = new HashMap<>();
-        emergencyRational.put("schemeCode", "string");
-        emergencyRational.put("schemeName", "string");
-        emergencyRational.put("category", "string");
-        emergencyRational.put("subCategory", "string");
-        emergencyRational.put("rationale", "string");
-        emergencyRational.put("ratings", 4);
+            emergencyRational.put("schemeCode", "string");
+            emergencyRational.put("schemeName", "string");
+            emergencyRational.put("category", "string");
+            emergencyRational.put("subCategory", "string");
+            emergencyRational.put("rationale", "string");
+            emergencyRational.put("ratings", 5);
         emergencyRationalsList.add(emergencyRational);
 
         List<Map<String, Object>> insuranceRationalsList = new ArrayList<>();
@@ -274,7 +277,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
 
         rationals.put("emergency", emergencyRationalsList);
         rationals.put("insurance", insuranceRationalsList);
-        payload.put("rationals", rationals);
+   //     payload.put("rationals", rationals);
 
         RequestSpecification res=given().spec(req)
                 .body(payload);
@@ -297,61 +300,60 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     public void postShortTerm(){
         Map<String, Object> safetyPayload = new HashMap<>();
         safetyPayload.put("requirementId", "3caa0891-a1d4-4f23-8c8f-53a35335c864");
-        safetyPayload.put("comments", "String");
+        safetyPayload.put("comments", "Testing");
+//1-3 Years
+        List<Map<String, Object>> One_ThreeYears = new ArrayList<>();
+            Map<String, Object> onescheme_data = new HashMap<>();
+            onescheme_data.put("schemeCode", "468");
+            onescheme_data.put("schemeName", "Aditya Birla SL Savings Fund-Reg(G)");
+            onescheme_data.put("ratings", 5);
+            onescheme_data.put("category", "Debt");
+            onescheme_data.put("subCategory", "Debt - Ultra Short Duration Fund");
+            onescheme_data.put("sip", 5000);
+            onescheme_data.put("lumpsum", 10000);
+         One_ThreeYears.add(onescheme_data);
+//3-5 Years
+        List<Map<String, Object>> Three_FiveYears = new ArrayList<>();
+            Map<String, Object> threescheme_data2 = new HashMap<>();
+            threescheme_data2.put("schemeCode", "31230");
+            threescheme_data2.put("schemeName", "ICICI Pru Equity Savings Fund(G)");
+            threescheme_data2.put("ratings", 5);
+            threescheme_data2.put("category", "Hybrid Others");
+            threescheme_data2.put("subCategory", "Hybrid - Equity Savings");
+            threescheme_data2.put("sip", 0);
+            threescheme_data2.put("lumpsum", 0);
+        Three_FiveYears.add(threescheme_data2);
 
-        List<Map<String, Object>> listdata = new ArrayList<>();
-            Map<String, Object> threeYear = new HashMap<>();
-            threeYear.put("schemeCode", "4567");
-            threeYear.put("schemeName", "ICICI Prudential Equity Savings Fund");
-            threeYear.put("ratings", 1);
-            threeYear.put("category", "MF");
-            threeYear.put("subCategory", "Blend");
-            threeYear.put("sip", 5000);
-            threeYear.put("lumpsum", 10000);
-         listdata.add(threeYear);
+//Rational Data
+        List<Map<String, Object>> Rationla_OneThreeYears = new ArrayList<>();
+        Map<String, Object> OnerationalData = new HashMap<>();
+            OnerationalData.put("schemeCode", "4567");
+            OnerationalData.put("schemeName", "ICICI Prudential Equity Savings Fund");
+            OnerationalData.put("ratings", 1);
+            OnerationalData.put("category", "MF");
+            OnerationalData.put("subCategory", "Blend");
+            OnerationalData.put("sip", 5000);
+            OnerationalData.put("lumpsum", 10000);
+        Rationla_OneThreeYears.add(OnerationalData);
 
-        List<Map<String, Object>> listdata2 = new ArrayList<>();
-        Map<String, Object> fiveYear = new HashMap<>();
-            fiveYear.put("schemeCode", "1234");
-            fiveYear.put("schemeName", "ICICI Prudential BAF");
-            fiveYear.put("ratings", 4);
-            fiveYear.put("category", "MF");
-            fiveYear.put("subCategory", "Quality");
-            fiveYear.put("sip", 0);
-            fiveYear.put("lumpsum", 0);
-        listdata2.add(fiveYear);
+        List<Map<String, Object>> Rational_ThreeFiveYears = new ArrayList<>();
+            Map<String, Object> fiverationalData = new HashMap<>();
+            fiverationalData.put("schemeCode", "1234");
+            fiverationalData.put("schemeName", "ICICI Prudential BAF");
+            fiverationalData.put("ratings", 4);
+            fiverationalData.put("category", "MF");
+            fiverationalData.put("subCategory", "Quality");
+            fiverationalData.put("sip", 0);
+            fiverationalData.put("lumpsum", 0);
+        Rational_ThreeFiveYears.add(fiverationalData);
+
+        safetyPayload.put("oneToThreeYears", One_ThreeYears);
+        safetyPayload.put("threeToFiveYears", Three_FiveYears);
 
         Map<String, Object> rationalPayload = new HashMap<>();
-
-        List<Map<String, Object>> listdata3 = new ArrayList<>();
-            Map<String, Object> rThreeYear = new HashMap<>();
-                rThreeYear.put("schemeCode", "4567");
-                rThreeYear.put("schemeName", "ICICI Prudential Equity Savings Fund");
-                rThreeYear.put("category", "string");
-                rThreeYear.put("subCategory", "Blend");
-                rThreeYear.put("rationale", "rationale");
-                rThreeYear.put("ratings", 4);
-        listdata3.add(rThreeYear);
-
-        List<Map<String, Object>> listdata4 = new ArrayList<>();
-            Map<String, Object> rFiveYear = new HashMap<>();
-                rFiveYear.put("schemeCode", "1234");
-                rFiveYear.put("schemeName", "ICICI Prudential BAF");
-                rFiveYear.put("category", "string");
-                rFiveYear.put("subCategory", "Blend");
-                rFiveYear.put("rationale", "rational");
-                rFiveYear.put("ratings", 6);
-        listdata4.add(rFiveYear);
-
-        Map<String, Object> listPayload = new HashMap<>();
-        listPayload.put("oneToThreeYears", listdata3);
-        listPayload.put("threeToFiveYears", listdata4);
-        rationalPayload.put("rationals", listPayload);
-
-        safetyPayload.put("oneToThreeYears", listdata);
-        safetyPayload.put("threeToFiveYears", listdata2);
-        safetyPayload.put("rationals", listPayload);
-
+            rationalPayload.put("oneToThreeYears",Rationla_OneThreeYears);
+            rationalPayload.put("threeToFiveYears",Rational_ThreeFiveYears);
+      //  safetyPayload.put("rationals",rationalPayload);
 
         RequestSpecification res=given().spec(req)
                         .body(safetyPayload);
@@ -460,7 +462,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         Map<String, Object> equityRationalsMap = new HashMap<>();
         equityRationalsMap.put("schemeCode", "string");
         equityRationalsMap.put("schemeName", "string");
-        equityRationalsMap.put("category", "string");
+        equityRationalsMap.put("category", "MF");
         equityRationalsMap.put("subCategory", "string");
         equityRationalsMap.put("rationale", "string");
         equityRationalsMap.put("ratings", 0);
@@ -596,24 +598,24 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         res.get("/tools/portfolios/builder/suggested-portfolio/high-risk")
                 .then().log().all().spec(respec);
     }
-
     @Test
-    public void getDiscussionAttachement(){
-        RequestSpecification res=given()
-                .queryParam("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66")
+    public void getDiscussion() {
+        RequestSpecification res = given()
+                //        .queryParam("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66")
                 .spec(req);
-        res.get("/tools/portfolios/builder/discussion/attachments")
+        res.get("/tools/portfolios/builder/discussion")
                 .then().log().all().spec(respec);
     }
+
     @Test
     public void postDiscussionAttachement(){
 
         Map<String,Object> payload=new HashMap<>();
-        payload.put("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66");
-        payload.put("documentId","1");
-        payload.put("name","Wealth");
-        payload.put("url","d1yefw7zveme14.cloudfront.net/Advisory_Dashboard/Portfolio_Builder/FundsIndia_Wealth_Conversations.pdf");
-        payload.put("category","wealth_conversation");
+        payload.put("requirementId","8ad2c916-8761-42a3-9d5d-007910bdbdee");
+        payload.put("documentId","2");
+        payload.put("name","SIP Conversion");
+        payload.put("url","d1yefw7zveme14.cloudfront.net/Advisory_Dashboard/Portfolio_Builder/SIP_Conversations.pdf");
+        payload.put("category","sip_conversation");
 
         RequestSpecification res=given().spec(req)
                 .body(payload);
@@ -621,18 +623,20 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
                 .then().log().all().spec(respec);
     }
     @Test
-    public void getDiscussion(){
+    public void getDiscussionAttachement(){
         RequestSpecification res=given()
-                .queryParam("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66")
+         //             .queryParam("requirementId","8ad2c916-8761-42a3-9d5d-007910bdbdee")
                 .spec(req);
-        res.get("/tools/portfolios/builder/discussion")
+        res.get("/tools/portfolios/builder/discussion/attachments")
                 .then().log().all().spec(respec);
     }
+
+
     @Test
     public void DeleteDiscussionAttachement(){
         RequestSpecification res=given().spec(req)
-                .queryParam("requirementId","3caa0891-a1d4-4f23-8c8f-53a35335c864")
-                .queryParam("documentId","5");
+               .queryParam("requirementId","8ad2c916-8761-42a3-9d5d-007910bdbdee")
+                .queryParam("documentId","1");
         res.delete("/tools/portfolios/builder/discussion/attachments")
                 .then()
                 .log().all()
@@ -646,7 +650,370 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         res.get("/tools/portfolios/builder/download")
                 .then().log().all().spec(respec);
     }
+    @Test
+    public void postLongTermPreset(){
+        Map<String, Object> jsonPayload = new HashMap<>();
+       //     jsonPayload.put("presetId", "");
+            jsonPayload.put("presetName", "Sathish DS");
+       //    jsonPayload.put("lumpsum", 10000);
+       //    jsonPayload.put("sip", 1000);
+
+        // Create "assetAllocation" map
+        Map<String, Object> assetAllocationMap = new HashMap<>();
+        assetAllocationMap.put("equity", 80);
+        assetAllocationMap.put("debt", 20);
+
+        // Create "portfolioConstruction" map
+        Map<String, Object> portfolioConstructionMap = new HashMap<>();
+        portfolioConstructionMap.put("equity", "Five finger ");
+        portfolioConstructionMap.put("debt", "Saving Fund");
+
+        assetAllocationMap.put("portfolioConstruction", portfolioConstructionMap);
+            jsonPayload.put("assetAllocation", assetAllocationMap);
+
+        // Create "allocations" map
+        Map<String, Object> allocationsMap = new HashMap<>();
+
+        // Create "equity" map
+        Map<String, Object> equityMap = new HashMap<>();
+
+        // Create "sip" map inside "equity"
+        Map<String, Object> sipMapEquity = new HashMap<>();
+            sipMapEquity.put("amount", 1000);
+            sipMapEquity.put("percentage", 1000);
+            sipMapEquity.put("execution", "string");
+
+        // Create "lumpsum" map inside "equity"
+        Map<String, Object> lumpsumMapEquity = new HashMap<>();
+            lumpsumMapEquity.put("amount", 10000);
+            lumpsumMapEquity.put("percentage", 10);
+            lumpsumMapEquity.put("execution", "string");
+
+        // Create "schemes" list inside "equity"
+        List<Map<String, Object>> schemesListEquity = new ArrayList<>();
+        Map<String, Object> schemeMapEquity = new HashMap<>();
+            schemeMapEquity.put("schemeCode", "string");
+            schemeMapEquity.put("schemeName", "string");
+            schemeMapEquity.put("ratings", 0);
+            schemeMapEquity.put("category", "Equity");
+            schemeMapEquity.put("subCategory", "string");
+
+        // Create "sip" map inside "schemes"
+        Map<String, Object> sipMapScheme = new HashMap<>();
+            sipMapScheme.put("amount", 0);
+            sipMapScheme.put("percentage", 0);
+            sipMapScheme.put("execution", "string");
+
+        // Create "lumpsum" map inside "schemes"
+        Map<String, Object> lumpsumMapScheme = new HashMap<>();
+            lumpsumMapScheme.put("amount", 0);
+            lumpsumMapScheme.put("percentage", 0);
+            lumpsumMapScheme.put("execution", "string");
+
+        schemeMapEquity.put("sip", sipMapScheme);
+        schemeMapEquity.put("lumpsum", lumpsumMapScheme);
+
+        schemesListEquity.add(schemeMapEquity);
+
+        equityMap.put("sip", sipMapEquity);
+        equityMap.put("lumpsum", lumpsumMapEquity);
+        equityMap.put("schemes", schemesListEquity);
+
+       allocationsMap.put("equity", equityMap);
+
+        // Create "debt" map
+        Map<String, Object> debtMap = new HashMap<>();
+
+        // Create "sip" map inside "debt"
+        Map<String, Object> sipMapDebt = new HashMap<>();
+        sipMapDebt.put("amount", 1000);
+        sipMapDebt.put("percentage", 10);
+        sipMapDebt.put("execution", "string");
+
+        // Create "lumpsum" map inside "debt"
+        Map<String, Object> lumpsumMapDebt = new HashMap<>();
+        lumpsumMapDebt.put("amount", 10000);
+        lumpsumMapDebt.put("percentage", 10);
+        lumpsumMapDebt.put("execution", "string");
+
+        // Create "schemes" list inside "debt"
+        List<Map<String, Object>> schemesListDebt = new ArrayList<>();
+        Map<String, Object> schemeMapDebt = new HashMap<>();
+        schemeMapDebt.put("schemeCode", "string");
+        schemeMapDebt.put("schemeName", "string");
+        schemeMapDebt.put("ratings", 0);
+        schemeMapDebt.put("category", "Debt");
+        schemeMapDebt.put("subCategory", "string");
+
+        // Create "sip" map inside "schemes"
+        Map<String, Object> sipMapSchemeDebt = new HashMap<>();
+        sipMapSchemeDebt.put("amount", 0);
+        sipMapSchemeDebt.put("percentage", 0);
+        sipMapSchemeDebt.put("execution", "string");
+
+        // Create "lumpsum" map inside "schemes"
+        Map<String, Object> lumpsumMapSchemeDebt = new HashMap<>();
+        lumpsumMapSchemeDebt.put("amount", 0);
+        lumpsumMapSchemeDebt.put("percentage", 0);
+        lumpsumMapSchemeDebt.put("execution", "string");
+
+        schemeMapDebt.put("sip", sipMapSchemeDebt);
+        schemeMapDebt.put("lumpsum", lumpsumMapSchemeDebt);
+
+        schemesListDebt.add(schemeMapDebt);
+
+        debtMap.put("sip", sipMapDebt);
+        debtMap.put("lumpsum", lumpsumMapDebt);
+        debtMap.put("schemes", schemesListDebt);
+
+        allocationsMap.put("debt", debtMap);
+
+        jsonPayload.put("allocations", allocationsMap);
+
+        RequestSpecification res=given().spec(req)
+                .body(jsonPayload);
+        res.post("/tools/portfolios/builder/suggested-portfolio/long-term/presets")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void getLongTermPreset(){
+        RequestSpecification res=given().spec(req)
+                        .queryParam("presetId","b31fcf13-a6eb-420f-9ca8-671f961d0a40");
+        res.get("/tools/portfolios/builder/suggested-portfolio/long-term/presets")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void deleteLongTermPreset(){
+        RequestSpecification res=given().spec(req)
+           .queryParam("presetId","b31fcf13-a6eb-420f-9ca8-671f961d0a40");
+        res.delete("/tools/portfolios/builder/suggested-portfolio/long-term/presets")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void postHighRiskPreset(){
+        Map<String, Object> jsonPayload = new HashMap<>();
+        jsonPayload.put("presetId", "");
+        jsonPayload.put("presetName", "High Risk Preset 2");
+        jsonPayload.put("lumpsum", 10000);
+        jsonPayload.put("sip", 1000);
+
+        // Create "allocations" map
+        Map<String, Object> allocationsMap = new HashMap<>();
+
+        // Create "equity" map
+        Map<String, Object> equityMap = new HashMap<>();
+
+        // Create "sip" map inside "equity"
+        Map<String, Object> sipMapEquity = new HashMap<>();
+        sipMapEquity.put("amount", 1000);
+        sipMapEquity.put("percentage", 200);
+        sipMapEquity.put("execution", "string");
+
+        // Create "lumpsum" map inside "equity"
+        Map<String, Object> lumpsumMapEquity = new HashMap<>();
+        lumpsumMapEquity.put("amount", 10000);
+        lumpsumMapEquity.put("percentage", 83);
+        lumpsumMapEquity.put("execution", "string");
+
+        // Create "schemes" list inside "equity"
+        List<Map<String, Object>> schemesListEquity = new ArrayList<>();
+        Map<String, Object> schemeMapEquity = new HashMap<>();
+        schemeMapEquity.put("schemeCode", "1023");
+        schemeMapEquity.put("schemeName", "Aditiya Birla");
+        schemeMapEquity.put("ratings", 3);
+        schemeMapEquity.put("category", "Equity");
+        schemeMapEquity.put("subCategory", "string");
+
+        // Create "sip" map inside "schemes"
+        Map<String, Object> sipMapScheme = new HashMap<>();
+        sipMapScheme.put("amount", 1000);
+        sipMapScheme.put("percentage", 17);
+        sipMapScheme.put("execution", "string");
+
+        // Create "lumpsum" map inside "schemes"
+        Map<String, Object> lumpsumMapScheme = new HashMap<>();
+        lumpsumMapScheme.put("amount", 0);
+        lumpsumMapScheme.put("percentage", 0);
+        lumpsumMapScheme.put("execution", "string");
+
+        schemeMapEquity.put("sip", sipMapScheme);
+        schemeMapEquity.put("lumpsum", lumpsumMapScheme);
+
+        schemesListEquity.add(schemeMapEquity);
+
+        equityMap.put("sip", sipMapEquity);
+        equityMap.put("lumpsum", lumpsumMapEquity);
+        equityMap.put("schemes", schemesListEquity);
+
+        // Create "debt" map
+        // Follow similar steps as for "equity"...
+
+        allocationsMap.put("equity", equityMap);
+
+        // Create "debt" map
+        Map<String, Object> debtMap = new HashMap<>();
+
+        // Create "sip" map inside "debt"
+        Map<String, Object> sipMapDebt = new HashMap<>();
+        sipMapDebt.put("amount", 0);
+        sipMapDebt.put("percentage", 0);
+        sipMapDebt.put("execution", "string");
+
+        // Create "lumpsum" map inside "debt"
+        Map<String, Object> lumpsumMapDebt = new HashMap<>();
+        lumpsumMapDebt.put("amount", 10000);
+        lumpsumMapDebt.put("percentage", 83);
+        lumpsumMapDebt.put("execution", "string");
+
+        // Create "schemes" list inside "debt"
+        List<Map<String, Object>> schemesListDebt = new ArrayList<>();
+        Map<String, Object> schemeMapDebt = new HashMap<>();
+        schemeMapDebt.put("schemeCode", "1234");
+        schemeMapDebt.put("schemeName", "SBI Debt Fund");
+        schemeMapDebt.put("ratings", 0);
+        schemeMapDebt.put("category", "Debt");
+        schemeMapDebt.put("subCategory", "string");
+
+        // Create "sip" map inside "schemes"
+        Map<String, Object> sipMapSchemeDebt = new HashMap<>();
+        sipMapSchemeDebt.put("amount", 0);
+        sipMapSchemeDebt.put("percentage", 0);
+        sipMapSchemeDebt.put("execution", "string");
+
+        // Create "lumpsum" map inside "schemes"
+        Map<String, Object> lumpsumMapSchemeDebt = new HashMap<>();
+        lumpsumMapSchemeDebt.put("amount", 0);
+        lumpsumMapSchemeDebt.put("percentage", 0);
+        lumpsumMapSchemeDebt.put("execution", "string");
+
+        schemeMapDebt.put("sip", sipMapSchemeDebt);
+        schemeMapDebt.put("lumpsum", lumpsumMapSchemeDebt);
+
+        schemesListDebt.add(schemeMapDebt);
+
+        debtMap.put("sip", sipMapDebt);
+        debtMap.put("lumpsum", lumpsumMapDebt);
+        debtMap.put("schemes", schemesListDebt);
+
+        allocationsMap.put("debt", debtMap);
+
+        jsonPayload.put("allocations", allocationsMap);
+
+        // Create "rationals" map
+        Map<String, Object> rationalsMap = new HashMap<>();
+
+        // Create "equity" list inside "rationals"
+        List<Map<String, Object>> equityRationalsList = new ArrayList<>();
+        Map<String, Object> equityRationalMap = new HashMap<>();
+        equityRationalMap.put("schemeCode", "string");
+        equityRationalMap.put("schemeName", "string");
+        equityRationalMap.put("category", "Equity");
+        equityRationalMap.put("subCategory", "string");
+        equityRationalMap.put("rationale", "string");
+        equityRationalMap.put("ratings", 5);
+
+        equityRationalsList.add(equityRationalMap);
+        rationalsMap.put("equity", equityRationalsList);
+
+        // Create "debt" list inside "rationals"
+        List<Map<String, Object>> debtRationalsList = new ArrayList<>();
+        Map<String, Object> debtRationalMap = new HashMap<>();
+        debtRationalMap.put("schemeCode", "string");
+        debtRationalMap.put("schemeName", "string");
+        debtRationalMap.put("category", "Debt");
+        debtRationalMap.put("subCategory", "string");
+        debtRationalMap.put("rationale", "string");
+        debtRationalMap.put("ratings", 0);
+
+        debtRationalsList.add(debtRationalMap);
+        rationalsMap.put("debt", debtRationalsList);
+
+        jsonPayload.put("rationals", rationalsMap);
+
+        // Add remaining fields like "rebalance", "comments", etc.
+        jsonPayload.put("rebalance", "string");
+        jsonPayload.put("comments", "string");
+        RequestSpecification res=given().spec(req)
+                .body(jsonPayload);
+        res.post("/tools/portfolios/builder/suggested-portfolio/high-risk/presets")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void getHighRiskPreset(){
+        RequestSpecification res=given().spec(req)
+                .queryParam("presetId","0390e065-cf69-4614-aa37-3e0161c95acb");
+        res.get("/tools/portfolios/builder/suggested-portfolio/high-risk/presets")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void deleteHighRiskPreset(){
+        RequestSpecification res=given().spec(req)
+               .queryParam("presetId","59869c7e-24b9-46e3-90bc-b8d5f5ec7c3b");
+        res.delete("/tools/portfolios/builder/suggested-portfolio/high-risk/presets")
+                .then().log().all().spec(respec);
+    }
+
+    @Test
+    public void postGoldPlanner(){
+        RequestSpecification res=given().spec(req)
+                .body("[\n" +
+                        "    {\n" +
+                        "        \"requirementId\": \"5efd4598-6abf-4d63-99bf-8d2428813ee1\",\n" +
+                        "        \"goalId\": \"1\",\n" +
+                        "        \"goalName\": \"First goal\"\n" +
+
+
+                        "        \"currentCost\": 1000000,\n" +
+                        "        \"years\": 10,\n" +
+                        "        \"yearlySipIncrease\": 1000,\n" +
+                        "        \"targetAmount\": 1791000,\n" +
+                        "        \"existing\": 50000,\n" +
+                        "        \"future\": 108000,\n" +
+                        "        \"target\": 1683000,\n" +
+                        "        \"assumed\": {\n" +
+                        "            \"inflation\": 206,\n" +
+                        "            \"returns\": 10\n" +
+                        "        },\n" +
+                        "        \"allocations\": {\n" +
+                        "            \"equity\": 700,\n" +
+                        "            \"debt\": 300,\n" +
+                        "            \"others\": 0\n" +
+                        "        }\n" +
+                        "    },\n" +
+                        "    {\n" +
+                        "        \"requirementId\": \"5efd4598-6abf-4d63-99bf-8d2428813ee1\",\n" +
+                        "        \"goalId\": \"1\",\n" +
+                        "        \"goalName\": \"First goal\",\n" +
+                        "        \"currentCost\": 1000000,\n" +
+                        "        \"years\": 10,\n" +
+                        "        \"yearlySipIncrease\": 10,\n" +
+                        "        \"targetAmount\": 1791000,\n" +
+                        "        \"existing\": 50000,\n" +
+                        "        \"future\": 108000,\n" +
+                        "        \"target\": 1683000,\n" +
+                        "        \"assumed\": {\n" +
+                        "            \"inflation\": 6,\n" +
+                        "            \"returns\": 8\n" +
+                        "        },\n" +
+                        "        \"allocations\": {\n" +
+                        "            \"equity\": 70,\n" +
+                        "            \"debt\": 30,\n" +
+                        "            \"others\": 0\n" +
+                        "        }\n" +
+                        "    }\n" +
+                        "]");
+        res.post("/tools/portfolios/builder/goal-planner")
+                .then().log().all().spec(respec);
+    }
+    @Test
+    public void getGoldPlanner(){
+        RequestSpecification res=given().spec(req)
+              .queryParam("requirementId","5efd4598-6abf-4d63-99bf-8d2428813ee1");
+        res.get("/tools/portfolios/builder/goal-planner")
+                .then().log().all().spec(respec);
+    }
 }
+
 
 
 

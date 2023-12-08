@@ -154,8 +154,8 @@ public class Live_BankCollection extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
     }
 
-   /* @Test(priority = 7)
-    public void QR_AddBank() throws IOException {
+    @Test(priority = 7)
+    public void postBank() throws IOException {
         String content = new String(Files.readAllBytes(Paths.get("C:\\Users\\Fi-User\\fi-repositories\\fi-test-automation\\src\\main\\java\\core\\advisor_Dashboard\\BankCollection\\test.txt")));
 
         Map<String, Object> paylaod=new HashMap<>();
@@ -175,7 +175,6 @@ public class Live_BankCollection extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
     }
 
-*/
 
 
    /* @Test(priority = 1)
