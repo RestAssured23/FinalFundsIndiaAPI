@@ -42,14 +42,14 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
                 .build();
     }
 
-    @Test   //d38070c5-d440-49d6-bd69-1c15fe2f56ed
+    @Test
     public void postRequirement(){
      Map<String,Object> reqPayload=new HashMap<>();
         Map<String,Object> basicData=new HashMap<>();
         basicData.put("name","post test");
         basicData.put("age",40);
         basicData.put("email","post@gmail.com");
-        basicData.put("mobile","6000000000");
+        basicData.put("mobile","+61700000001");
         basicData.put("location","chennai");
         basicData.put("occupation","occupation");
         basicData.put("family","family Name");
@@ -202,10 +202,11 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         payload.put("requirementId","d38070c5-d440-49d6-bd69-1c15fe2f56ed");
         payload.put("current",50000);
         payload.put("sip",1000);
-        payload.put("yearlyLumpsum",10000);
-        payload.put("yearlyIncreaseLumpsum",1000);
+        payload.put("yearlyLumpsum",100);
+        payload.put("yearlyIncreaseLumpsum",90);
+        payload.put("yearlyIncreaseSip",20);
         List<Integer> data=new ArrayList<>();
-        data.add(4);
+        data.add(5);
         payload.put("years",data);
         payload.put("type","total_investment");     //[ total_investment, one_time_investment, monthly_savings, yearly_one_time_investment ]
 
@@ -277,7 +278,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
 
         rationals.put("emergency", emergencyRationalsList);
         rationals.put("insurance", insuranceRationalsList);
-   //     payload.put("rationals", rationals);
+     //   payload.put("rationals", rationals);
 
         RequestSpecification res=given().spec(req)
                 .body(payload);
@@ -373,108 +374,154 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     }
     @Test
     public void postLongTermBox(){
-        Map<String, Object> payload = new HashMap<>();
-        // Set values for the outermost fields
-        payload.put("presetId", "string");
-        payload.put("presetName", "string");
-        payload.put("lumpsum", 0);
-        payload.put("sip", 0);
-        payload.put("requirementId", "3caa0891-a1d4-4f23-8c8f-53a35335c864");
-        payload.put("rebalance", "string");
-        payload.put("comment", "string");
+        Map<String, Object> longTermPayload = new HashMap<>();
+            longTermPayload.put("presetId", "string");
+            longTermPayload.put("presetName", "string");
+            longTermPayload.put("lumpsum", 0);
+            longTermPayload.put("sip", 0);
+            longTermPayload.put("requirementId", "3caa0891-a1d4-4f23-8c8f-53a35335c864");
+            longTermPayload.put("rebalance", "string");
+            longTermPayload.put("comment", "string");
 
-        // Create a nested map for "assetAllocation"
+ //"assetAllocation"
         Map<String, Object> assetAllocationMap = new HashMap<>();
-        assetAllocationMap.put("equity", 0);
-        assetAllocationMap.put("debt", 0);
+        assetAllocationMap.put("equity", 80);
+        assetAllocationMap.put("debt", 20);
 
-        // Create a nested map for "portfolioConstruction" inside "assetAllocation"
+   //"portfolioConstruction" inside "assetAllocation"
         Map<String, Object> portfolioConstructionMap = new HashMap<>();
-        portfolioConstructionMap.put("equity", "string");
-        portfolioConstructionMap.put("debt", "string");
+        portfolioConstructionMap.put("equity", "Testing");
+        portfolioConstructionMap.put("debt", "Equity Savings");
 
         assetAllocationMap.put("portfolioConstruction", portfolioConstructionMap);
-        payload.put("assetAllocation", assetAllocationMap);
+        longTermPayload.put("assetAllocation", assetAllocationMap);
 
-        // Create a nested map for "allocations"
+ // "allocations"
         Map<String, Object> allocationsMap = new HashMap<>();
 
-        // Create a nested map for "equity" inside "allocations"
+  // "EQUITY" inside "allocations"
         Map<String, Object> equityMap = new HashMap<>();
-
-        // Create a nested map for "sip" inside "equity"
+        // "sip" inside "equity"
         Map<String, Object> sipMap = new HashMap<>();
-        sipMap.put("amount", 0);
-        sipMap.put("percentage", 0);
-        sipMap.put("execution", "string");
-
-        // Create a nested map for "lumpsum" inside "equity"
+            sipMap.put("amount", 10000);
+            sipMap.put("percentage", 70);
+            sipMap.put("execution", "execution Testing");
+        //"lumpsum" inside "equity"
         Map<String, Object> lumpsumMap = new HashMap<>();
-        lumpsumMap.put("amount", 0);
-        lumpsumMap.put("percentage", 0);
-        lumpsumMap.put("execution", "string");
+            lumpsumMap.put("amount", 20000);
+            lumpsumMap.put("percentage",10 );
+            lumpsumMap.put("execution", "Lumpsum");
 
         equityMap.put("sip", sipMap);
         equityMap.put("lumpsum", lumpsumMap);
 
-        // Create a list for "schemes" inside "equity"
+    // "schemes" inside "equity"
         List<Map<String, Object>> schemesList = new ArrayList<>();
         Map<String, Object> schemesMap = new HashMap<>();
-        schemesMap.put("schemeCode", "string");
-        schemesMap.put("schemeName", "string");
-        schemesMap.put("ratings", 0);
-        schemesMap.put("category", "string");
-        schemesMap.put("subCategory", "string");
-
-        // Create a nested map for "sip" inside "schemes"
+        schemesMap.put("schemeCode", "938");
+        schemesMap.put("schemeName", "Franklin India Focused Equity Fund(G)");
+        schemesMap.put("ratings", 5);
+        schemesMap.put("category", "Equity");
+        schemesMap.put("subCategory", "Equity - Focused Fund");
+    // "sip" inside "schemes"
         Map<String, Object> sipSchemeMap = new HashMap<>();
-        sipSchemeMap.put("amount", 0);
-        sipSchemeMap.put("percentage", 0);
-        sipSchemeMap.put("execution", "string");
-
-        // Create a nested map for "lumpsum" inside "schemes"
+        sipSchemeMap.put("amount", 2000);
+        sipSchemeMap.put("percentage", 10);
+        sipSchemeMap.put("execution", "One scheme");
+    //"lumpsum" inside "schemes"
         Map<String, Object> lumpsumSchemeMap = new HashMap<>();
-        lumpsumSchemeMap.put("amount", 0);
-        lumpsumSchemeMap.put("percentage", 0);
-        lumpsumSchemeMap.put("execution", "string");
+        lumpsumSchemeMap.put("amount", 10000);
+        lumpsumSchemeMap.put("percentage", 20);
+        lumpsumSchemeMap.put("execution", "OTI Equity");
 
         schemesMap.put("sip", sipSchemeMap);
         schemesMap.put("lumpsum", lumpsumSchemeMap);
 
         schemesList.add(schemesMap);
         equityMap.put("schemes", schemesList);
+ //"DEBT" inside "allocations"
+        Map<String, Object> debtMap = new HashMap<>();
+        // "sip" inside "debt"
+        Map<String, Object> debtsipMap = new HashMap<>();
+        debtsipMap.put("amount", 10000);
+        debtsipMap.put("percentage", 70);
+        debtsipMap.put("execution", "execution Testing");
+        //"lumpsum" inside "debt"
+        Map<String, Object> otilumpsumMap = new HashMap<>();
+        otilumpsumMap.put("amount", 20000);
+        otilumpsumMap.put("percentage",10 );
+        otilumpsumMap.put("execution", "Lumpsum");
+
+        debtMap.put("sip", debtsipMap);
+        debtMap.put("lumpsum", otilumpsumMap);
+
+        // "schemes" inside "debt"
+        List<Map<String, Object>> debtschemesList = new ArrayList<>();
+        Map<String, Object> debtschemesMap = new HashMap<>();
+        debtschemesMap.put("schemeCode", "453");
+        debtschemesMap.put("schemeName", "Aditya Birla SL Corp Bond Fund(G)");
+        debtschemesMap.put("ratings", 5);
+        debtschemesMap.put("category", "Debt");
+        debtschemesMap.put("subCategory", "Debt - Corporate Bond Fund");
+        // "sip" inside "schemes"
+        Map<String, Object> debtsipSchemeMap = new HashMap<>();
+        debtsipSchemeMap.put("amount", 2000);
+        debtsipSchemeMap.put("percentage", 10);
+        debtsipSchemeMap.put("execution", "One scheme");
+        //"lumpsum" inside "schemes"
+        Map<String, Object> debtlumpsumSchemeMap = new HashMap<>();
+        debtlumpsumSchemeMap.put("amount", 10000);
+        debtlumpsumSchemeMap.put("percentage", 20);
+        debtlumpsumSchemeMap.put("execution", "OTI Debt");
+
+        debtschemesMap.put("sip", debtsipSchemeMap);
+        debtschemesMap.put("lumpsum", debtlumpsumSchemeMap);
+
+        debtschemesList.add(debtschemesMap);
+        debtMap.put("schemes", debtschemesList);
 
         allocationsMap.put("equity", equityMap);
+        allocationsMap.put("debt", debtMap);
+    longTermPayload.put("allocations", allocationsMap);
 
-        payload.put("allocations", allocationsMap);
-
-        // Create a nested map for "invest"
+    //"invest"
         Map<String, Object> investMap = new HashMap<>();
-        investMap.put("debt", "string");
-        investMap.put("equity", "string");
-        payload.put("invest", investMap);
+        investMap.put("debt", "20000");
+        investMap.put("equity", "10000");
+    longTermPayload.put("invest", investMap);
 
-        // Create a nested map for "rationals"
+    // Create a nested map for "rationals"
         Map<String, Object> rationalsMap = new HashMap<>();
 
-        // Create a list for "equity" inside "rationals"
+    //"equity" inside "rationals"
         List<Map<String, Object>> equityRationalsList = new ArrayList<>();
-        Map<String, Object> equityRationalsMap = new HashMap<>();
-        equityRationalsMap.put("schemeCode", "string");
-        equityRationalsMap.put("schemeName", "string");
-        equityRationalsMap.put("category", "MF");
-        equityRationalsMap.put("subCategory", "string");
-        equityRationalsMap.put("rationale", "string");
-        equityRationalsMap.put("ratings", 0);
-
+            Map<String, Object> equityRationalsMap = new HashMap<>();
+            equityRationalsMap.put("schemeCode", "string");
+            equityRationalsMap.put("schemeName", "string");
+            equityRationalsMap.put("category", "equity");
+            equityRationalsMap.put("subCategory", "string");
+            equityRationalsMap.put("rationale", "string");
+            equityRationalsMap.put("ratings",3);
         equityRationalsList.add(equityRationalsMap);
+
+    //"debt" inside "rationals"
+        List<Map<String, Object>> debtRationalsList = new ArrayList<>();
+        Map<String, Object> debtRationalsMap = new HashMap<>();
+        debtRationalsMap.put("schemeCode", "string");
+        debtRationalsMap.put("schemeName", "string");
+        debtRationalsMap.put("category", "debt");
+        debtRationalsMap.put("subCategory", "string");
+        debtRationalsMap.put("rationale", "string");
+        debtRationalsMap.put("ratings",3);
+        debtRationalsList.add(debtRationalsMap);
+
         rationalsMap.put("equity", equityRationalsList);
+        rationalsMap.put("debt", debtRationalsList);
 
-
-        payload.put("rationals", rationalsMap);
+  //  longTermPayload.put("rationals", rationalsMap);
 
         RequestSpecification res=given() .spec(req)
-                .body(payload);
+                .body(longTermPayload);
         res.post("/tools/portfolios/builder/suggested-portfolio/long-term")
                 .then()
                 .log()
@@ -499,26 +546,26 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         // Set values for the outermost fields
         payload.put("presetId", "string");
         payload.put("presetName", "string");
-        payload.put("lumpsum", 0);
-        payload.put("sip", 0);
+        payload.put("lumpsum", 10000);
+        payload.put("sip", 2000);
         payload.put("rebalance", "string");
         payload.put("comments", "string");
         payload.put("requirementId", "3caa0891-a1d4-4f23-8c8f-53a35335c864");
         payload.put("comment", "string");
 
-        // Create a nested map for "allocations"
+    // Create a nested map for "allocations"
         Map<String, Object> allocationsMap = new HashMap<>();
 
-        // Create a nested map for "equity" inside "allocations"
+    // Create a nested map for "equity" inside "allocations"
         Map<String, Object> equityMap = new HashMap<>();
 
-        // Create a nested map for "sip" inside "equity"
+    //"sip" inside "equity"
         Map<String, Object> sipMap = new HashMap<>();
         sipMap.put("amount", 0);
         sipMap.put("percentage", 0);
         sipMap.put("execution", "string");
 
-        // Create a nested map for "lumpsum" inside "equity"
+    //"lumpsum" inside "equity"
         Map<String, Object> lumpsumMap = new HashMap<>();
         lumpsumMap.put("amount", 0);
         lumpsumMap.put("percentage", 0);
@@ -527,25 +574,25 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         equityMap.put("sip", sipMap);
         equityMap.put("lumpsum", lumpsumMap);
 
-        // Create a list for "schemes" inside "equity"
+    //Create a list for "schemes" inside "equity"
         List<Map<String, Object>> schemesList = new ArrayList<>();
         Map<String, Object> schemesMap = new HashMap<>();
-        schemesMap.put("schemeCode", "string");
-        schemesMap.put("schemeName", "string");
-        schemesMap.put("ratings", 0);
-        schemesMap.put("category", "string");
-        schemesMap.put("subCategory", "string");
+        schemesMap.put("schemeCode", "948");
+        schemesMap.put("schemeName", "Franklin India Prima Fund(G)");
+        schemesMap.put("ratings", 5);
+        schemesMap.put("category", "Equity");
+        schemesMap.put("subCategory", "Equity - Mid Cap Fund");
 
         // Create a nested map for "sip" inside "schemes"
         Map<String, Object> sipSchemeMap = new HashMap<>();
-        sipSchemeMap.put("amount", 0);
-        sipSchemeMap.put("percentage", 0);
+        sipSchemeMap.put("amount", 1000);
+        sipSchemeMap.put("percentage", 60);
         sipSchemeMap.put("execution", "string");
 
         // Create a nested map for "lumpsum" inside "schemes"
         Map<String, Object> lumpsumSchemeMap = new HashMap<>();
-        lumpsumSchemeMap.put("amount", 0);
-        lumpsumSchemeMap.put("percentage", 0);
+        lumpsumSchemeMap.put("amount", 3000);
+        lumpsumSchemeMap.put("percentage", 50);
         lumpsumSchemeMap.put("execution", "string");
 
         schemesMap.put("sip", sipSchemeMap);
@@ -554,37 +601,91 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         schemesList.add(schemesMap);
         equityMap.put("schemes", schemesList);
 
-        // Create a nested map for "debt" inside "allocations"
+    // Create a nested map for "debt" inside "allocations"
         Map<String, Object> debtMap = new HashMap<>();
+        //"sip" inside "debt"
+        Map<String, Object> debtsipMap = new HashMap<>();
+        debtsipMap.put("amount", 0);
+        debtsipMap.put("percentage", 0);
+        debtsipMap.put("execution", "string");
+
+        //"lumpsum" inside "debt"
+        Map<String, Object> debtlumpsumMap = new HashMap<>();
+        debtlumpsumMap.put("amount", 0);
+        debtlumpsumMap.put("percentage", 0);
+        debtlumpsumMap.put("execution", "string");
+
+        debtMap.put("sip", debtsipMap);
+        debtMap.put("lumpsum", debtlumpsumMap);
+
+        //Create a list for "schemes" inside "equity"
+        List<Map<String, Object>> debtschemesList = new ArrayList<>();
+        Map<String, Object> debtschemesMap = new HashMap<>();
+        debtschemesMap.put("schemeCode", "948");
+        debtschemesMap.put("schemeName", "Franklin India Prima Fund(G)");
+        debtschemesMap.put("ratings", 5);
+        debtschemesMap.put("category", "Equity");
+        debtschemesMap.put("subCategory", "Equity - Mid Cap Fund");
+
+        // Create a nested map for "sip" inside "schemes"
+        Map<String, Object> debtsipSchemeMap = new HashMap<>();
+        debtsipSchemeMap.put("amount", 1000);
+        debtsipSchemeMap.put("percentage", 60);
+        debtsipSchemeMap.put("execution", "string");
+
+        // Create a nested map for "lumpsum" inside "schemes"
+        Map<String, Object> debtlumpsumSchemeMap = new HashMap<>();
+        debtlumpsumSchemeMap.put("amount", 3000);
+        debtlumpsumSchemeMap.put("percentage", 50);
+        debtlumpsumSchemeMap.put("execution", "string");
+
+        debtschemesMap.put("sip", debtsipSchemeMap);
+        debtschemesMap.put("lumpsum", debtlumpsumSchemeMap);
+
+        debtschemesList.add(debtschemesMap);
+        debtMap.put("schemes", debtschemesList);
 
         allocationsMap.put("equity", equityMap);
         allocationsMap.put("debt", debtMap);
 
-        payload.put("allocations", allocationsMap);
+    payload.put("allocations", allocationsMap);
 
-        // Create a nested map for "rationals"
+    // Create a nested map for "rationals"
         Map<String, Object> rationalsMap = new HashMap<>();
 
         // Create a list for "equity" inside "rationals"
         List<Map<String, Object>> equityRationalsList = new ArrayList<>();
-        Map<String, Object> equityRationalsMap = new HashMap<>();
-        equityRationalsMap.put("schemeCode", "string");
-        equityRationalsMap.put("schemeName", "string");
-        equityRationalsMap.put("category", "string");
-        equityRationalsMap.put("subCategory", "string");
-        equityRationalsMap.put("rationale", "string");
-        equityRationalsMap.put("ratings", 0);
+            Map<String, Object> equityRationalsMap = new HashMap<>();
+            equityRationalsMap.put("schemeCode", "string");
+            equityRationalsMap.put("schemeName", "string");
+            equityRationalsMap.put("category", "string");
+            equityRationalsMap.put("subCategory", "string");
+            equityRationalsMap.put("rationale", "string");
+            equityRationalsMap.put("ratings", 0);
 
+        List<Map<String, Object>> debtRationalsList = new ArrayList<>();
+            Map<String, Object> debtRationalsMap = new HashMap<>();
+            debtRationalsMap.put("schemeCode", "string");
+            debtRationalsMap.put("schemeName", "string");
+            debtRationalsMap.put("category", "string");
+            debtRationalsMap.put("subCategory", "string");
+            debtRationalsMap.put("rationale", "string");
+            debtRationalsMap.put("ratings", 0);
+
+        debtRationalsList.add(debtRationalsMap);
         equityRationalsList.add(equityRationalsMap);
+        rationalsMap.put("debt", debtRationalsList);
         rationalsMap.put("equity", equityRationalsList);
 
         payload.put("rationals", rationalsMap);
 
-        // Create a nested map for "invest"
+   // Create a nested map for "invest"
         Map<String, Object> investMap = new HashMap<>();
         investMap.put("debt", "string");
         investMap.put("equity", "string");
         payload.put("invest", investMap);
+
+
         RequestSpecification res=given().spec(req)
                 .body(payload);
         res.post("/tools/portfolios/builder/suggested-portfolio/high-risk")
@@ -601,7 +702,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void getDiscussion() {
         RequestSpecification res = given()
-                //        .queryParam("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66")
+                       .queryParam("requirementId","fa391ac4-d56a-4359-aef5-3dc0b597ac66")
                 .spec(req);
         res.get("/tools/portfolios/builder/discussion")
                 .then().log().all().spec(respec);
@@ -625,7 +726,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void getDiscussionAttachement(){
         RequestSpecification res=given()
-         //             .queryParam("requirementId","8ad2c916-8761-42a3-9d5d-007910bdbdee")
+                      .queryParam("requirementId","8ad2c916-8761-42a3-9d5d-007910bdbdee")
                 .spec(req);
         res.get("/tools/portfolios/builder/discussion/attachments")
                 .then().log().all().spec(respec);
@@ -635,8 +736,8 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     @Test
     public void DeleteDiscussionAttachement(){
         RequestSpecification res=given().spec(req)
-               .queryParam("requirementId","8ad2c916-8761-42a3-9d5d-007910bdbdee")
-                .queryParam("documentId","1");
+              .queryParam("requirementId","8ad2c916-8761-42a3-9d5d-007910bdbdee")
+               .queryParam("documentId","3");
         res.delete("/tools/portfolios/builder/discussion/attachments")
                 .then()
                 .log().all()
@@ -793,7 +894,7 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
     public void postHighRiskPreset(){
         Map<String, Object> jsonPayload = new HashMap<>();
         jsonPayload.put("presetId", "");
-        jsonPayload.put("presetName", "High Risk Preset 2");
+        jsonPayload.put("presetName", "High Risk Preset");
         jsonPayload.put("lumpsum", 10000);
         jsonPayload.put("sip", 1000);
 
@@ -806,13 +907,13 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         // Create "sip" map inside "equity"
         Map<String, Object> sipMapEquity = new HashMap<>();
         sipMapEquity.put("amount", 1000);
-        sipMapEquity.put("percentage", 200);
+        sipMapEquity.put("percentage", 90);
         sipMapEquity.put("execution", "string");
 
         // Create "lumpsum" map inside "equity"
         Map<String, Object> lumpsumMapEquity = new HashMap<>();
         lumpsumMapEquity.put("amount", 10000);
-        lumpsumMapEquity.put("percentage", 83);
+        lumpsumMapEquity.put("percentage", 90);
         lumpsumMapEquity.put("execution", "string");
 
         // Create "schemes" list inside "equity"
@@ -827,13 +928,13 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
         // Create "sip" map inside "schemes"
         Map<String, Object> sipMapScheme = new HashMap<>();
         sipMapScheme.put("amount", 1000);
-        sipMapScheme.put("percentage", 17);
+        sipMapScheme.put("percentage", 99);
         sipMapScheme.put("execution", "string");
 
         // Create "lumpsum" map inside "schemes"
         Map<String, Object> lumpsumMapScheme = new HashMap<>();
         lumpsumMapScheme.put("amount", 0);
-        lumpsumMapScheme.put("percentage", 0);
+        lumpsumMapScheme.put("percentage", 99);
         lumpsumMapScheme.put("execution", "string");
 
         schemeMapEquity.put("sip", sipMapScheme);
@@ -960,23 +1061,21 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
                         "    {\n" +
                         "        \"requirementId\": \"5efd4598-6abf-4d63-99bf-8d2428813ee1\",\n" +
                         "        \"goalId\": \"1\",\n" +
-                        "        \"goalName\": \"First goal\"\n" +
-
-
-                        "        \"currentCost\": 1000000,\n" +
-                        "        \"years\": 10,\n" +
-                        "        \"yearlySipIncrease\": 1000,\n" +
+                        "        \"goalName\": \"First goal\",\n" +
+                 //       "        \"currentCost\": 1000000,\n" +
+                       "        \"years\": 10,\n" +
+                 //       "        \"yearlySipIncrease\": 99,\n" +
                         "        \"targetAmount\": 1791000,\n" +
-                        "        \"existing\": 50000,\n" +
-                        "        \"future\": 108000,\n" +
+               //         "        \"existing\": 50000,\n" +
+               //         "        \"future\": 108000,\n" +
                         "        \"target\": 1683000,\n" +
                         "        \"assumed\": {\n" +
-                        "            \"inflation\": 206,\n" +
+                        "            \"inflation\": 6,\n" +
                         "            \"returns\": 10\n" +
                         "        },\n" +
                         "        \"allocations\": {\n" +
-                        "            \"equity\": 700,\n" +
-                        "            \"debt\": 300,\n" +
+                        "            \"equity\": 100,\n" +
+                        "            \"debt\": 0,\n" +
                         "            \"others\": 0\n" +
                         "        }\n" +
                         "    },\n" +
@@ -996,8 +1095,8 @@ public class PortfolioBuilder extends AD_AccessPropertyFile{
                         "            \"returns\": 8\n" +
                         "        },\n" +
                         "        \"allocations\": {\n" +
-                        "            \"equity\": 70,\n" +
-                        "            \"debt\": 30,\n" +
+                        "            \"equity\": 99,\n" +
+                        "            \"debt\": 1,\n" +
                         "            \"others\": 0\n" +
                         "        }\n" +
                         "    }\n" +

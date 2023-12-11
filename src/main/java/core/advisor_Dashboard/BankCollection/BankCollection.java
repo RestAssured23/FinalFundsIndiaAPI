@@ -71,7 +71,7 @@ public class BankCollection extends AccessPropertyFile {
     @Test(priority = 1)
     public void ListBank() {
         RequestSpecification res = given().spec(req)
-                .queryParam("investorId", 1401246);              // live : 1401246  // local 287822
+                .queryParam("investorId", 287822);              // live : 1401246  // local 287822
         response = res.when().get("/core/investor/banks")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
