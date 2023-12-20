@@ -1,0 +1,23 @@
+version: 0.2
+phases:
+ pre_build:
+  commands:
+    - mkdir target
+    - pwd
+ build:
+  commands:
+    - echo Build started on `date`
+    - mvn --version
+    - mvn install -Dmaven.test.skip=true
+ post_build:
+  commands:   
+    - cp appspec.yml target/appspec.yml
+    - cp transfer.sh target/transfer.sh
+    - ls -ltr target/
+    - echo Build completed on `date`
+artifacts:
+  base-directory: target 
+  files:
+    - coreapi-1.0-SNAPSHOT-jar-with-dependencies.jar
+    - appspec.yml
+    - transfer.sh
