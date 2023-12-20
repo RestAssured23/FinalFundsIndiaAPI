@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 
 public class Signin {
-    @Getter    @Setter
+    @Getter@Setter
     public static class Root {
         public int code;
         public String desc;
@@ -21,5 +21,6 @@ public class Signin {
     public static class Data {
         public String accessToken;
         public String refreshToken;
+        public String jti;   //20.12.2023 implemented
     }
 }

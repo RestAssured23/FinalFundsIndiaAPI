@@ -15,11 +15,13 @@ public class SiginTest {
     public String pwd;
 
 
-    @Test(invocationCount = 18, threadPoolSize = 1)
+    @Test       //(invocationCount = 18, threadPoolSize = 1)
     public void sign() {
         HashMap<String, String> liveLogin = new HashMap<>();
-        liveLogin.put("emailId", "tri.sharon01@gmail.com");
-        liveLogin.put("password", "Wealth007");
+        liveLogin.put("emailId", "dsathish0223@gmail.com");
+        liveLogin.put("password", "KOUshik@2627");
+       /* liveLogin.put("emailId", "tri.sharon01@gmail.com");
+        liveLogin.put("password", "Wealth007");*/
         liveLogin.put("grantType", "credentials");
         liveLogin.put("refreshToken", "string");
 
@@ -38,14 +40,15 @@ public class SiginTest {
      /*   @Test
         public void testlogin() {*/
             //Login API
-            RestAssured.baseURI = "https://staging-api.fundsindia.com";
+            RestAssured.baseURI = "https://api.fundsindia.com";
             Signin.Root response = given().log().all()
                     .header("x-api-version", "1.0")
-                    .header("channel-id", 10)
+                    .header("channel-id", 11)
                     .header("Content-Type", "application/json")
-                    .body(adminlogin)
+                    .body(liveLogin)
                     .when()
-                    .post("/core-partner/auth/sign-in")
+                    .post("/core/auth/sign-in")
+                  //  .post("/core-partner/auth/sign-in")
                     .then()
                     .log().all()
                     .assertThat()
