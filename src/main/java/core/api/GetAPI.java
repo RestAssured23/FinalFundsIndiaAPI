@@ -102,7 +102,7 @@ public class GetAPI extends AccessPropertyFile {
     @Test(priority = 1)
     public void investedSchemes() {
         RequestSpecification res = given().spec(req)
-                .queryParam("holdingProfileId", 179461);
+                .queryParam("holdingProfileId", holdingId);
         response=res.when().get("/core/investor/invested-schemes")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
@@ -176,7 +176,7 @@ public class GetAPI extends AccessPropertyFile {
     @Test(priority = 1)
     public void authorization() {
         RequestSpecification res = given().spec(req)
-                .queryParam("holdingProfileId", "1403821");
+                .queryParam("holdingProfileId", holdingId);
        response= res.when().get("/core/investor/transactions/authorization")
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
@@ -291,7 +291,7 @@ public class GetAPI extends AccessPropertyFile {
     @Test
     public void mfScheme() {
         RequestSpecification res = given().spec(req)
-                .queryParam("schemeCodes",876)
+                .queryParam("schemeCodes","44958")
                 .queryParam("page",1)
                 .queryParam("size",10);
         response=res.when().get("/core/product-search/mf/schemes")

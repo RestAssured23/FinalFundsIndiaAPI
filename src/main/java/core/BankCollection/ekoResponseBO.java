@@ -1,4 +1,4 @@
-package core.advisor_Dashboard.BankCollection;
+package core.BankCollection;
 
 import lombok.Getter;
 import lombok.Setter;
