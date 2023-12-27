@@ -22,5 +22,6 @@ public class Signin {
         public String accessToken;
         public String refreshToken;
         public String jti;   //20.12.2023 implemented
+        public String enforceCredentials;
     }
 }

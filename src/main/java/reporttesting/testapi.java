@@ -13,13 +13,14 @@ public class testapi {
     @Test
     public void signinAPI(){
         HashMap<String, String> payload = new HashMap<>();
-        payload.put("emailId", "dsathish0223@gmail.com");
-        payload.put("password", "KOUshik@2627");
+        payload.put("emailId", "regression@gmail.com");
+        payload.put("password", "asdfasdf123");
         payload.put("grantType", "credentials");
         payload.put("refreshToken", "string");
 
-        RestAssured.baseURI="https://api.fundsindia.com";
-               Signin.Root response=given().log().all()
+        RestAssured.baseURI="https://scrum-api.fundsindia.com";
+              Signin.Root response=given().log().all()
+          //       given().log().all()
                         .header("x-api-version","1.0")
                 .header("channel-id", 11)
                 .header("Content-Type", "application/json")
@@ -28,7 +29,8 @@ public class testapi {
                         .then().log().all()
                         .assertThat().statusCode(200)
                         .header("Content-Type", "application/json")
-                        .extract().response().as(Signin.Root.class);
+                        .extract().response()
+                         .as(Signin.Root.class);
         System.out.println(response.getData().getAccessToken());
     }
 }
