@@ -17,7 +17,7 @@ public class AD_AccessPropertyFile {
     static Properties properties = new Properties();
     static String mailid,ccmailid,searchphno,searchpan;
     @Test
-    public String getADBasePath() {
+    public static String getADBasePath() {
         AD_BasePlatform uri = new AD_BasePlatform();
         try {
             FileInputStream fis = new FileInputStream(uri.platform());
@@ -28,7 +28,7 @@ public class AD_AccessPropertyFile {
         }
     }
     @Test
-    public String getAdminAccessToken() {
+    public static String getAdminAccessToken() {
         AD_BasePlatform uri = new AD_BasePlatform();
         try {
             FileInputStream fis = new FileInputStream(uri.platform());
