@@ -502,6 +502,9 @@ public class GetAPI extends AccessPropertyFile {
                 .then().log().all().spec(respec).extract().response().asString();
         Reporter.log(response);
     }
+//New Onboarding API
+
+
   /*  @Test         // Rest API
     public void main_dashboard_restAPI() throws IOException
     {

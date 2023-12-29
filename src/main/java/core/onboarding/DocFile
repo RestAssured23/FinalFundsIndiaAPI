@@ -1,0 +1,10 @@
+  Exists API(onboarding/registration/user/email/exists)
+  /*     fcmId - Fcm Id
+                                                            deviceId - unique device identifier
+                                                            platform - (ios/android/web)
+                                                            bundleId - com.fundsindia.FundsIndia,com.fundsindia, com.fundsindia-web,com.fiadvisor-web)
+                                                            os       - (ios/android/windows/linux...etc)
+                                                            osVersion - 8.1.0
+                                                            brandModel - ONEPLUS A5010
+                                                            appVersionCode - 64
+                                                            appVersionName - 4.7.1*/

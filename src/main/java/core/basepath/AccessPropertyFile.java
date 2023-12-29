@@ -19,7 +19,8 @@ public class AccessPropertyFile {
             targetscheme_pro,switch_target, amcschemeSearch,expectedscheme,alertStartdate,alertEnddate;
     public static String dbusr, dbpwd, dburl, databasename, encrypt, dbdrivername;
     public static int sipDate;
-    static Properties properties = new Properties();
+
+   public static Properties properties = new Properties();
 
     @Test
     public String getBasePath() {
