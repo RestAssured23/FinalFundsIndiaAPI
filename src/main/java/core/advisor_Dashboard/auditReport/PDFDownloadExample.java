@@ -11,6 +11,8 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static io.restassured.RestAssured.given;
 
@@ -24,6 +26,7 @@ public class PDFDownloadExample extends AD_AccessPropertyFile {
         }
     }
 
+
     private static void downloadAndSavePDF() throws IOException {
         RequestSpecification req = new RequestSpecBuilder()
                 .setBaseUri(getADBasePath())
@@ -34,10 +37,12 @@ public class PDFDownloadExample extends AD_AccessPropertyFile {
                 .setContentType(ContentType.JSON)
                 .build()
                 .log()
-                .all();/* ... your request specification setup ... */;
+                .all();
+
+    String userId="152389";
 
         Response response = given()
-                .queryParam("uuid", "765274")
+                .queryParam("uuid", userId)
                 .queryParam("isInvestmentStyle", true)
                 .spec(req)
                 .get("/tools/portfolios/scan/download")
@@ -51,12 +56,12 @@ public class PDFDownloadExample extends AD_AccessPropertyFile {
 
         String directoryPath = "download/AuditReport/";
         File directory = new File(directoryPath);
-
         if (!directory.exists()) {
             directory.mkdirs();
         }
 
-        String filePath = directoryPath + "Report.pdf";
+        String timestamp = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        String filePath = directoryPath + "Report_" + userId +"_"+ timestamp + ".pdf";
         savePDFToFile(pdfContent, filePath);
 
         // Verify PDF content using PDFBox
