@@ -17,6 +17,7 @@ import java.util.Date;
 import static io.restassured.RestAssured.given;
 
 public class PDFDownloadExample extends AD_AccessPropertyFile {
+   static String userId="764594";   //112071
 
     public static void main(String[] args) {
         try {
@@ -25,8 +26,6 @@ public class PDFDownloadExample extends AD_AccessPropertyFile {
             e.printStackTrace();
         }
     }
-
-
     private static void downloadAndSavePDF() throws IOException {
         RequestSpecification req = new RequestSpecBuilder()
                 .setBaseUri(getADBasePath())
@@ -39,7 +38,7 @@ public class PDFDownloadExample extends AD_AccessPropertyFile {
                 .log()
                 .all();
 
-    String userId="152389";
+
 
         Response response = given()
                 .queryParam("uuid", userId)
@@ -82,15 +81,13 @@ public class PDFDownloadExample extends AD_AccessPropertyFile {
             System.err.println("Error: The PDF file is either missing or empty.");
             return;
         }
-
         try (PDDocument document = PDDocument.load(pdfFile)) {
             PDFTextStripper pdfStripper = new PDFTextStripper();
             String text = pdfStripper.getText(document);
-            System.out.println("PDF Content: " + text);
+            System.out.println("PDF Content: " +text);
         } catch (IOException e) {
             System.err.println("Error loading PDF file: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
 }

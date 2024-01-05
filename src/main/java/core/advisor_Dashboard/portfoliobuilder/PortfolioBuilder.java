@@ -3,14 +3,18 @@ import core.advisor_Dashboard.AD_AccessPropertyFile;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -372,30 +376,52 @@ public class PortfolioBuilder extends AD_AccessPropertyFile {
     }
     @Test(enabled = true)
     public void testBuilderPDFDownload() throws IOException {
-        // Assuming you have a valid 'req' RequestSpecification
-        // ...
-
-        RequestSpecification res = given()
+            Response response = given()
                 .queryParam("requirementId", "c4ad3812-b0ff-431b-a713-428b7a24a96a")
                 .queryParam("version", "longer")
-                .spec(req);
-           res.get("/tools/portfolios/builder/download")
-                   .then().log().all().contentType("application/pdf");
+                .spec(req)
 
-       /* // Verify response status code if needed
-        .then().log().all().statusCode(200);*/
+                .get("/tools/portfolios/builder/download")
+                .then().log().all()
+                .statusCode(200)
+                .contentType("application/pdf")
+                .extract().response();
 
-     String directoryPath = "download/portfolioBuilder/";
-    File directory = new File(directoryPath);        // Create the directory if it doesn't exist
+        byte[] pdfContent = response.getBody().asByteArray();
+        System.out.println("Received PDF content length: " + pdfContent.length);
+
+        String directoryPath = "download/portfolioBuilder/";
+        File directory = new File(directoryPath);
         if (!directory.exists()) {
             directory.mkdirs();
         }
+        String timestamp = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        String filePath = directoryPath + "PortFolioProposal_" + timestamp + ".pdf";
+        savePDFToFile(pdfContent, filePath);
 
-    savePDFToFile(res.head().asByteArray(), directoryPath + "Builder.pdf");     // Save the PDF content to a file
+        // Verify PDF content using PDFBox
+        verifyPDFContent(filePath);
     }
-    private void savePDFToFile(byte[] pdfContent, String filePath) throws IOException {
+    private static void savePDFToFile(byte[] pdfContent, String filePath) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
             fos.write(pdfContent);
+            System.out.println("PDF saved to: " + filePath);
+        }
+    }
+    private static void verifyPDFContent(String filePath) {
+        File pdfFile = new File(filePath);
+
+        if (!pdfFile.exists() || pdfFile.length() == 0) {
+            System.err.println("Error: The PDF file is either missing or empty.");
+            return;
+        }
+        try (PDDocument document = PDDocument.load(pdfFile)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            String text = pdfStripper.getText(document);
+            System.out.println("PDF Content: " +text);
+        } catch (IOException e) {
+            System.err.println("Error loading PDF file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
