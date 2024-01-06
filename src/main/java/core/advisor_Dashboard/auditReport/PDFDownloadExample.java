@@ -39,7 +39,6 @@ public class PDFDownloadExample extends AD_AccessPropertyFile {
                 .all();
 
 
-
         Response response = given()
                 .queryParam("uuid", userId)
                 .queryParam("isInvestmentStyle", true)
